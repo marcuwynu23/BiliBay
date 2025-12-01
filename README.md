@@ -1,4 +1,4 @@
-# BiliBay Monorepo
+# BiliBay
 
 A **Filipino-inspired online marketplace** built using a **monorepo architecture** powered by **PNPM Workspaces** and **Turborepo**.
 
