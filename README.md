@@ -1,17 +1,26 @@
-# Monorepo Project Template
+# BiliBay Monorepo
 
-A **monorepo template** using **PNPM Workspaces** and **Turborepo**.
-This repository includes a frontend, backend, and shared UI component library.
+A **Filipino-inspired online marketplace** built using a **monorepo architecture** powered by **PNPM Workspaces** and **Turborepo**.
+
+This repository contains the **frontend**, **backend**, and a **shared UI component library** used across apps.
 
 ---
 
-## Project Structure
+## 🇵🇭 About BiliBay
+
+**BiliBay** is an online marketplace that connects **buyers** and **sellers** through simple product listings, order management, role-based dashboards, and a Pinoy-centric UX.
+
+This monorepo setup makes BiliBay scalable, maintainable, and fast to develop.
+
+---
+
+## 🏗️ Project Structure
 
 ```
-myapp/
+bilibay/
 ├── apps/
-│   ├── frontend/        # React frontend app
-│   └── backend/         # Node.js / Express backend app
+│   ├── frontend/        # Buyer & Seller web app (React + Vite)
+│   └── backend/         # REST API backend (Node.js + Express)
 ├── packages/
 │   └── ui/              # Shared React UI component library
 ├── package.json
@@ -21,23 +30,35 @@ myapp/
 
 ---
 
-## Workspaces
+## 📦 Workspaces
 
-- **Frontend**: React + TypeScript + Vite. Uses shared UI components from `@myapp/ui`.
-- **Backend**: Node.js + TypeScript + Express (or any other backend framework).
-- **UI Library**: Shared React components (`Button`, `Page`, `Table`, etc.) built with TypeScript.
+- **Frontend** (`apps/frontend`)
+
+  - React + TypeScript + Vite
+  - Uses UI components from `@bilibay/ui`
+  - Buyer & seller dashboards, product browsing, auth UI
+
+- **Backend** (`apps/backend`)
+
+  - Node.js + Express + TypeScript
+  - API routes for users, products, orders, auth
+
+- **UI Library** (`packages/ui`)
+
+  - Shared React components: `Page`, `Button`, `Card`, `Table`, etc.
+  - Reused across all BiliBay apps
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
-### Prerequisites
+### **Prerequisites**
 
-- [Node.js](https://nodejs.org/) >= 20
-- [PNPM](https://pnpm.io/) >= 8
-- [Turborepo](https://turbo.build/) (installed via dev dependencies)
+- Node.js >= 20
+- PNPM >= 8
+- Turborepo (via devDependencies)
 
-### Install dependencies
+### **Install all dependencies**
 
 ```bash
 pnpm install
@@ -45,25 +66,29 @@ pnpm install
 
 ---
 
-## Development
+## 🧑‍💻 Development
 
-Run all apps and packages in parallel:
+Run everything (frontend + backend + ui) in parallel:
 
 ```bash
 pnpm dev
 ```
 
-- Frontend: [http://localhost:5173](http://localhost:5173) (default Vite port)
-- Backend: [http://localhost:3000](http://localhost:3000)
+- **Frontend:** [http://localhost:5173](http://localhost:5173)
+- **Backend:** [http://localhost:3000](http://localhost:3000)
 
-### Frontend
+---
+
+## 🌐 Frontend Setup
 
 ```bash
 cd apps/frontend
 pnpm dev
 ```
 
-Vite frontend is configured to use a **proxy** to your backend. Add the following to `vite.config.ts`:
+### Vite Proxy for API
+
+Allows calling `/api/...` without CORS issues:
 
 ```ts
 import {defineConfig} from "vite";
@@ -84,86 +109,92 @@ export default defineConfig({
 });
 ```
 
-This allows you to call backend APIs without CORS issues using paths like `/api/users`.
+---
 
-### Backend
+## 🛠 Backend Setup
 
 ```bash
 cd apps/backend
 pnpm dev
 ```
 
-### UI Library
+Default endpoints:
 
-Build or watch the shared UI components:
+```
+GET /api/users
+GET /api/products
+POST /api/auth/login
+POST /api/orders
+```
+
+---
+
+## 🎨 UI Component Library
 
 ```bash
 cd packages/ui
-pnpm build       # Compile TypeScript
-pnpm dev         # Watch mode
-```
-
----
-
-## Build
-
-Build all apps and packages for production:
-
-```bash
 pnpm build
+pnpm dev
 ```
 
-- Frontend: Compiled to `dist/`
-- Backend: Compiled to `dist/`
-- UI Library: Compiled to `dist/` and ready to be consumed by frontend or other apps
+Exports components like:
+
+- `<Page />`
+- `<Button />`
+- `<Card />`
+- `<Table />`
 
 ---
 
-## Linting
+## 🧱 API Structure (Example)
 
-```bash
-pnpm lint
+```
+apps/backend/src/api/
+├── auth/
+│   └── login.ts
+├── users/
+│   └── routes.ts
+├── products/
+│   └── routes.ts
+└── orders/
+    └── routes.ts
 ```
 
-Uses ESLint for frontend, backend, and UI packages.
+### Example Route
+
+```ts
+router.get("/users", async (req, res) => {
+  const users = await db.user.findMany();
+  res.json(users);
+});
+```
 
 ---
 
-## Testing
-
-```bash
-pnpm test
-```
-
-Runs all tests across apps and packages (supports `vitest` or `jest` depending on setup).
-
----
-
-## Usage Example (Frontend + UI Library + Proxy)
+## 🔄 Example Usage (Frontend + UI + API)
 
 ```tsx
-import {Page, Button, Table} from "@myapp/ui";
+import {Page, Table} from "@bilibay/ui";
 import {useEffect, useState} from "react";
 
-function App() {
-  const [users, setUsers] = useState<{id: number; name: string}[]>([]);
+export default function UsersPage() {
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("/api/users") // Note: no need for full localhost URL because of Vite proxy
-      .then((res) => res.json())
+    fetch("/api/users")
+      .then((r) => r.json())
       .then(setUsers);
   }, []);
 
   return (
-    <Page id="page-1" className="p-6">
-      <h1 className="text-xl font-bold mb-4">Users List</h1>
+    <Page className="p-6">
+      <h1 className="text-xl font-bold mb-4">Users</h1>
       <Table
         items={users}
         emptyMessage="No users found."
-        className="overflow-hidden"
         columns={[
-          {header: "ID", render: (user) => user.id},
-          {header: "Name", render: (user) => user.name},
+          {header: "ID", render: (u) => u.id},
+          {header: "Name", render: (u) => u.name},
         ]}
       />
     </Page>
@@ -173,14 +204,44 @@ function App() {
 
 ---
 
-## Contributing
+## 🏗️ Build for Production
 
-- Create feature branches for new functionality
-- Update TypeScript types and UI components in `packages/ui` as needed
-- Ensure linting and tests pass before submitting pull requests
+```bash
+pnpm build
+```
+
+Outputs:
+
+- `apps/frontend/dist/`
+- `apps/backend/dist/`
+- `packages/ui/dist/`
 
 ---
 
-## License
+## 📏 Linting
 
-[MIT](LICENSE)
+```bash
+pnpm lint
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+pnpm test
+```
+
+---
+
+## 🤝 Contributing
+
+- Use feature branches
+- Update UI types + components when needed
+- Ensure tests and lint pass before PR
+
+---
+
+## 📜 License
+
+MIT License © 2025 marcuwynu23
