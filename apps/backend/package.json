@@ -1,22 +1,32 @@
 {
-  "name": "@myapp/backend",
+  "name": "@bilibay/backend",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "build": "node esbuild.config.js"
+    "build": "node esbuild.config.js",
+    "seed": "tsx src/seeder/seed.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "cors": "^2.8.5",
     "esbuild": "^0.27.0",
     "express": "^5.1.0",
-    "tsx": "^4.10.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.0.0"
   }
 }
