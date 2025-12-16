@@ -273,7 +273,7 @@ export default function SellerProducts() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 md:py-12 pb-safe">
+      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 md:py-12 pb-safe-nav">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-10">
           <div>

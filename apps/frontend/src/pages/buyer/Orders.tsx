@@ -100,7 +100,7 @@ export default function Orders() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="w-full px-4 sm:px-6 py-6 sm:py-12">
+      <div className="w-full px-4 sm:px-6 py-6 sm:py-12 pb-safe-nav">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">

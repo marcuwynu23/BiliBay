@@ -7,6 +7,7 @@ import {
   UserIcon,
   ArrowRightOnRectangleIcon,
   ClipboardDocumentListIcon,
+  QueueListIcon,
 } from "@heroicons/react/24/outline";
 import {useAuthStore} from "~/stores/common/authStore";
 import {usePromptStore} from "~/stores/common/promptStore";
@@ -295,7 +296,7 @@ export const NavBar = () => {
 
       {/* Mobile Bottom Navigation Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 pb-safe shadow-lg">
-        <div className="flex items-center justify-around h-16">
+        <div className="flex items-center justify-around h-9">
           {/* Home Button */}
           <Link
             to="/"
@@ -341,7 +342,7 @@ export const NavBar = () => {
                   : "text-gray-600 hover:text-[#98b964]"
               }`}
             >
-              <ClipboardDocumentListIcon className="h-6 w-6" />
+              <QueueListIcon className="h-6 w-6" />
             </Link>
           ) : (
             <div className="flex flex-col items-center justify-center flex-1 h-full min-h-[64px] text-gray-300 cursor-not-allowed">
