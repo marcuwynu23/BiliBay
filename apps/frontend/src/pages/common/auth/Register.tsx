@@ -30,7 +30,9 @@ export default function Register() {
   const navigate = useNavigate();
   const {register} = useAuthStore();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({...formData, [e.target.name]: e.target.value});
   };
 
@@ -72,7 +74,8 @@ export default function Register() {
         }
       }, 100);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Registration failed";
+      const errorMessage =
+        err instanceof Error ? err.message : "Registration failed";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -85,7 +88,7 @@ export default function Register() {
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* Gradient accent */}
           <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
-          
+
           <div className="p-8 space-y-6">
             {/* Header */}
             <div className="text-center">
@@ -107,7 +110,10 @@ export default function Register() {
 
               {/* Full Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Full Name
                 </label>
                 <div className="relative">
@@ -129,7 +135,10 @@ export default function Register() {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Email address
                 </label>
                 <div className="relative">
@@ -152,8 +161,12 @@ export default function Register() {
 
               {/* Phone */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Phone Number <span className="text-gray-500 font-normal">(Optional)</span>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  Phone Number{" "}
+                  <span className="text-gray-500 font-normal">(Optional)</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -173,7 +186,10 @@ export default function Register() {
 
               {/* Account Type */}
               <div>
-                <label htmlFor="role" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Account Type
                 </label>
                 <div className="relative">
@@ -192,8 +208,18 @@ export default function Register() {
                     <option value="seller">Seller</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="h-5 w-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -201,7 +227,10 @@ export default function Register() {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -223,7 +252,9 @@ export default function Register() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
                       <EyeSlashIcon className="h-5 w-5" />
@@ -232,7 +263,9 @@ export default function Register() {
                     )}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Must be at least 6 characters
+                </p>
               </div>
 
               {/* Confirm Password */}
@@ -262,7 +295,9 @@ export default function Register() {
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showConfirmPassword ? (
                       <EyeSlashIcon className="h-5 w-5" />
@@ -311,4 +346,3 @@ export default function Register() {
     </Page>
   );
 }
-
