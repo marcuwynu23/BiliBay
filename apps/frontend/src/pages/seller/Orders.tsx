@@ -89,14 +89,14 @@ export default function SellerOrders() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-2">
-            <ClipboardDocumentListIcon className="h-8 w-8 text-[#98b964]" />
-            <h1 className="text-4xl font-bold text-gray-900">Orders</h1>
+        <div className="mb-6 sm:mb-10">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <ClipboardDocumentListIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Orders</h1>
           </div>
-          <p className="text-gray-600">Manage and process customer orders</p>
+          <p className="text-sm sm:text-base text-gray-600">Manage and process customer orders</p>
         </div>
 
         {loading ? (

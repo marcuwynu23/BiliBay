@@ -119,20 +119,20 @@ export default function ProductDetail() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 flex items-center gap-2 text-[#98b964] hover:text-[#5e7142] font-medium transition-colors"
+          className="mb-4 sm:mb-6 flex items-center gap-2 text-[#98b964] hover:text-[#5e7142] font-medium transition-colors text-sm sm:text-base"
         >
-          <ArrowLeftIcon className="h-5 w-5" />
+          <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>Back</span>
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* Product Images */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <img
                 src={product.images?.[0] || "/placeholder.png"}
                 alt={product.title}
@@ -142,24 +142,24 @@ export default function ProductDetail() {
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
-              <div className="p-6">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <div className="p-4 sm:p-6">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
                   {product.title}
                 </h1>
-                <div className="flex items-center gap-3 mb-6">
-                  <p className="text-4xl font-bold text-[#98b964]">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                  <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#98b964]">
                     ₱{product.price?.toFixed(2)}
                   </p>
                   {product.stock > 0 && (
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm font-semibold">
                       In Stock
                     </span>
                   )}
                 </div>
-                <p className="text-gray-700 text-lg leading-relaxed mb-6">
+                <p className="text-sm sm:text-base lg:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6">
                   {product.description}
                 </p>
 

@@ -48,22 +48,26 @@ export default function BuyerDashboard() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Manage your shopping experience</p>
+        <div className="mb-6 sm:mb-10">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+            Dashboard
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600">
+            Manage your shopping experience
+          </p>
         </div>
 
         {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {dashboardCards.map((card) => {
             const Icon = card.icon;
             return (
               <Link
                 key={card.link}
                 to={card.link}
-                className="group relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
+                className="group relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
               >
                 {/* Gradient Accent */}
                 <div
@@ -72,16 +76,18 @@ export default function BuyerDashboard() {
 
                 {/* Icon Container */}
                 <div
-                  className={`${card.bgColor} w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                  className={`${card.bgColor} w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}
                 >
-                  <Icon className={`h-7 w-7 text-gray-700`} />
+                  <Icon className={`h-6 w-6 sm:h-7 sm:w-7 text-gray-700`} />
                 </div>
 
                 {/* Content */}
-                <h2 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#98b964] transition-colors">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-[#98b964] transition-colors">
                   {card.title}
                 </h2>
-                <p className="text-gray-600 text-sm mb-4">{card.description}</p>
+                <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">
+                  {card.description}
+                </p>
 
                 {/* Arrow Indicator */}
                 <div className="flex items-center text-[#98b964] font-medium text-sm group-hover:translate-x-1 transition-transform duration-300">
@@ -97,26 +103,26 @@ export default function BuyerDashboard() {
         </div>
 
         {/* Minimalist Illustration Section */}
-        <div className="mt-16 bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+        <div className="mt-8 sm:mt-16 bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex-1 mb-6 md:mb-0">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="flex-1 mb-6 md:mb-0 text-center md:text-left">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 Start Shopping
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-4">
                 Discover amazing products from local sellers and support
                 Filipino businesses.
               </p>
               <Link
                 to="/products"
-                className="inline-flex items-center px-6 py-3 bg-[#98b964] text-white rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+                className="inline-flex items-center px-5 sm:px-6 py-2.5 sm:py-3 bg-[#98b964] text-white rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow text-sm sm:text-base"
               >
-                <ShoppingBagIcon className="h-5 w-5 mr-2" />
+                <ShoppingBagIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Browse Products
               </Link>
             </div>
             {/* Minimalist SVG Illustration */}
-            <div className="flex-shrink-0 w-64 h-64 md:w-80 md:h-80">
+            <div className="flex-shrink-0 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 hidden md:block">
               <svg viewBox="0 0 200 200" className="w-full h-full">
                 {/* Shopping bag */}
                 <path

@@ -1,10 +1,13 @@
 import {Link, useNavigate} from "react-router-dom";
+import {useState} from "react";
 import {
   HomeIcon,
   ShoppingCartIcon,
   ShoppingBagIcon,
   UserIcon,
   ArrowRightOnRectangleIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import {useAuthStore} from "~/stores/common/authStore";
 import {useDialogStore} from "~/stores/common/dialogStore";
@@ -13,6 +16,7 @@ export const NavBar = () => {
   const {user, token, logout} = useAuthStore();
   const navigate = useNavigate();
   const {confirm} = useDialogStore();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     confirm({
@@ -39,6 +43,94 @@ export const NavBar = () => {
     }
   };
 
+  const navigationLinks =
+    user && token ? (
+      <>
+        <Link
+          to="/"
+          onClick={() => setMobileMenuOpen(false)}
+          className="flex items-center space-x-2 px-4 py-3 text-base text-gray-700 hover:text-[#98b964] hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg"
+        >
+          <HomeIcon className="h-5 w-5" />
+          <span>Home</span>
+        </Link>
+        <Link
+          to="/products"
+          onClick={() => setMobileMenuOpen(false)}
+          className="flex items-center space-x-2 px-4 py-3 text-base text-gray-700 hover:text-[#98b964] hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg"
+        >
+          <ShoppingBagIcon className="h-5 w-5" />
+          <span>Products</span>
+        </Link>
+        {user && user.role === "buyer" && (
+          <Link
+            to="/buyer/cart"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center space-x-2 px-4 py-3 text-base text-gray-700 hover:text-[#98b964] hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg"
+          >
+            <ShoppingCartIcon className="h-5 w-5" />
+            <span>Cart</span>
+          </Link>
+        )}
+        {getDashboardLink() && (
+          <Link
+            to={getDashboardLink()!}
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center space-x-2 px-4 py-3 text-base text-gray-700 hover:text-[#98b964] hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg"
+          >
+            <UserIcon className="h-5 w-5" />
+            <span>Dashboard</span>
+          </Link>
+        )}
+        <div className="border-t border-gray-200 my-2"></div>
+        <div className="px-4 py-2 text-sm text-gray-600 font-medium">
+          {user.name}
+        </div>
+        <button
+          onClick={() => {
+            setMobileMenuOpen(false);
+            handleLogout();
+          }}
+          className="flex items-center space-x-2 px-4 py-3 text-base text-gray-700 hover:text-[#98b964] hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg w-full text-left"
+        >
+          <ArrowRightOnRectangleIcon className="h-5 w-5" />
+          <span>Logout</span>
+        </button>
+      </>
+    ) : (
+      <>
+        <Link
+          to="/"
+          onClick={() => setMobileMenuOpen(false)}
+          className="px-4 py-3 text-base text-gray-700 hover:text-[#98b964] hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg"
+        >
+          Home
+        </Link>
+        <Link
+          to="/products"
+          onClick={() => setMobileMenuOpen(false)}
+          className="px-4 py-3 text-base text-gray-700 hover:text-[#98b964] hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg"
+        >
+          Products
+        </Link>
+        <div className="border-t border-gray-200 my-2"></div>
+        <Link
+          to="/login"
+          onClick={() => setMobileMenuOpen(false)}
+          className="px-4 py-3 text-base text-gray-700 hover:text-[#98b964] hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg"
+        >
+          Sign In
+        </Link>
+        <Link
+          to="/register"
+          onClick={() => setMobileMenuOpen(false)}
+          className="px-4 py-3 text-base bg-[#98b964] text-white rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow text-center"
+        >
+          Sign Up
+        </Link>
+      </>
+    );
+
   return (
     <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -49,13 +141,13 @@ export const NavBar = () => {
               <img
                 src="/bilibay-logo-rectangle-light.svg"
                 alt="BiliBay Logo"
-                className="h-8 transition-opacity group-hover:opacity-80"
+                className="h-7 sm:h-8 transition-opacity group-hover:opacity-80"
               />
             </Link>
           </div>
 
-          {/* Navigation */}
-          <div className="flex items-center space-x-1">
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-1">
             {user && token ? (
               <>
                 {/* Main Navigation */}
@@ -97,7 +189,7 @@ export const NavBar = () => {
                 )}
 
                 {/* User Name - Subtle */}
-                <div className="px-3 py-1.5 text-sm text-gray-600 font-medium hidden sm:block">
+                <div className="px-3 py-1.5 text-sm text-gray-600 font-medium">
                   {user.name}
                 </div>
 
@@ -144,8 +236,28 @@ export const NavBar = () => {
               </>
             )}
           </div>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-gray-600 hover:text-[#98b964] rounded-lg hover:bg-gray-50 transition-all duration-200"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <XMarkIcon className="h-6 w-6" />
+            ) : (
+              <Bars3Icon className="h-6 w-6" />
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-gray-200 bg-white">
+          <div className="px-4 py-4 space-y-1">{navigationLinks}</div>
+        </div>
+      )}
     </nav>
   );
 };

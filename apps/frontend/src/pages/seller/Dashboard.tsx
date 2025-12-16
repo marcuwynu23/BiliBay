@@ -50,43 +50,43 @@ export default function SellerDashboard() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Seller Dashboard</h1>
-          <p className="text-gray-600">Manage your store and grow your business</p>
+        <div className="mb-6 sm:mb-10">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Seller Dashboard</h1>
+          <p className="text-sm sm:text-base text-gray-600">Manage your store and grow your business</p>
         </div>
 
         {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
           {dashboardCards.map((card) => {
             const Icon = card.icon;
             return (
               <Link
                 key={card.link}
                 to={card.link}
-                className="group relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
+                className="group relative bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
               >
                 {/* Gradient Accent */}
                 <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${card.color}`} />
 
-                <div className="flex items-start justify-between mb-6">
+                <div className="flex items-start justify-between mb-4 sm:mb-6">
                   {/* Icon Container */}
-                  <div className={`${card.bgColor} w-16 h-16 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="h-8 w-8 text-gray-700" />
+                  <div className={`${card.bgColor} w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-700" />
                   </div>
 
                   {/* Illustration */}
-                  <div className="w-24 h-24 opacity-40 group-hover:opacity-60 transition-opacity">
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 opacity-40 group-hover:opacity-60 transition-opacity hidden sm:block">
                     {card.illustration}
                   </div>
                 </div>
 
                 {/* Content */}
-                <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#98b964] transition-colors">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-[#98b964] transition-colors">
                   {card.title}
                 </h2>
-                <p className="text-gray-600 mb-6">{card.description}</p>
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">{card.description}</p>
 
                 {/* Arrow Indicator */}
                 <div className="flex items-center text-[#98b964] font-medium group-hover:translate-x-1 transition-transform duration-300">
@@ -102,23 +102,23 @@ export default function SellerDashboard() {
         </div>
 
         {/* Quick Actions & Illustration Section */}
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex-1 mb-6 md:mb-0">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to grow?</h3>
-              <p className="text-gray-600 mb-6">
+            <div className="flex-1 mb-6 md:mb-0 text-center md:text-left">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Ready to grow?</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
                 Add new products to your catalog and start reaching more customers today.
               </p>
               <Link
                 to="/seller/products"
-                className="inline-flex items-center px-6 py-3 bg-[#98b964] text-white rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+                className="inline-flex items-center px-5 sm:px-6 py-2.5 sm:py-3 bg-[#98b964] text-white rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow text-sm sm:text-base"
               >
-                <PlusIcon className="h-5 w-5 mr-2" />
+                <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Add New Product
               </Link>
             </div>
             {/* Minimalist Store Illustration */}
-            <div className="flex-shrink-0 w-64 h-64 md:w-80 md:h-80">
+            <div className="flex-shrink-0 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 hidden md:block">
               <svg viewBox="0 0 200 200" className="w-full h-full">
                 {/* Store building */}
                 <rect x="40" y="80" width="120" height="100" rx="4" fill="none" stroke="#98b964" strokeWidth="3" opacity="0.3" />
