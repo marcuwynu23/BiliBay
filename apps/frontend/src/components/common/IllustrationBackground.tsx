@@ -96,8 +96,8 @@ export default function IllustrationBackground({className = ""}: IllustrationBac
       {/* Feature Description - Desktop Only */}
       <div className="hidden md:block absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#637c3c]/60 via-[#637c3c]/40 to-transparent">
         <div className="max-w-2xl mx-auto text-center">
-          <h3 className="text-2xl font-bold text-white mb-2">{feature.title}</h3>
-          <p className="text-base text-white/90">{feature.description}</p>
+          <h3 className="text-2xl font-bold text-[#647e3d] mb-2">{feature.title}</h3>
+          <p className="text-base text-white">{feature.description}</p>
         </div>
       </div>
     </div>

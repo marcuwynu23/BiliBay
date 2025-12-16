@@ -1,21 +1,24 @@
 import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {Page} from "@bilibay/ui";
+import {Page, Select} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {Card} from "@bilibay/ui";
 import {api} from "~/utils/api";
 import {useAuthStore} from "~/stores/common/authStore";
-import {useDialogStore} from "~/stores/common/dialogStore";
+import {usePromptStore} from "~/stores/common/promptStore";
 import {
   MagnifyingGlassIcon,
   FunnelIcon,
   ShoppingBagIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Products() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({
     search: "",
     category: "",
@@ -26,7 +29,7 @@ export default function Products() {
   });
   const navigate = useNavigate();
   const {token, user} = useAuthStore();
-  const {alert, confirm} = useDialogStore();
+  const {alert, confirm} = usePromptStore();
 
   useEffect(() => {
     fetchCategories();
@@ -102,24 +105,39 @@ export default function Products() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe">
+      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 md:py-12 pb-safe">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
-            <ShoppingBagIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Products</h1>
+            <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">Products</h1>
           </div>
           <p className="text-sm sm:text-base text-gray-600">Discover amazing products from local sellers</p>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 mb-6 sm:mb-8">
-          <div className="flex items-center gap-2 mb-3 sm:mb-4">
-            <FunnelIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
-            <h2 className="text-sm sm:text-base font-semibold text-gray-900">Filters</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="relative">
+        {/* Filters Accordion */}
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 mb-6 sm:mb-8 overflow-hidden">
+          {/* Accordion Header */}
+          <button
+            onClick={() => setFiltersOpen(!filtersOpen)}
+            className="w-full flex items-center justify-between p-4 sm:p-6 hover:bg-gray-50 transition-colors touch-manipulation"
+          >
+            <div className="flex items-center gap-2 sm:gap-3">
+              <FunnelIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+              <h2 className="text-sm sm:text-base font-semibold text-gray-900">Filters</h2>
+            </div>
+            {filtersOpen ? (
+              <ChevronUpIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500" />
+            ) : (
+              <ChevronDownIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500" />
+            )}
+          </button>
+          
+          {/* Accordion Content */}
+          {filtersOpen && (
+            <div className="px-4 sm:px-6 pb-4 sm:pb-6 animate-slide-down">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {/* Search Input */}
+            <div className="relative sm:col-span-2 lg:col-span-1">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               <input
                 type="text"
@@ -129,93 +147,126 @@ export default function Products() {
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
               />
             </div>
-            <select
-              className="w-full px-3 sm:px-4 py-3 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-base sm:text-sm touch-manipulation"
-              value={filters.category}
-              onChange={(e) => setFilters({...filters, category: e.target.value})}
-            >
-              <option value="">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <select
-              className="w-full px-3 sm:px-4 py-3 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-base sm:text-sm touch-manipulation"
-              value={filters.sortBy}
-              onChange={(e) => setFilters({...filters, sortBy: e.target.value})}
-            >
-              <option value="newest">Newest</option>
-              <option value="price_low">Price: Low to High</option>
-              <option value="price_high">Price: High to Low</option>
-              <option value="popularity">Popularity</option>
-            </select>
-            <label className="flex items-center px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            {/* Category Select */}
+            <div className="relative z-10">
+              <Select
+                options={[
+                  { value: "", label: "All Categories" },
+                  ...categories.map((cat) => ({
+                    value: cat._id,
+                    label: cat.name,
+                  })),
+                ]}
+                value={filters.category}
+                onChange={(e) => setFilters({...filters, category: e.target.value})}
+                placeholder="All Categories"
+                backgroundColor="bg-white"
+                borderColor="border-gray-300"
+                textColor="text-gray-900"
+                iconColor="text-gray-500"
+                focusRingColor="focus:ring-[#98b964]"
+                optionHoverColor="hover:bg-gray-100"
+                optionSelectedColor="bg-[#98b964]/10"
+                className="w-full"
+                selectClassName="px-3 sm:px-4 py-3 sm:py-2.5"
+                optionClassName=""
+              />
+            </div>
+            {/* Sort Select */}
+            <div className="relative z-10">
+              <Select
+                options={[
+                  { value: "newest", label: "Newest" },
+                  { value: "price_low", label: "Price: Low to High" },
+                  { value: "price_high", label: "Price: High to Low" },
+                  { value: "popularity", label: "Popularity" },
+                ]}
+                value={filters.sortBy}
+                onChange={(e) => setFilters({...filters, sortBy: e.target.value})}
+                placeholder="Sort by"
+                backgroundColor="bg-white"
+                borderColor="border-gray-300"
+                textColor="text-gray-900"
+                iconColor="text-gray-500"
+                focusRingColor="focus:ring-[#98b964]"
+                optionHoverColor="hover:bg-gray-100"
+                optionSelectedColor="bg-[#98b964]/10"
+                className="w-full"
+                selectClassName="px-3 sm:px-4 py-3 sm:py-2.5"
+                optionClassName=""
+              />
+            </div>
+            {/* In Stock Checkbox */}
+            <label className="flex items-center justify-center sm:justify-start px-3 sm:px-4 py-3 sm:py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors touch-manipulation min-h-[48px] sm:min-h-0">
               <input
                 type="checkbox"
                 checked={filters.inStock === "true"}
                 onChange={(e) =>
                   setFilters({...filters, inStock: e.target.checked ? "true" : ""})
                 }
-                className="mr-2 w-4 h-4 text-[#98b964] focus:ring-[#98b964] rounded"
+                className="mr-2 w-4 h-4 sm:w-4 sm:h-4 text-[#98b964] focus:ring-[#98b964] rounded"
               />
-              <span className="text-xs sm:text-sm font-medium text-gray-700">In Stock Only</span>
+              <span className="text-sm sm:text-sm font-medium text-gray-700 whitespace-nowrap">In Stock Only</span>
             </label>
-          </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Products Grid */}
         {loading ? (
-          <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#98b964] border-t-transparent"></div>
-            <p className="mt-4 text-gray-600">Loading products...</p>
+          <div className="text-center py-12 sm:py-20">
+            <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-[#98b964] border-t-transparent"></div>
+            <p className="mt-4 text-sm sm:text-base text-gray-600">Loading products...</p>
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
-            <ShoppingBagIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-            <p className="text-gray-600">Try adjusting your filters</p>
+          <div className="bg-white rounded-xl sm:rounded-2xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
+            <ShoppingBagIcon className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No products found</h3>
+            <p className="text-sm sm:text-base text-gray-600">Try adjusting your filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
             {products.map((product) => (
               <Card
                 key={product._id}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group"
+                className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group flex flex-col"
               >
                 <div
-                  className="cursor-pointer"
+                  className="cursor-pointer flex-1 flex flex-col"
                   onClick={() => navigate(`/product/${product._id}`)}
                 >
                   <div className="relative overflow-hidden">
                     <img
                       src={product.images?.[0] || "/placeholder.png"}
                       alt={product.title}
-                      className="h-56 w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="h-48 sm:h-56 w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/placeholder.png";
+                      }}
                     />
                     {product.stock === 0 && (
-                      <div className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                      <div className="absolute top-2 right-2 bg-red-500 text-white px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
                         Out of Stock
                       </div>
                     )}
                   </div>
-                  <div className="p-5">
-                    <h3 className="font-bold text-lg mb-2 text-gray-900 line-clamp-1 group-hover:text-[#98b964] transition-colors">
+                  <div className="p-4 sm:p-5 flex-1 flex flex-col">
+                    <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 text-gray-900 line-clamp-2 group-hover:text-[#98b964] transition-colors">
                       {product.title}
                     </h3>
                     {product.category && (
-                      <p className="text-xs sm:text-sm text-gray-500 mb-1">
+                      <p className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">
                         {product.category.name}
                       </p>
                     )}
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                    <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2 flex-1">
                       {product.description}
                     </p>
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="font-bold text-2xl text-[#98b964]">₱{product.price}</p>
+                    <div className="flex items-center justify-between mb-2 sm:mb-3 mt-auto">
+                      <p className="font-bold text-xl sm:text-2xl text-[#98b964]">₱{product.price.toFixed(2)}</p>
                       {product.stock > 0 && (
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded whitespace-nowrap">
                           {product.stock} left
                         </span>
                       )}
@@ -223,10 +274,10 @@ export default function Products() {
                   </div>
                 </div>
                 {product.stock > 0 && (
-                  <div className="px-5 pb-5">
+                  <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0">
                     <button
                       onClick={(e) => handleAddToCart(e, product._id, product.title, product.price)}
-                      className="w-full bg-[#98b964] text-white px-4 py-3.5 sm:py-2.5 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
+                      className="w-full bg-[#98b964] text-white px-4 py-3 sm:py-2.5 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-sm sm:text-sm"
                     >
                       Add to Cart
                     </button>

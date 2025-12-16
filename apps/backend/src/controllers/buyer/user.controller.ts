@@ -27,12 +27,20 @@ export const updateProfile = async (req: Request, res: Response) => {
         .json({error: "Forbidden: Access is allowed only for buyers"});
     }
 
-    const {name, phone, defaultShippingAddress} = req.body;
+    const {firstName, middleName, lastName, birthday, phone, defaultShippingAddress} = req.body;
     const user = await User.findById(req.user.id);
 
     if (!user) return res.status(404).json({error: "User not found"});
 
-    if (name) user.name = name;
+    if (firstName) user.firstName = firstName;
+    if (middleName !== undefined) user.middleName = middleName || undefined;
+    if (lastName) user.lastName = lastName;
+    if (birthday) {
+      const birthdayDate = new Date(birthday);
+      if (!isNaN(birthdayDate.getTime())) {
+        user.birthday = birthdayDate;
+      }
+    }
     if (phone) user.phone = phone;
     if (defaultShippingAddress) user.defaultShippingAddress = defaultShippingAddress;
 
@@ -40,6 +48,11 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     const userResponse = user.toObject();
     delete userResponse.password;
+    // Add full name for backward compatibility
+    const fullName = user.middleName 
+      ? `${user.firstName} ${user.middleName} ${user.lastName}`
+      : `${user.firstName} ${user.lastName}`;
+    userResponse.name = fullName;
     res.json(userResponse);
   } catch (err: any) {
     res.status(400).json({error: err.message});

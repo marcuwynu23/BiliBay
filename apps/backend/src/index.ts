@@ -1,6 +1,10 @@
 import express, {Request, Response} from "express";
 import dotenv from "dotenv";
 
+// Logger
+import logger from "./utils/logger";
+import {requestLogger, errorLogger} from "./middlewares/logger.middleware";
+
 // Routes
 import authRoutes from "./routes/common/auth.route";
 import buyerUserRoutes from "./routes/buyer/user.route";
@@ -31,12 +35,32 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Initialize logger
+const JWT_SECRET = process.env.JWT_SECRET;
+const jwtSecretStatus = JWT_SECRET 
+  ? `Set (length: ${JWT_SECRET.length})` 
+  : "Not set - using default 'SECRET_KEY'";
+
+logger.info("Starting BiliBay backend server", {
+  nodeEnv: process.env.NODE_ENV || "development",
+  port: PORT,
+  jwtSecretStatus,
+});
+
+// Request logging middleware (should be first to log all requests)
+app.use(requestLogger);
+
 // Middleware to parse JSON bodies
 app.use(express.json({limit: "10mb"}));
 
 // Handle JSON parse errors (must be right after express.json())
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err instanceof SyntaxError && "body" in err) {
+    logger.warn("Invalid JSON in request body", {
+      method: req.method,
+      url: req.originalUrl,
+      ip: req.ip,
+    });
     return res.status(400).json({error: "Invalid JSON in request body"});
   }
   next(err);
@@ -83,9 +107,17 @@ app.get("/api/check", (req: Request, res: Response) => {
   res.json({message: "Hello from backend using Express and TypeScript!"});
 });
 
+// Error logging middleware (before error handler)
+app.use(errorLogger);
+
 // Error handling middleware (must be after all routes)
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error("Error:", err);
+  logger.error("Unhandled error", {
+    error: err.message,
+    stack: err.stack,
+    status: err.status || 500,
+  });
+  
   res.status(err.status || 500).json({
     error: err.message || "Internal server error",
   });
@@ -93,12 +125,30 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 // 404 handler
 app.use((req: Request, res: Response) => {
+  logger.warn("Route not found", {
+    method: req.method,
+    url: req.originalUrl,
+    ip: req.ip,
+  });
   res.status(404).json({error: "Route not found"});
 });
 
 // --- Connect to MongoDB and Start Server ---
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+connectDB()
+  .then(() => {
+    logger.info("Database connected successfully");
+    
+    app.listen(PORT, () => {
+      logger.info(`Server running on http://localhost:${PORT}`, {
+        environment: process.env.NODE_ENV || "development",
+        port: PORT,
+      });
+    });
+  })
+  .catch((error) => {
+    logger.error("Failed to start server", {
+      error: error.message,
+      stack: error.stack,
+    });
+    process.exit(1);
   });
-});

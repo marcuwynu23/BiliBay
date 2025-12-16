@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Page} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
-import {useDialogStore} from "~/stores/common/dialogStore";
+import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
 import {
   ShoppingCartIcon,
@@ -16,7 +16,7 @@ import {
 export default function Cart() {
   const {token} = useAuthStore();
   const navigate = useNavigate();
-  const {alert, confirm} = useDialogStore();
+  const {alert, confirm} = usePromptStore();
   const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -82,7 +82,7 @@ export default function Cart() {
     return (
       <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <NavBar />
-        <div className="container mx-auto px-4 py-12">
+        <div className="w-full px-4 py-12">
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#98b964] border-t-transparent"></div>
             <p className="mt-4 text-gray-600">Loading cart...</p>
@@ -99,12 +99,11 @@ export default function Cart() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe">
+      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 md:py-12 pb-safe">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
-            <ShoppingCartIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+            <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">
               Shopping Cart
             </h1>
           </div>

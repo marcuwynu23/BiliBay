@@ -1,12 +1,12 @@
 import {create} from "zustand";
 
-export type DialogType = "info" | "warning" | "error" | "success" | "confirm";
+export type PromptType = "info" | "warning" | "error" | "success" | "confirm";
 
-interface DialogState {
+interface PromptState {
   isOpen: boolean;
   title: string;
   message?: string;
-  type: DialogType;
+  type: PromptType;
   confirmText?: string;
   cancelText?: string;
   onConfirm?: () => void;
@@ -15,9 +15,9 @@ interface DialogState {
   children?: React.ReactNode;
 }
 
-interface DialogStore extends DialogState {
-  openDialog: (config: Omit<DialogState, "isOpen">) => void;
-  closeDialog: () => void;
+interface PromptStore extends PromptState {
+  openPrompt: (config: Omit<PromptState, "isOpen">) => void;
+  closePrompt: () => void;
   confirm: (config: {
     title: string;
     message?: string;
@@ -29,11 +29,11 @@ interface DialogStore extends DialogState {
   alert: (config: {
     title: string;
     message?: string;
-    type?: DialogType;
+    type?: PromptType;
   }) => Promise<void>;
 }
 
-const initialState: DialogState = {
+const initialState: PromptState = {
   isOpen: false,
   title: "",
   message: undefined,
@@ -46,15 +46,15 @@ const initialState: DialogState = {
   children: undefined,
 };
 
-export const useDialogStore = create<DialogStore>((set) => ({
+export const usePromptStore = create<PromptStore>((set) => ({
   ...initialState,
-  openDialog: (config) => {
+  openPrompt: (config) => {
     set({
       isOpen: true,
       ...config,
     });
   },
-  closeDialog: () => {
+  closePrompt: () => {
     set(initialState);
   },
   confirm: (config) => {

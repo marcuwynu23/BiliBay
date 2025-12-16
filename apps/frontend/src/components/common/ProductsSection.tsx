@@ -1,7 +1,8 @@
+import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {Card} from "@bilibay/ui";
 import {useAuthStore} from "~/stores/common/authStore";
-import {useDialogStore} from "~/stores/common/dialogStore";
+import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
 import {ShoppingCartIcon, SparklesIcon} from "@heroicons/react/24/outline";
 
@@ -12,6 +13,10 @@ interface Product {
   price: number;
   images?: string[];
   stock: number;
+  category?: {
+    _id: string;
+    name: string;
+  };
 }
 
 interface ProductsSectionProps {
@@ -21,7 +26,18 @@ interface ProductsSectionProps {
 export default function ProductsSection({products}: ProductsSectionProps) {
   const navigate = useNavigate();
   const {token, user} = useAuthStore();
-  const {alert, confirm} = useDialogStore();
+  const {alert, confirm} = usePromptStore();
+
+  // Randomly shuffle products array
+  const shuffledProducts = useMemo(() => {
+    const shuffled = [...products];
+    // Fisher-Yates shuffle algorithm
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, [products]);
 
   const handleAddToCart = (
     e: React.MouseEvent,
@@ -70,12 +86,11 @@ export default function ProductsSection({products}: ProductsSectionProps) {
   };
 
   return (
-    <section className="container mx-auto px-4 py-12 max-w-7xl">
+    <section className="w-full px-4 py-12">
       {/* Header */}
       <div className="mb-6 sm:mb-10">
         <div className="flex items-center gap-2 sm:gap-3 mb-2">
-          <SparklesIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+          <h2 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">
             Featured Products
           </h2>
         </div>
@@ -84,7 +99,7 @@ export default function ProductsSection({products}: ProductsSectionProps) {
         </p>
       </div>
 
-      {products.length === 0 ? (
+      {shuffledProducts.length === 0 ? (
         <div className="bg-white rounded-xl sm:rounded-2xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
           <SparklesIcon className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
           <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
@@ -96,7 +111,7 @@ export default function ProductsSection({products}: ProductsSectionProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {shuffledProducts.map((product) => (
             <Card
               key={product._id}
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group"

@@ -1,8 +1,8 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useMemo} from "react";
 import {Page} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
-import {useDialogStore} from "~/stores/common/dialogStore";
+import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
 import {
   ClipboardDocumentListIcon,
@@ -10,11 +10,14 @@ import {
   CalendarIcon,
 } from "@heroicons/react/24/outline";
 
+type OrderStatus = "all" | "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+
 export default function Orders() {
   const {token} = useAuthStore();
-  const {alert, confirm} = useDialogStore();
+  const {alert, confirm} = usePromptStore();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<OrderStatus>("all");
 
   useEffect(() => {
     if (token) {
@@ -76,15 +79,31 @@ export default function Orders() {
     }
   };
 
+  // Filter orders based on active tab
+  const filteredOrders = useMemo(() => {
+    if (activeTab === "all") {
+      return orders;
+    }
+    return orders.filter((order) => order.status === activeTab);
+  }, [orders, activeTab]);
+
+  const tabs: {id: OrderStatus; label: string; count: number}[] = [
+    {id: "all", label: "All", count: orders.length},
+    {id: "pending", label: "Pending", count: orders.filter((o) => o.status === "pending").length},
+    {id: "processing", label: "Processing", count: orders.filter((o) => o.status === "processing").length},
+    {id: "shipped", label: "Shipped", count: orders.filter((o) => o.status === "shipped").length},
+    {id: "delivered", label: "Delivered", count: orders.filter((o) => o.status === "delivered").length},
+    {id: "cancelled", label: "Cancelled", count: orders.filter((o) => o.status === "cancelled").length},
+  ];
+
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
+      <div className="w-full px-4 sm:px-6 py-6 sm:py-12">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
-            <ClipboardDocumentListIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">My Orders</h1>
+            <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">My Orders</h1>
           </div>
           <p className="text-sm sm:text-base text-gray-600">View and manage your order history</p>
         </div>
@@ -94,19 +113,58 @@ export default function Orders() {
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#98b964] border-t-transparent"></div>
             <p className="mt-4 text-gray-600">Loading orders...</p>
           </div>
-        ) : orders.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
-            <ClipboardDocumentListIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No orders yet
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Start shopping to see your orders here
-            </p>
-          </div>
         ) : (
-          <div className="space-y-6">
-            {orders.map((order) => (
+          <>
+            {/* Tabs */}
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+              <div className="flex overflow-x-auto scrollbar-hide">
+                <div className="flex min-w-full sm:min-w-0">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-medium transition-all duration-200 border-b-2 min-w-[120px] sm:min-w-0 ${
+                        activeTab === tab.id
+                          ? "border-[#98b964] text-[#98b964] bg-[#98b964]/5"
+                          : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <span>{tab.label}</span>
+                        {tab.count > 0 && (
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                              activeTab === tab.id
+                                ? "bg-[#98b964] text-white"
+                                : "bg-gray-200 text-gray-700"
+                            }`}
+                          >
+                            {tab.count}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Orders List */}
+            {filteredOrders.length === 0 ? (
+              <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
+                <ClipboardDocumentListIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {activeTab === "all" ? "No orders yet" : `No ${tabs.find((t) => t.id === activeTab)?.label.toLowerCase()} orders`}
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  {activeTab === "all"
+                    ? "Start shopping to see your orders here"
+                    : `You don't have any ${tabs.find((t) => t.id === activeTab)?.label.toLowerCase()} orders at the moment`}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {filteredOrders.map((order) => (
               <div
                 key={order._id}
                 className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
@@ -205,8 +263,10 @@ export default function Orders() {
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </Page>

@@ -43,7 +43,7 @@ export default function ForgotPassword() {
       </div>
 
       {/* Right Side - Form Container */}
-      <div className="w-full md:w-1/2 flex items-center justify-center min-h-screen md:min-h-0 py-0 md:py-12 px-0 md:px-8 lg:px-12 relative z-10">
+      <div className="w-full md:w-1/2  bg-[#8ead5e]  flex items-center justify-center min-h-screen md:min-h-0 py-0 md:py-12 px-0 md:px-8 lg:px-12 relative z-10">
         {/* Home Button */}
         <Link
           to="/"

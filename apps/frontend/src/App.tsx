@@ -1,7 +1,7 @@
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import {useEffect} from "react";
 import {useAuthStore} from "~/stores/common/authStore";
-import {DialogProvider} from "~/components/common/DialogProvider";
+import {PromptProvider} from "~/components/common/PromptProvider";
 
 // Pages
 import Home from "./pages/Home";
@@ -45,15 +45,54 @@ function ProtectedRoute({
 function App() {
   const {checkAuth, token} = useAuthStore();
 
+  // Only check auth on mount if token exists from localStorage
+  // This prevents calling checkAuth immediately after login/register
+  // Login data will persist unless explicitly logged out
   useEffect(() => {
-    if (token) {
-      checkAuth();
-    }
-  }, [token, checkAuth]);
+    // Check if we have persisted auth data from a previous session
+    // Only verify token if it was stored before (not from a fresh login)
+    const checkPersistedAuth = () => {
+      try {
+        const stored = localStorage.getItem("auth-storage");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          // Only check auth if we have a token from a previous session
+          // The persist middleware will hydrate the state automatically
+          if (parsed?.state?.token) {
+            // Check if we've checked auth recently (within last 5 minutes)
+            const lastAuthCheck = localStorage.getItem("last-auth-check");
+            const now = Date.now();
+            const fiveMinutes = 5 * 60 * 1000;
+            
+            // Only check if we haven't checked recently or if it's been more than 5 minutes
+            if (!lastAuthCheck || (now - parseInt(lastAuthCheck)) > fiveMinutes) {
+              // Small delay to ensure Zustand has hydrated from localStorage
+              setTimeout(() => {
+                checkAuth().then(() => {
+                  // Update last check time on success
+                  localStorage.setItem("last-auth-check", now.toString());
+                }).catch(() => {
+                  // Don't update on error, so we can retry
+                });
+              }, 500);
+            } else {
+              // Recently checked, skip this time
+              console.log("Skipping auth check - recently verified");
+            }
+          }
+        }
+      } catch (e) {
+        // If parsing fails, don't clear - might be temporary issue
+        console.warn("Failed to check persisted auth:", e);
+      }
+    };
+
+    checkPersistedAuth();
+  }, []); // Empty dependency array - only run on mount
 
   return (
     <BrowserRouter>
-      <DialogProvider />
+      <PromptProvider />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
