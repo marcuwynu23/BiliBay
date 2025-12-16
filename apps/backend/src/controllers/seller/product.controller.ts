@@ -1,5 +1,6 @@
 import {Request, Response} from "express";
 import Product from "../../models/product";
+import Category from "../../models/category";
 import mongoose from "mongoose";
 
 export const createProduct = async (req: Request, res: Response) => {
@@ -27,11 +28,24 @@ export const createProduct = async (req: Request, res: Response) => {
       return res.status(400).json({error: "Title, price, and stock are required"});
     }
 
+    // Validate category if provided
+    let categoryId = undefined;
+    if (category && category.trim() !== "") {
+      if (!mongoose.Types.ObjectId.isValid(category)) {
+        return res.status(400).json({error: "Invalid category ID"});
+      }
+      const categoryExists = await Category.findById(category);
+      if (!categoryExists) {
+        return res.status(400).json({error: "Category not found"});
+      }
+      categoryId = new mongoose.Types.ObjectId(category);
+    }
+
     const product = await Product.create({
       title,
       description,
       price: Number(price),
-      category: category ? new mongoose.Types.ObjectId(category) : undefined,
+      category: categoryId,
       images: images || [],
       stock: Number(stock),
       variants: variants || [],
@@ -96,8 +110,22 @@ export const updateProduct = async (req: Request, res: Response) => {
     }
 
     const updates = req.body;
-    if (updates.category) {
-      updates.category = new mongoose.Types.ObjectId(updates.category);
+    // Handle category - validate and convert to ObjectId if provided, set to undefined if empty string
+    if (updates.category !== undefined) {
+      if (updates.category && updates.category.trim() !== "") {
+        // Validate category ID format
+        if (!mongoose.Types.ObjectId.isValid(updates.category)) {
+          return res.status(400).json({error: "Invalid category ID"});
+        }
+        // Verify category exists
+        const categoryExists = await Category.findById(updates.category);
+        if (!categoryExists) {
+          return res.status(400).json({error: "Category not found"});
+        }
+        updates.category = new mongoose.Types.ObjectId(updates.category);
+      } else {
+        updates.category = undefined;
+      }
     }
 
     Object.assign(product, updates);

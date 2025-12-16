@@ -157,7 +157,7 @@ export default function Checkout() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-6xl pb-safe">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Checkout</h1>
@@ -175,7 +175,7 @@ export default function Checkout() {
                     <MapPinIcon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Shipping Address</h2>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Shipping Address</h2>
                     <p className="text-xs sm:text-sm text-gray-600">Where should we deliver your order?</p>
                   </div>
                 </div>
@@ -196,11 +196,11 @@ export default function Checkout() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">City</label>
                       <input
                         type="text"
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                         value={shippingAddress.city}
                         onChange={(e) =>
                           setShippingAddress({...shippingAddress, city: e.target.value})
@@ -208,13 +208,13 @@ export default function Checkout() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                         Province
                       </label>
                       <input
                         type="text"
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                         value={shippingAddress.province}
                         onChange={(e) =>
                           setShippingAddress({...shippingAddress, province: e.target.value})
@@ -223,13 +223,13 @@ export default function Checkout() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                       ZIP Code
                     </label>
                     <input
                       type="text"
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                       value={shippingAddress.zipCode}
                       onChange={(e) =>
                         setShippingAddress({...shippingAddress, zipCode: e.target.value})
@@ -249,8 +249,8 @@ export default function Checkout() {
                     <CreditCardIcon className="h-6 w-6 text-purple-600" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Payment Method</h2>
-                    <p className="text-sm text-gray-600">Choose how you want to pay</p>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Payment Method</h2>
+                    <p className="text-xs sm:text-sm text-gray-600">Choose how you want to pay</p>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -264,8 +264,8 @@ export default function Checkout() {
                       className="mr-3 w-4 h-4 text-[#98b964] focus:ring-[#98b964]"
                     />
                     <div className="flex-1">
-                      <span className="font-semibold text-gray-900">Cash on Delivery (COD)</span>
-                      <p className="text-sm text-gray-600">Pay when you receive your order</p>
+                      <span className="font-semibold text-sm sm:text-base text-gray-900">Cash on Delivery (COD)</span>
+                      <p className="text-xs sm:text-sm text-gray-600">Pay when you receive your order</p>
                     </div>
                     {paymentMethod === "cod" && (
                       <CheckCircleIcon className="h-6 w-6 text-[#98b964]" />
@@ -281,8 +281,8 @@ export default function Checkout() {
                       className="mr-3 w-4 h-4 text-[#98b964] focus:ring-[#98b964]"
                     />
                     <div className="flex-1">
-                      <span className="font-semibold text-gray-900">Bank Transfer</span>
-                      <p className="text-sm text-gray-600">Transfer funds directly to our account</p>
+                      <span className="font-semibold text-sm sm:text-base text-gray-900">Bank Transfer</span>
+                      <p className="text-xs sm:text-sm text-gray-600">Transfer funds directly to our account</p>
                     </div>
                     {paymentMethod === "bank_transfer" && (
                       <CheckCircleIcon className="h-6 w-6 text-[#98b964]" />
@@ -292,26 +292,26 @@ export default function Checkout() {
                   {paymentMethod === "bank_transfer" && (
                     <div className="space-y-4 mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                           Payment Reference
                         </label>
                         <input
                           type="text"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                           placeholder="Transaction reference number"
                           value={paymentReference}
                           onChange={(e) => setPaymentReference(e.target.value)}
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                           Upload Receipt
                         </label>
                         <input
                           type="file"
                           accept="image/*,.pdf"
                           onChange={handleFileChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                         />
                       </div>
                     </div>
@@ -326,29 +326,29 @@ export default function Checkout() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 sticky top-24 overflow-hidden">
               <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
               <div className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <TruckIcon className="h-6 w-6 text-[#98b964]" />
-                  <h2 className="text-2xl font-bold text-gray-900">Order Summary</h2>
+                <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                  <TruckIcon className="h-5 w-5 sm:h-6 sm:w-6 text-[#98b964]" />
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Order Summary</h2>
                 </div>
-                <div className="space-y-3 mb-6">
+                <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                   {cart?.items?.map((item: any) => (
-                    <div key={item._id} className="flex justify-between items-start text-sm p-3 bg-gray-50 rounded-lg">
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{item.product?.title}</p>
+                    <div key={item._id} className="flex justify-between items-start text-xs sm:text-sm p-2.5 sm:p-3 bg-gray-50 rounded-lg">
+                      <div className="flex-1 min-w-0 pr-2">
+                        <p className="font-medium text-gray-900 truncate">{item.product?.title}</p>
                         <p className="text-gray-600">× {item.quantity}</p>
                       </div>
-                      <span className="font-semibold text-gray-900">
+                      <span className="font-semibold text-gray-900 flex-shrink-0">
                         ₱{(item.product?.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-gray-200 pt-4 space-y-3">
-                  <div className="flex justify-between text-gray-700">
+                <div className="border-t border-gray-200 pt-3 sm:pt-4 space-y-2 sm:space-y-3">
+                  <div className="flex justify-between text-xs sm:text-sm text-gray-700">
                     <span>Subtotal:</span>
                     <span className="font-semibold">₱{subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-700">
+                  <div className="flex justify-between text-xs sm:text-sm text-gray-700">
                     <span>Shipping:</span>
                     <span className="font-semibold">
                       {shippingFee === 0 ? (
@@ -358,26 +358,26 @@ export default function Checkout() {
                       )}
                     </span>
                   </div>
-                  <div className="border-t border-gray-200 pt-3">
+                  <div className="border-t border-gray-200 pt-2 sm:pt-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold text-gray-900">Total:</span>
-                      <span className="text-2xl font-bold text-[#98b964]">₱{total.toFixed(2)}</span>
+                      <span className="text-base sm:text-lg font-semibold text-gray-900">Total:</span>
+                      <span className="text-xl sm:text-2xl font-bold text-[#98b964]">₱{total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full mt-6 flex items-center justify-center gap-2 bg-[#98b964] text-white py-3 rounded-lg font-medium hover:bg-[#5e7142] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow"
+                  className="w-full mt-4 sm:mt-6 flex items-center justify-center gap-2 bg-[#98b964] text-white py-3.5 sm:py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
                 >
                   {submitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent"></div>
                       <span>Placing Order...</span>
                     </>
                   ) : (
                     <>
-                      <CheckCircleIcon className="h-5 w-5" />
+                      <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span>Place Order</span>
                     </>
                   )}

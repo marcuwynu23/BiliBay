@@ -153,14 +153,14 @@ export default function Profile() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-4xl pb-safe">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-2">
-            <UserIcon className="h-8 w-8 text-[#98b964]" />
-            <h1 className="text-4xl font-bold text-gray-900">Profile</h1>
+        <div className="mb-6 sm:mb-10">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <UserIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Profile</h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Manage your account settings and preferences
           </p>
         </div>
@@ -206,22 +206,22 @@ export default function Profile() {
 
         {/* Profile Tab */}
         {activeTab === "profile" && (
-          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-gray-100">
+            <div className="mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 Personal Information
               </h2>
-              <p className="text-gray-600">Update your personal details</p>
+              <p className="text-sm sm:text-base text-gray-600">Update your personal details</p>
             </div>
             <form onSubmit={handleProfileUpdate} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   Full Name
                 </label>
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({...formData, name: e.target.value})
@@ -229,26 +229,26 @@ export default function Profile() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   Email
                 </label>
                 <input
                   type="email"
                   disabled
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                   value={profile?.email || ""}
                 />
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs sm:text-sm text-gray-500 mt-2">
                   Email cannot be changed
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   Phone Number
                 </label>
                 <input
                   type="tel"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                   value={formData.phone}
                   onChange={(e) =>
                     setFormData({...formData, phone: e.target.value})
@@ -258,7 +258,7 @@ export default function Profile() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-[#98b964] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow"
+                className="w-full bg-[#98b964] text-white px-6 py-3.5 sm:py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
               >
                 {saving ? "Saving..." : "Save Changes"}
               </button>
@@ -268,24 +268,24 @@ export default function Profile() {
 
         {/* Password Tab */}
         {activeTab === "password" && (
-          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-gray-100">
+            <div className="mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 Change Password
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600">
                 Update your password to keep your account secure
               </p>
             </div>
             <form onSubmit={handlePasswordChange} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   Current Password
                 </label>
                 <input
                   type="password"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                   value={passwordData.currentPassword}
                   onChange={(e) =>
                     setPasswordData({
@@ -296,14 +296,14 @@ export default function Profile() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   New Password
                 </label>
                 <input
                   type="password"
                   required
                   minLength={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                   value={passwordData.newPassword}
                   onChange={(e) =>
                     setPasswordData({
@@ -312,19 +312,19 @@ export default function Profile() {
                     })
                   }
                 />
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs sm:text-sm text-gray-500 mt-2">
                   Must be at least 6 characters
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   Confirm New Password
                 </label>
                 <input
                   type="password"
                   required
                   minLength={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                   value={passwordData.confirmPassword}
                   onChange={(e) =>
                     setPasswordData({
@@ -337,7 +337,7 @@ export default function Profile() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-[#98b964] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow"
+                className="w-full bg-[#98b964] text-white px-6 py-3.5 sm:py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
               >
                 {saving ? "Changing..." : "Change Password"}
               </button>
@@ -347,24 +347,24 @@ export default function Profile() {
 
         {/* Address Tab */}
         {activeTab === "address" && (
-          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-gray-100">
+            <div className="mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 Shipping Address
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600">
                 Manage your default shipping address
               </p>
             </div>
             <form onSubmit={handleProfileUpdate} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   Street Address
                 </label>
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                   value={formData.defaultShippingAddress.street}
                   onChange={(e) =>
                     setFormData({
@@ -379,13 +379,13 @@ export default function Profile() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                     City
                   </label>
                   <input
                     type="text"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                     value={formData.defaultShippingAddress.city}
                     onChange={(e) =>
                       setFormData({
@@ -399,13 +399,13 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                     Province
                   </label>
                   <input
                     type="text"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                     value={formData.defaultShippingAddress.province}
                     onChange={(e) =>
                       setFormData({
@@ -420,13 +420,13 @@ export default function Profile() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                   ZIP Code
                 </label>
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                   value={formData.defaultShippingAddress.zipCode}
                   onChange={(e) =>
                     setFormData({
@@ -442,7 +442,7 @@ export default function Profile() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-[#98b964] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow"
+                className="w-full bg-[#98b964] text-white px-6 py-3.5 sm:py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
               >
                 {saving ? "Saving..." : "Save Address"}
               </button>

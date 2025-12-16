@@ -148,8 +148,9 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     user.passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour
     await user.save();
 
-    // TODO: Send password reset email
-    // await sendPasswordResetEmail(user.email, resetToken);
+    // Send password reset email
+    const {sendPasswordResetEmail} = await import("../../utils/email.service");
+    await sendPasswordResetEmail(user.email, resetToken);
 
     res.json({message: "If email exists, password reset link has been sent"});
   } catch (err: any) {

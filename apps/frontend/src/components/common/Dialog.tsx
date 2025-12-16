@@ -123,25 +123,25 @@ export const Dialog = ({
       }}
     >
       <div
-        className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl relative overflow-hidden"
+        className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl relative overflow-hidden mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Gradient accent */}
         <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1 absolute top-0 left-0 right-0"></div>
 
-        <div className="flex justify-between items-start mb-4 pt-2">
-          <div className="flex items-start gap-3 flex-1">
+        <div className="flex justify-between items-start mb-4 sm:mb-4 pt-2">
+          <div className="flex items-start gap-2 sm:gap-3 flex-1">
             <div className="flex-shrink-0 mt-1">
               {getTypeIcon()}
             </div>
             <div className="flex-1">
-              <h2 className={`text-2xl font-bold ${getTypeStyles()}`}>{title}</h2>
+              <h2 className={`text-xl sm:text-2xl font-bold ${getTypeStyles()}`}>{title}</h2>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition flex-shrink-0"
+            className="text-gray-500 hover:text-gray-700 w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-gray-100 active:bg-gray-200 transition flex-shrink-0 touch-manipulation"
             aria-label="Close dialog"
           >
             <XMarkIcon className="h-6 w-6" />
@@ -149,17 +149,17 @@ export const Dialog = ({
         </div>
 
         {message && (
-          <p className="text-gray-700 mb-6 whitespace-pre-line leading-relaxed">{message}</p>
+          <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 whitespace-pre-line leading-relaxed">{message}</p>
         )}
 
         {children && <div className="mb-6">{children}</div>}
 
-        <div className="flex gap-4 justify-end pt-4 border-t border-gray-100">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end pt-4 border-t border-gray-100">
           {showCancel && (
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-2.5 border-2 border-[#98b964] text-[#98b964] rounded-lg font-medium hover:bg-[#98b964] hover:text-white transition-all duration-200"
+              className="px-6 py-3.5 sm:py-2.5 border-2 border-[#98b964] text-[#98b964] rounded-lg font-medium hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] transition-all duration-200 touch-manipulation min-h-[48px] text-base sm:text-sm"
             >
               {cancelText}
             </button>
@@ -167,7 +167,7 @@ export const Dialog = ({
           <button
             type="button"
             onClick={handleConfirm}
-            className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow ${getConfirmButtonStyles()}`}
+            className={`px-6 py-3.5 sm:py-2.5 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow active:bg-[#4a5a35] touch-manipulation min-h-[48px] text-base sm:text-sm ${getConfirmButtonStyles()}`}
           >
             {confirmText}
           </button>

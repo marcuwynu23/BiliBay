@@ -102,7 +102,7 @@ export default function Products() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
@@ -124,13 +124,13 @@ export default function Products() {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-sm sm:text-base"
+                className="w-full pl-9 sm:pl-10 pr-4 py-3 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-base sm:text-sm touch-manipulation"
                 value={filters.search}
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
               />
             </div>
             <select
-              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-sm sm:text-base"
+              className="w-full px-3 sm:px-4 py-3 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-base sm:text-sm touch-manipulation"
               value={filters.category}
               onChange={(e) => setFilters({...filters, category: e.target.value})}
             >
@@ -142,7 +142,7 @@ export default function Products() {
               ))}
             </select>
             <select
-              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-sm sm:text-base"
+              className="w-full px-3 sm:px-4 py-3 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-base sm:text-sm touch-manipulation"
               value={filters.sortBy}
               onChange={(e) => setFilters({...filters, sortBy: e.target.value})}
             >
@@ -204,6 +204,11 @@ export default function Products() {
                     <h3 className="font-bold text-lg mb-2 text-gray-900 line-clamp-1 group-hover:text-[#98b964] transition-colors">
                       {product.title}
                     </h3>
+                    {product.category && (
+                      <p className="text-xs sm:text-sm text-gray-500 mb-1">
+                        {product.category.name}
+                      </p>
+                    )}
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                       {product.description}
                     </p>
@@ -221,7 +226,7 @@ export default function Products() {
                   <div className="px-5 pb-5">
                     <button
                       onClick={(e) => handleAddToCart(e, product._id, product.title, product.price)}
-                      className="w-full bg-[#98b964] text-white px-4 py-2.5 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+                      className="w-full bg-[#98b964] text-white px-4 py-3.5 sm:py-2.5 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
                     >
                       Add to Cart
                     </button>

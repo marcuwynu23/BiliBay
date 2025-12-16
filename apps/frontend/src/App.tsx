@@ -7,6 +7,8 @@ import {DialogProvider} from "~/components/common/DialogProvider";
 import Home from "./pages/Home";
 import Login from "./pages/common/auth/Login";
 import Register from "./pages/common/auth/Register";
+import ForgotPassword from "./pages/common/auth/ForgotPassword";
+import ResetPassword from "./pages/common/auth/ResetPassword";
 import Products from "./pages/buyer/Products";
 import ProductDetail from "./pages/Product";
 import Cart from "./pages/buyer/Cart";
@@ -57,6 +59,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/products" element={<Products />} />
         <Route path="/product/:id" element={<ProductDetail />} />
 

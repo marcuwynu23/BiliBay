@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Page } from "@bilibay/ui";
 import { NavBar } from "~/components/common/NavBar";
 import { useAuthStore } from "~/stores/common/authStore";
@@ -30,6 +30,8 @@ export default function SellerProducts() {
     images: [] as string[],
   });
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (token) {
@@ -58,16 +60,39 @@ export default function SellerProducts() {
     }
   };
 
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      description: "",
+      price: "",
+      category: "",
+      stock: "",
+      status: "draft",
+      images: [],
+    });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleImageUpload = async (files: FileList) => {
     setUploadingImages(true);
     try {
-      const formData = new FormData();
+      const uploadFormData = new FormData();
       Array.from(files).forEach((file) => {
-        formData.append("images", file);
+        uploadFormData.append("images", file);
       });
 
-      const data = await api.upload("/seller/upload/products", formData, token);
-      setFormData({...formData, images: [...formData.images, ...data.images]});
+      const data = await api.upload("/seller/upload/products", uploadFormData, token);
+      // Use functional update to avoid closure issue
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...data.images],
+      }));
+      // Reset file input to allow uploading the same file again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (err: any) {
       await alert({
         title: "Error",
@@ -81,6 +106,7 @@ export default function SellerProducts() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       if (editingProduct) {
         await api.put(
@@ -88,6 +114,11 @@ export default function SellerProducts() {
           formData,
           token
         );
+        // Close dialog first, then show success message
+        setShowForm(false);
+        setEditingProduct(null);
+        resetForm();
+        await fetchProducts();
         await alert({
           title: "Success",
           message: "Product updated successfully!",
@@ -95,30 +126,26 @@ export default function SellerProducts() {
         });
       } else {
         await api.post("/seller/products", formData, token);
+        // Close dialog first, then show success message
+        setShowForm(false);
+        setEditingProduct(null);
+        resetForm();
+        await fetchProducts();
         await alert({
           title: "Success",
           message: "Product created successfully!",
           type: "success",
         });
       }
-      setShowForm(false);
-      setEditingProduct(null);
-      setFormData({
-        title: "",
-        description: "",
-        price: "",
-        category: "",
-        stock: "",
-        status: "draft",
-        images: [],
-      });
-      fetchProducts();
     } catch (err: any) {
+      // Show error message but keep dialog open so user can fix issues
       await alert({
         title: "Error",
         message: err.message || "Failed to save product",
         type: "error",
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -173,15 +200,7 @@ export default function SellerProducts() {
       if (e.key === "Escape" && showForm) {
         setShowForm(false);
         setEditingProduct(null);
-        setFormData({
-          title: "",
-          description: "",
-          price: "",
-          category: "",
-          stock: "",
-          status: "draft",
-          images: [],
-        });
+        resetForm();
       }
     };
 
@@ -199,7 +218,7 @@ export default function SellerProducts() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-10">
           <div>
@@ -213,53 +232,43 @@ export default function SellerProducts() {
             onClick={() => {
               setShowForm(true);
               setEditingProduct(null);
-              setFormData({
-                title: "",
-                description: "",
-                price: "",
-                category: "",
-                stock: "",
-                status: "draft",
-                images: [],
-              });
+              resetForm();
             }}
-            className="flex items-center gap-2 bg-[#98b964] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+            className="flex items-center gap-2 bg-[#98b964] text-white px-4 sm:px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[44px] text-sm sm:text-base"
           >
             <PlusIcon className="h-5 w-5" />
-            <span>Add Product</span>
+            <span className="hidden sm:inline">Add Product</span>
+            <span className="sm:hidden">Add</span>
           </button>
         </div>
 
         {/* Product Form Modal */}
         {showForm && (
           <div
-            className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setShowForm(false);
                 setEditingProduct(null);
-                setFormData({
-                  title: "",
-                  description: "",
-                  price: "",
-                  category: "",
-                  stock: "",
-                  status: "draft",
-                  images: [],
-                });
+                resetForm();
               }
             }}
           >
             <div
-              className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative mx-4"
+              className="bg-white rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl w-full h-[95vh] sm:h-auto sm:max-h-[90vh] overflow-y-auto shadow-2xl relative animate-slide-up sm:animate-none"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
+              {/* Mobile drag handle */}
+              <div className="sm:hidden flex justify-center mb-4 pt-2">
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+              </div>
+              
+              <div className="flex justify-between items-center mb-4 sm:mb-6 border-b border-gray-100 pb-4 sm:pb-6">
+                <div className="flex-1 min-w-0 pr-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                     {editingProduct ? "Edit Product" : "Add New Product"}
                   </h2>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
                     {editingProduct ? "Update product information" : "Create a new product listing"}
                   </p>
                 </div>
@@ -268,23 +277,15 @@ export default function SellerProducts() {
                   onClick={() => {
                     setShowForm(false);
                     setEditingProduct(null);
-                    setFormData({
-                      title: "",
-                      description: "",
-                      price: "",
-                      category: "",
-                      stock: "",
-                      status: "draft",
-                      images: [],
-                    });
+                    resetForm();
                   }}
-                  className="text-gray-500 hover:text-gray-700 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+                  className="text-gray-500 hover:text-gray-700 w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition flex-shrink-0 touch-manipulation"
                   aria-label="Close modal"
                 >
                   <XMarkIcon className="h-6 w-6" />
                 </button>
               </div>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Product Title *
@@ -292,7 +293,7 @@ export default function SellerProducts() {
                   <input
                     type="text"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                     value={formData.title}
                     onChange={(e) =>
                       setFormData({...formData, title: e.target.value})
@@ -305,7 +306,7 @@ export default function SellerProducts() {
                     Description
                   </label>
                   <textarea
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                     rows={4}
                     value={formData.description}
                     onChange={(e) =>
@@ -314,7 +315,7 @@ export default function SellerProducts() {
                     placeholder="Enter product description"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Price (₱) *
@@ -324,7 +325,7 @@ export default function SellerProducts() {
                       required
                       min="0"
                       step="0.01"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                      className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                       value={formData.price}
                       onChange={(e) =>
                         setFormData({...formData, price: e.target.value})
@@ -340,7 +341,7 @@ export default function SellerProducts() {
                       type="number"
                       required
                       min="0"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                      className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                       value={formData.stock}
                       onChange={(e) =>
                         setFormData({...formData, stock: e.target.value})
@@ -350,30 +351,35 @@ export default function SellerProducts() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                     Category
                   </label>
                   <select
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                     value={formData.category}
                     onChange={(e) =>
                       setFormData({...formData, category: e.target.value})
                     }
                   >
-                    <option value="">Select Category</option>
+                    <option value="">Select Category (Optional)</option>
                     {categories.map((cat) => (
                       <option key={cat._id} value={cat._id}>
                         {cat.name}
                       </option>
                     ))}
                   </select>
+                  {categories.length === 0 && (
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                      No categories available. Contact admin to create categories.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Status
                   </label>
                   <select
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                     value={formData.status}
                     onChange={(e) =>
                       setFormData({...formData, status: e.target.value})
@@ -388,31 +394,37 @@ export default function SellerProducts() {
                     Product Images
                   </label>
                   <input
+                    ref={fileInputRef}
                     type="file"
                     multiple
                     accept="image/*"
                     onChange={(e) =>
                       e.target.files && handleImageUpload(e.target.files)
                     }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all"
-                    disabled={uploadingImages}
+                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
+                    disabled={uploadingImages || submitting}
                   />
                   {uploadingImages && (
                     <p className="text-sm text-gray-500 mt-2">Uploading images...</p>
                   )}
                   {formData.images.length > 0 && (
-                    <div className="grid grid-cols-4 gap-3 mt-4">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 mt-4">
                       {formData.images.map((img, idx) => (
                         <div key={idx} className="relative group">
                           <img
                             src={img}
                             alt={`Product ${idx + 1}`}
-                            className="w-full h-28 object-cover rounded-lg"
+                            className="w-full h-24 sm:h-28 object-cover rounded-lg border border-gray-200"
+                            onError={(e) => {
+                              console.error("Failed to load image:", img);
+                              (e.target as HTMLImageElement).src = "/placeholder.png";
+                            }}
                           />
                           <button
                             type="button"
                             onClick={() => removeImage(idx)}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                            disabled={submitting}
+                            className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-red-500 text-white rounded-full w-8 h-8 sm:w-7 sm:h-7 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50 touch-manipulation"
                           >
                             <XMarkIcon className="h-4 w-4" />
                           </button>
@@ -421,29 +433,30 @@ export default function SellerProducts() {
                     </div>
                   )}
                 </div>
-                <div className="flex gap-4 pt-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 pb-2 sm:pb-0">
                   <button
                     type="submit"
-                    className="flex-1 bg-[#98b964] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+                    disabled={submitting}
+                    className="flex-1 bg-[#98b964] text-white px-6 py-4 sm:py-3 rounded-xl sm:rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base sm:text-sm touch-manipulation min-h-[48px]"
                   >
-                    {editingProduct ? "Update Product" : "Create Product"}
+                    {submitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        <span>{editingProduct ? "Updating..." : "Creating..."}</span>
+                      </>
+                    ) : (
+                      <span>{editingProduct ? "Update Product" : "Create Product"}</span>
+                    )}
                   </button>
                   <button
                     type="button"
+                    disabled={submitting}
                     onClick={() => {
                       setShowForm(false);
                       setEditingProduct(null);
-                      setFormData({
-                        title: "",
-                        description: "",
-                        price: "",
-                        category: "",
-                        stock: "",
-                        status: "draft",
-                        images: [],
-                      });
+                      resetForm();
                     }}
-                    className="flex-1 border border-[#98b964] text-[#98b964] px-6 py-3 rounded-lg font-medium hover:bg-[#98b964] hover:text-white transition-all duration-200"
+                    className="flex-1 border border-[#98b964] text-[#98b964] px-6 py-4 sm:py-3 rounded-xl sm:rounded-lg font-medium hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm touch-manipulation min-h-[48px]"
                   >
                     Cancel
                   </button>
@@ -472,24 +485,24 @@ export default function SellerProducts() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {products.map((product) => (
               <div
                 key={product._id}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 group"
+                className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 group"
               >
                 {/* Gradient accent */}
                 <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
-                <div className="p-5">
-                  <div className="relative overflow-hidden rounded-lg mb-4">
+                <div className="p-4 sm:p-5">
+                  <div className="relative overflow-hidden rounded-lg mb-3 sm:mb-4">
                     <img
                       src={product.images?.[0] || "/placeholder.png"}
                       alt={product.title}
-                      className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-48 sm:h-56 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-3 right-3">
+                    <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                           product.status === "available"
                             ? "bg-green-100 text-green-800"
                             : "bg-gray-100 text-gray-800"
@@ -499,26 +512,31 @@ export default function SellerProducts() {
                       </span>
                     </div>
                   </div>
-                  <h3 className="font-bold text-lg mb-2 text-gray-900 line-clamp-1">
+                  <h3 className="font-bold text-base sm:text-lg mb-2 text-gray-900 line-clamp-1">
                     {product.title}
                   </h3>
-                  <p className="text-2xl font-bold text-[#98b964] mb-3">₱{product.price}</p>
-                  <div className="flex items-center justify-between mb-4 text-sm">
+                  {product.category && (
+                    <p className="text-xs sm:text-sm text-gray-500 mb-1">
+                      {product.category.name}
+                    </p>
+                  )}
+                  <p className="text-xl sm:text-2xl font-bold text-[#98b964] mb-2 sm:mb-3">₱{product.price}</p>
+                  <div className="flex items-center justify-between mb-3 sm:mb-4 text-xs sm:text-sm">
                     <span className="text-gray-600">
                       <span className="font-semibold">Stock:</span> {product.stock}
                     </span>
                   </div>
-                  <div className="flex gap-2 pt-4 border-t border-gray-100">
+                  <div className="flex gap-2 pt-3 sm:pt-4 border-t border-gray-100">
                     <button
                       onClick={() => handleEdit(product)}
-                      className="flex-1 flex items-center justify-center gap-2 border border-[#98b964] text-[#98b964] px-4 py-2.5 rounded-lg hover:bg-[#98b964] hover:text-white transition-all duration-200 font-medium"
+                      className="flex-1 flex items-center justify-center gap-2 border border-[#98b964] text-[#98b964] px-3 sm:px-4 py-2.5 sm:py-2.5 rounded-lg hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] transition-all duration-200 font-medium text-sm sm:text-base touch-manipulation min-h-[44px]"
                     >
                       <PencilIcon className="h-4 w-4" />
                       <span>Edit</span>
                     </button>
                     <button
                       onClick={() => handleDelete(product._id, product.title)}
-                      className="flex-1 flex items-center justify-center gap-2 border border-red-500 text-red-500 px-4 py-2.5 rounded-lg hover:bg-red-500 hover:text-white transition-all duration-200 font-medium"
+                      className="flex-1 flex items-center justify-center gap-2 border border-red-500 text-red-500 px-3 sm:px-4 py-2.5 sm:py-2.5 rounded-lg hover:bg-red-500 hover:text-white active:bg-red-600 transition-all duration-200 font-medium text-sm sm:text-base touch-manipulation min-h-[44px]"
                     >
                       <TrashIcon className="h-4 w-4" />
                       <span>Delete</span>
