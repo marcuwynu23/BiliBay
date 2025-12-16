@@ -6,12 +6,12 @@ import {useAuthStore} from "~/stores/common/authStore";
 import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
 import {
-  ShoppingCartIcon,
   TrashIcon,
   PlusIcon,
   MinusIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
+import emptyCartIllustration from "~/assets/illustrations/empty-cart.svg";
 
 export default function Cart() {
   const {token} = useAuthStore();
@@ -114,7 +114,11 @@ export default function Cart() {
 
         {!cart || cart.items?.length === 0 ? (
           <div className="bg-white rounded-xl sm:rounded-2xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
-            <ShoppingCartIcon className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+            <img
+              src={emptyCartIllustration}
+              alt="Empty cart"
+              className="h-48 sm:h-64 mx-auto mb-4 sm:mb-6"
+            />
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
               Your cart is empty
             </h3>

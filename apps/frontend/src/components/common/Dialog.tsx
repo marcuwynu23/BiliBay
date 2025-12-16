@@ -1,4 +1,4 @@
-import {useEffect, ReactNode} from "react";
+import {useEffect,type ReactNode }  from "react";
 import {XMarkIcon} from "@heroicons/react/24/outline";
 
 export interface DialogProps {

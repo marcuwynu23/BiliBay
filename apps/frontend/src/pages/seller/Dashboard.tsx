@@ -67,21 +67,8 @@ export default function SellerDashboard() {
                 to={card.link}
                 className="group relative bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
               >
-                {/* Gradient Accent */}
-                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${card.color}`} />
-
-                <div className="flex items-start justify-between mb-4 sm:mb-6">
-                  {/* Icon Container */}
-                  <div className={`${card.bgColor} w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-700" />
-                  </div>
-
-                  {/* Illustration */}
-                  <div className="w-16 h-16 sm:w-24 sm:h-24 opacity-40 group-hover:opacity-60 transition-opacity hidden sm:block">
-                    {card.illustration}
-                  </div>
-                </div>
-
+             
+            
                 {/* Content */}
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-[#98b964] transition-colors">
                   {card.title}

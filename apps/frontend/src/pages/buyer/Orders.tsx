@@ -9,6 +9,7 @@ import {
   XCircleIcon,
   CalendarIcon,
 } from "@heroicons/react/24/outline";
+import deliveriesIllustration from "~/assets/illustrations/deliveries.svg";
 
 type OrderStatus = "all" | "pending" | "processing" | "shipped" | "delivered" | "cancelled";
 
@@ -151,12 +152,16 @@ export default function Orders() {
 
             {/* Orders List */}
             {filteredOrders.length === 0 ? (
-              <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
-                <ClipboardDocumentListIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <div className="bg-white rounded-2xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
+                <img
+                  src={deliveriesIllustration}
+                  alt="No orders"
+                  className="h-48 sm:h-64 mx-auto mb-4 sm:mb-6"
+                />
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
                   {activeTab === "all" ? "No orders yet" : `No ${tabs.find((t) => t.id === activeTab)?.label.toLowerCase()} orders`}
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-sm sm:text-base text-gray-600 mb-6">
                   {activeTab === "all"
                     ? "Start shopping to see your orders here"
                     : `You don't have any ${tabs.find((t) => t.id === activeTab)?.label.toLowerCase()} orders at the moment`}
