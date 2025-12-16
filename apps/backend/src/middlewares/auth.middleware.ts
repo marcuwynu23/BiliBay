@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 interface IUserPayload {
   id: string;
-  role: "buyer" | "seller";
+  role: "buyer" | "seller" | "admin";
 }
 
 declare global {
@@ -29,7 +29,8 @@ export const authMiddleware = (
   const token = authHeader.split(" ")[1];
 
   try {
-    const payload = jwt.verify(token, "SECRET_KEY") as IUserPayload;
+    const JWT_SECRET = process.env.JWT_SECRET || "SECRET_KEY";
+    const payload = jwt.verify(token, JWT_SECRET) as IUserPayload;
     req.user = payload;
     next();
   } catch (err) {
