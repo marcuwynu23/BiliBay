@@ -119,7 +119,7 @@ export default function ProductDetail() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe-nav">
         <button
           onClick={() => navigate(-1)}
           className="mb-4 sm:mb-6 flex items-center gap-2 text-[#98b964] hover:text-[#5e7142] font-medium transition-colors text-sm sm:text-base"
