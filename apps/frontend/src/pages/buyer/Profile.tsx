@@ -2,18 +2,21 @@ import {useState, useEffect} from "react";
 import {Page} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
-import {useDialogStore} from "~/stores/common/dialogStore";
+import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
 import {UserIcon, KeyIcon, MapPinIcon} from "@heroicons/react/24/outline";
 
 export default function Profile() {
   const {token} = useAuthStore();
-  const {alert} = useDialogStore();
+  const {alert} = usePromptStore();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    birthday: "",
     phone: "",
     defaultShippingAddress: {
       street: "",
@@ -43,7 +46,10 @@ export default function Profile() {
       const data = await api.get("/buyer/users/me", token);
       setProfile(data);
       setFormData({
-        name: data.name || "",
+        firstName: data.firstName || "",
+        middleName: data.middleName || "",
+        lastName: data.lastName || "",
+        birthday: data.birthday ? new Date(data.birthday).toISOString().split('T')[0] : "",
         phone: data.phone || "",
         defaultShippingAddress: data.defaultShippingAddress || {
           street: "",
@@ -140,7 +146,7 @@ export default function Profile() {
     return (
       <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <NavBar />
-        <div className="container mx-auto px-4 py-8">
+        <div className="w-full px-4 py-8">
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#98b964] border-t-transparent"></div>
             <p className="mt-4 text-gray-600">Loading profile...</p>
@@ -153,12 +159,11 @@ export default function Profile() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-4xl pb-safe">
+      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 md:py-12 pb-safe">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
-            <UserIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Profile</h1>
+            <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">Profile</h1>
           </div>
           <p className="text-sm sm:text-base text-gray-600">
             Manage your account settings and preferences
@@ -216,16 +221,57 @@ export default function Profile() {
             <form onSubmit={handleProfileUpdate} className="space-y-5">
               <div>
                 <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
-                  Full Name
+                  First Name
                 </label>
                 <input
                   type="text"
                   required
                   className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
-                  value={formData.name}
+                  value={formData.firstName}
                   onChange={(e) =>
-                    setFormData({...formData, name: e.target.value})
+                    setFormData({...formData, firstName: e.target.value})
                   }
+                />
+              </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                  Middle Name <span className="text-gray-500 font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
+                  value={formData.middleName}
+                  onChange={(e) =>
+                    setFormData({...formData, middleName: e.target.value})
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
+                  value={formData.lastName}
+                  onChange={(e) =>
+                    setFormData({...formData, lastName: e.target.value})
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                  Birthday <span className="text-gray-500 font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="date"
+                  className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
+                  value={formData.birthday}
+                  onChange={(e) =>
+                    setFormData({...formData, birthday: e.target.value})
+                  }
+                  max={new Date().toISOString().split('T')[0]}
                 />
               </div>
               <div>

@@ -55,7 +55,7 @@ export const Dialog = ({
       }}
     >
       <div
-        className={`bg-white rounded-t-3xl sm:rounded-2xl sm:rounded-b-2xl ${maxWidth} w-full max-h-[95vh] sm:h-auto sm:max-h-[calc(100vh-2rem)] shadow-2xl relative animate-slide-up sm:animate-none flex flex-col overflow-hidden`}
+        className={`bg-white rounded-t-3xl sm:rounded-2xl sm:rounded-b-2xl ${maxWidth} w-full max-h-[70vh] sm:h-auto sm:max-h-[calc(100vh-2rem)] shadow-2xl relative animate-slide-up sm:animate-none flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile drag handle */}

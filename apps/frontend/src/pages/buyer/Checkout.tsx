@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Page} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
-import {useDialogStore} from "~/stores/common/dialogStore";
+import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
 import {
   MapPinIcon,
@@ -15,7 +15,7 @@ import {
 export default function Checkout() {
   const {user, token} = useAuthStore();
   const navigate = useNavigate();
-  const {alert, confirm} = useDialogStore();
+  const {alert, confirm} = usePromptStore();
   const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -140,7 +140,7 @@ export default function Checkout() {
     return (
       <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <NavBar />
-        <div className="container mx-auto px-4 py-12">
+        <div className="w-full px-4 py-12">
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#98b964] border-t-transparent"></div>
             <p className="mt-4 text-gray-600">Loading checkout...</p>
@@ -157,7 +157,7 @@ export default function Checkout() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-6xl pb-safe">
+      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 md:py-12 pb-safe">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Checkout</h1>

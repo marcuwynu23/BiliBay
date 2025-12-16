@@ -14,7 +14,10 @@ interface AuthStore {
   token: string;
   login: (email: string, password: string) => Promise<void>;
   register: (
-    name: string,
+    firstName: string,
+    middleName: string | undefined,
+    lastName: string,
+    birthday: string | undefined,
     email: string,
     password: string,
     role: string,
@@ -70,7 +73,10 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
       register: async (
-        name: string,
+        firstName: string,
+        middleName: string | undefined,
+        lastName: string,
+        birthday: string | undefined,
         email: string,
         password: string,
         role: string,
@@ -80,7 +86,16 @@ export const useAuthStore = create<AuthStore>()(
           const res = await fetch(`${API_URL}/auth/register`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({name, email, password, role, phone}),
+            body: JSON.stringify({
+              firstName,
+              middleName,
+              lastName,
+              birthday,
+              email,
+              password,
+              role,
+              phone,
+            }),
           });
 
           // Check content type before parsing
@@ -114,7 +129,10 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
       logout: () => {
+        // Clear state and localStorage
         set({user: null, token: ""});
+        // Explicitly clear localStorage to ensure persistence is removed
+        localStorage.removeItem("auth-storage");
       },
       checkAuth: async () => {
         const token = get().token;
@@ -123,11 +141,18 @@ export const useAuthStore = create<AuthStore>()(
         try {
           // Use stored user's role or default to buyer
           const storedUser = get().user;
-          const role = storedUser?.role || "buyer";
+          if (!storedUser || !storedUser.role) {
+            // If no user data, we can't determine the role, so skip check
+            // This shouldn't happen if login/register worked correctly
+            console.warn("No user data found, skipping auth check");
+            return;
+          }
 
+          const role = storedUser.role;
           const res = await fetch(`${API_URL}/${role}/users/me`, {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           });
 
@@ -135,17 +160,61 @@ export const useAuthStore = create<AuthStore>()(
             const contentType = res.headers.get("content-type");
             if (contentType && contentType.includes("application/json")) {
               const user = await res.json();
+              // Update user data while preserving the token
               set({user: {...user, role}});
-            } else {
-              get().logout();
             }
-          } else {
-            // Token invalid, clear it
+          } else if (res.status === 401) {
+            // Token invalid or expired
+            // Try to read error message to confirm it's an auth error
+            try {
+              const contentType = res.headers.get("content-type");
+              let errorText = "";
+              if (contentType && contentType.includes("application/json")) {
+                const errorData = await res.json();
+                errorText = errorData.error || JSON.stringify(errorData);
+              } else {
+                errorText = await res.text();
+              }
+              
+              // Check if it's definitely an auth error
+              const isAuthError = errorText.includes("Unauthorized") || 
+                                 errorText.includes("Invalid token") || 
+                                 errorText.includes("expired") ||
+                                 errorText.includes("token") ||
+                                 errorText.toLowerCase().includes("authentication");
+              
+              if (isAuthError) {
+                console.error("Token invalid or expired, logging out");
+                // Clear the token and user, but don't clear localStorage immediately
+                // This allows the user to see they need to log in again
+                set({user: null, token: ""});
+                // Clear localStorage after a short delay to allow redirect
+                setTimeout(() => {
+                  localStorage.removeItem("auth-storage");
+                }, 100);
+              } else {
+                // Might be a server error, keep the token
+                console.warn("Received 401 but error message unclear, keeping token:", errorText);
+              }
+            } catch (parseErr) {
+              // If we can't parse the error, assume it's an auth error
+              console.error("Token invalid or expired (could not parse error), logging out");
+              set({user: null, token: ""});
+              setTimeout(() => {
+                localStorage.removeItem("auth-storage");
+              }, 100);
+            }
+          } else if (res.status === 403) {
+            // Forbidden - role mismatch, clear it
+            console.error("Role mismatch, logging out");
             get().logout();
           }
+          // For other status codes, don't clear - might be temporary server issues
         } catch (err) {
           console.error("Auth check failed:", err);
           // Don't logout on network errors, keep stored data
+          // Only logout on actual auth failures (401/403)
+          // This ensures login data persists even if there's a temporary network issue
         }
       },
     }),

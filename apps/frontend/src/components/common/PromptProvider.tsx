@@ -1,7 +1,7 @@
-import {Dialog} from "./Dialog";
-import {useDialogStore} from "~/stores/common/dialogStore";
+import {PromptProvider as UIPromptProvider} from "@bilibay/ui";
+import {usePromptStore} from "~/stores/common/promptStore";
 
-export const DialogProvider = () => {
+export const PromptProvider = () => {
   const {
     isOpen,
     title,
@@ -13,13 +13,13 @@ export const DialogProvider = () => {
     onCancel,
     showCancel,
     children,
-    closeDialog,
-  } = useDialogStore();
+    closePrompt,
+  } = usePromptStore();
 
   return (
-    <Dialog
+    <UIPromptProvider
       isOpen={isOpen}
-      onClose={closeDialog}
+      onClose={closePrompt}
       title={title}
       message={message}
       type={type}
@@ -30,7 +30,7 @@ export const DialogProvider = () => {
       showCancel={showCancel}
     >
       {children}
-    </Dialog>
+    </UIPromptProvider>
   );
 };
 

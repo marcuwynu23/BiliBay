@@ -10,7 +10,10 @@ export interface IShippingAddress {
 }
 
 export interface IUser extends Document {
-  name: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  birthday?: Date;
   email: string;
   password: string;
   phone?: string;
@@ -38,7 +41,10 @@ const ShippingAddressSchema = new Schema(
 
 const UserSchema: Schema = new Schema(
   {
-    name: {type: String, required: true},
+    firstName: {type: String, required: true},
+    middleName: {type: String},
+    lastName: {type: String, required: true},
+    birthday: {type: Date},
     email: {type: String, required: true, unique: true, lowercase: true},
     password: {type: String, required: true},
     phone: {type: String},

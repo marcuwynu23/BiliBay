@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {useNavigate, Link} from "react-router-dom";
 import {useAuthStore} from "~/stores/common/authStore";
-import {Page} from "@bilibay/ui";
+import {Page, Select} from "@bilibay/ui";
 import {
   UserIcon,
   EnvelopeIcon,
@@ -14,6 +14,7 @@ import {
   EyeIcon,
   EyeSlashIcon,
   HomeIcon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 import IllustrationBackground from "~/components/common/IllustrationBackground";
 import bilibayLogo from "~/assets/icons/bilibay-logo-rectangle-light.svg";
@@ -21,7 +22,10 @@ import bilibayLogo from "~/assets/icons/bilibay-logo-rectangle-light.svg";
 export default function Register() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    birthday: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -46,31 +50,44 @@ export default function Register() {
     e.preventDefault();
     setError("");
 
-    // Validate step 1 fields
-    if (!formData.name.trim()) {
-      setError("Full name is required");
-      return;
-    }
+    if (currentStep === 1) {
+      // Validate step 1 fields (name fields only)
+      if (!formData.firstName.trim()) {
+        setError("First name is required");
+        return;
+      }
 
-    if (!formData.email.trim()) {
-      setError("Email address is required");
-      return;
-    }
+      if (!formData.lastName.trim()) {
+        setError("Last name is required");
+        return;
+      }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
+      // Step 1 validation passed, move to step 2
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      // Validate step 2 fields (birthday, email, phone)
+      if (!formData.email.trim()) {
+        setError("Email address is required");
+        return;
+      }
 
-    // Step 1 validation passed, move to step 2
-    setCurrentStep(2);
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        setError("Please enter a valid email address");
+        return;
+      }
+
+      // Step 2 validation passed, move to step 3
+      setCurrentStep(3);
+    }
   };
 
   const handleBack = () => {
-    setCurrentStep(1);
-    setError("");
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      setError("");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,7 +108,10 @@ export default function Register() {
 
     try {
       await register(
-        formData.name,
+        formData.firstName,
+        formData.middleName || undefined,
+        formData.lastName,
+        formData.birthday || undefined,
         formData.email,
         formData.password,
         formData.role,
@@ -126,7 +146,7 @@ export default function Register() {
       </div>
 
       {/* Right Side - Form Container */}
-      <div className="w-full md:w-1/2 flex items-center justify-center min-h-screen md:min-h-0 py-0 md:py-12 px-0 md:px-8 lg:px-12 relative z-10">
+      <div className="w-full md:w-1/2  bg-[#8ead5e]  flex items-center justify-center min-h-screen md:min-h-0 py-0 md:py-12 px-0 md:px-8 lg:px-12 relative z-10">
         {/* Home Button */}
         <Link
           to="/"
@@ -152,12 +172,17 @@ export default function Register() {
                 Create Your Account
               </h2>
               <p className="text-sm sm:text-base text-white/90">
-                {currentStep === 1 ? "Step 1 of 2: Personal Information" : "Step 2 of 2: Account Setup"}
+                {currentStep === 1 
+                  ? "Step 1 of 3: Personal Information" 
+                  : currentStep === 2 
+                  ? "Step 2 of 3: Contact Information" 
+                  : "Step 3 of 3: Account Setup"}
               </p>
               {/* Progress Indicator */}
               <div className="mt-4 flex justify-center gap-2">
                 <div className={`h-1.5 w-12 rounded-full transition-all ${currentStep >= 1 ? 'bg-white' : 'bg-white/30'}`}></div>
                 <div className={`h-1.5 w-12 rounded-full transition-all ${currentStep >= 2 ? 'bg-white' : 'bg-white/30'}`}></div>
+                <div className={`h-1.5 w-12 rounded-full transition-all ${currentStep >= 3 ? 'bg-white' : 'bg-white/30'}`}></div>
               </div>
             </div>
 
@@ -171,27 +196,123 @@ export default function Register() {
                     </div>
                   )}
 
-                  {/* Full Name */}
+                  {/* First Name */}
                   <div>
                     <label
-                      htmlFor="name"
+                      htmlFor="firstName"
                       className="block text-xs sm:text-sm font-semibold text-white mb-2"
                     >
-                      Full Name
+                      First Name
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <UserIcon className="h-5 w-5 text-white/70" />
                       </div>
                       <input
-                        id="name"
-                        name="name"
+                        id="firstName"
+                        name="firstName"
                         type="text"
                         required
                         className="block w-full pl-10 pr-4 py-3 sm:py-2.5 text-base sm:text-sm bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all touch-manipulation"
-                        placeholder="Enter your full name"
-                        value={formData.name}
+                        placeholder="Enter your first name"
+                        value={formData.firstName}
                         onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Middle Name */}
+                  <div>
+                    <label
+                      htmlFor="middleName"
+                      className="block text-xs sm:text-sm font-semibold text-white mb-2"
+                    >
+                      Middle Name{" "}
+                      <span className="text-white/70 font-normal text-xs sm:text-sm">(Optional)</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <UserIcon className="h-5 w-5 text-white/70" />
+                      </div>
+                      <input
+                        id="middleName"
+                        name="middleName"
+                        type="text"
+                        className="block w-full pl-10 pr-4 py-3 sm:py-2.5 text-base sm:text-sm bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all touch-manipulation"
+                        placeholder="Enter your middle name"
+                        value={formData.middleName}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Last Name */}
+                  <div>
+                    <label
+                      htmlFor="lastName"
+                      className="block text-xs sm:text-sm font-semibold text-white mb-2"
+                    >
+                      Last Name
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <UserIcon className="h-5 w-5 text-white/70" />
+                      </div>
+                      <input
+                        id="lastName"
+                        name="lastName"
+                        type="text"
+                        required
+                        className="block w-full pl-10 pr-4 py-3 sm:py-2.5 text-base sm:text-sm bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all touch-manipulation"
+                        placeholder="Enter your last name"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Next Button */}
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 bg-white text-[#8ead5d] py-3.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-white/90 active:bg-white/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px] text-base sm:text-sm flex-shrink-0 mt-5"
+                >
+                  <span>Next</span>
+                  <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                </button>
+              </form>
+            ) : currentStep === 2 ? (
+              <form className="flex-1 flex flex-col min-h-0" onSubmit={handleNext}>
+                <div className="flex-1 overflow-y-auto -webkit-overflow-scrolling-touch space-y-5">
+                  {error && (
+                    <div className="rounded-lg bg-red-500/20 backdrop-blur-sm border border-red-300/50 p-4 flex items-start gap-3">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red-200 flex-shrink-0 mt-0.5" />
+                      <div className="text-xs sm:text-sm text-white">{error}</div>
+                    </div>
+                  )}
+
+                  {/* Birthday */}
+                  <div>
+                    <label
+                      htmlFor="birthday"
+                      className="block text-xs sm:text-sm font-semibold text-white mb-2"
+                    >
+                      Birthday{" "}
+                      <span className="text-white/70 font-normal text-xs sm:text-sm">(Optional)</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <CalendarIcon className="h-5 w-5 text-white/70" />
+                      </div>
+                      <input
+                        id="birthday"
+                        name="birthday"
+                        type="date"
+                        className="block w-full pl-10 pr-4 py-3 sm:py-2.5 text-base sm:text-sm bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all touch-manipulation"
+                        value={formData.birthday}
+                        onChange={handleChange}
+                        max={new Date().toISOString().split('T')[0]}
                       />
                     </div>
                   </div>
@@ -248,14 +369,24 @@ export default function Register() {
                   </div>
                 </div>
 
-                {/* Next Button */}
-                <button
-                  type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-white text-[#8ead5d] py-3.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-white/90 active:bg-white/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px] text-base sm:text-sm flex-shrink-0 mt-5"
-                >
-                  <span>Next</span>
-                  <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                </button>
+                {/* Action Buttons */}
+                <div className="flex gap-3 mt-5">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="flex-1 flex items-center justify-center gap-2 border-2 border-white/30 text-white py-3.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-white/10 active:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200 touch-manipulation min-h-[48px] text-base sm:text-sm"
+                  >
+                    <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span>Back</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 flex items-center justify-center gap-2 bg-white text-[#8ead5d] py-3.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-white/90 active:bg-white/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px] text-base sm:text-sm"
+                  >
+                    <span>Next</span>
+                    <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </button>
+                </div>
               </form>
             ) : (
               <form className="flex-1 flex flex-col min-h-0" onSubmit={handleSubmit}>
@@ -275,37 +406,18 @@ export default function Register() {
                     >
                       Account Type
                     </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <UserGroupIcon className="h-5 w-5 text-white/70" />
-                      </div>
-                      <select
-                        id="role"
-                        name="role"
-                        required
-                        className="block w-full pl-10 pr-4 py-3 sm:py-2.5 text-base sm:text-sm bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all appearance-none touch-manipulation"
-                        value={formData.role}
-                        onChange={handleChange}
-                      >
-                        <option value="buyer" className="bg-gray-800 text-white">Buyer</option>
-                        <option value="seller" className="bg-gray-800 text-white">Seller</option>
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <svg
-                          className="h-5 w-5 text-white/70"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
+                    <Select
+                      id="role"
+                      name="role"
+                      required
+                      value={formData.role}
+                      onChange={handleChange}
+                      options={[
+                        {value: "buyer", label: "Buyer"},
+                        {value: "seller", label: "Seller"},
+                      ]}
+                      leftIcon={<UserGroupIcon className="h-5 w-5 text-white/70" />}
+                    />
                   </div>
 
                   {/* Password */}

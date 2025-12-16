@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { Page } from "@bilibay/ui";
+import { Page, Select } from "@bilibay/ui";
+import { Dialog } from "~/components/common/Dialog";
 import { NavBar } from "~/components/common/NavBar";
 import { useAuthStore } from "~/stores/common/authStore";
-import { useDialogStore } from "~/stores/common/dialogStore";
+import { usePromptStore } from "~/stores/common/promptStore";
 import { api } from "~/utils/api";
 import {
   CubeIcon,
@@ -14,7 +15,7 @@ import {
 
 export default function SellerProducts() {
   const {token} = useAuthStore();
-  const {alert, confirm} = useDialogStore();
+  const {alert, confirm} = usePromptStore();
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +32,7 @@ export default function SellerProducts() {
   });
   const [uploadingImages, setUploadingImages] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -70,35 +72,82 @@ export default function SellerProducts() {
       status: "draft",
       images: [],
     });
+    setSelectedFiles([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
-  const handleImageUpload = async (files: FileList) => {
-    setUploadingImages(true);
-    try {
-      const uploadFormData = new FormData();
-      Array.from(files).forEach((file) => {
-        uploadFormData.append("images", file);
-      });
+  const handleFileSelect = (files: FileList | null) => {
+    if (!files || files.length === 0) {
+      return;
+    }
 
-      const data = await api.upload("/seller/upload/products", uploadFormData, token);
-      // Use functional update to avoid closure issue
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, ...data.images],
-      }));
-      // Reset file input to allow uploading the same file again
+    const fileArray = Array.from(files);
+    const validFiles: File[] = [];
+    const errors: string[] = [];
+
+    fileArray.forEach((file) => {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        errors.push(`${file.name} is not an image file`);
+        return;
+      }
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        errors.push(`${file.name} is too large. Maximum size is 5MB`);
+        return;
+      }
+      validFiles.push(file);
+    });
+
+    if (errors.length > 0) {
+      alert({
+        title: "File Selection Error",
+        message: errors.join("\n"),
+        type: "error",
+      });
+    }
+
+    if (validFiles.length > 0) {
+      setSelectedFiles((prev) => [...prev, ...validFiles]);
+      // Reset file input to allow selecting the same file again
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-    } catch (err: any) {
-      await alert({
-        title: "Error",
-        message: err.message || "Failed to upload images",
-        type: "error",
+    }
+  };
+
+  const uploadSelectedImages = async (): Promise<string[]> => {
+    if (selectedFiles.length === 0) {
+      return [];
+    }
+
+    if (!token) {
+      throw new Error("You must be logged in to upload images");
+    }
+
+    setUploadingImages(true);
+    try {
+      const uploadFormData = new FormData();
+      selectedFiles.forEach((file) => {
+        uploadFormData.append("images", file);
       });
+
+      console.log("Uploading images:", selectedFiles.map(f => ({ name: f.name, size: f.size, type: f.type })));
+
+      const data = await api.upload("/seller/upload/products", uploadFormData, token);
+      
+      if (!data || !data.images || !Array.isArray(data.images)) {
+        throw new Error("Invalid response from server");
+      }
+
+      console.log("Upload successful, received images:", data.images);
+      setSelectedFiles([]); // Clear selected files after successful upload
+      return data.images;
+    } catch (err: any) {
+      console.error("Image upload error:", err);
+      throw err;
     } finally {
       setUploadingImages(false);
     }
@@ -108,10 +157,32 @@ export default function SellerProducts() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Upload images first if there are selected files
+      let uploadedImageUrls: string[] = [];
+      if (selectedFiles.length > 0) {
+        try {
+          uploadedImageUrls = await uploadSelectedImages();
+        } catch (uploadErr: any) {
+          await alert({
+            title: "Upload Error",
+            message: uploadErr.message || "Failed to upload images. Please try again.",
+            type: "error",
+          });
+          setSubmitting(false);
+          return; // Stop submission if image upload fails
+        }
+      }
+
+      // Combine existing images with newly uploaded ones
+      const finalFormData = {
+        ...formData,
+        images: [...formData.images, ...uploadedImageUrls],
+      };
+
       if (editingProduct) {
         await api.put(
           `/seller/products/${editingProduct._id}`,
-          formData,
+          finalFormData,
           token
         );
         // Close dialog first, then show success message
@@ -125,7 +196,7 @@ export default function SellerProducts() {
           type: "success",
         });
       } else {
-        await api.post("/seller/products", formData, token);
+        await api.post("/seller/products", finalFormData, token);
         // Close dialog first, then show success message
         setShowForm(false);
         setEditingProduct(null);
@@ -160,6 +231,7 @@ export default function SellerProducts() {
       status: product.status,
       images: product.images || [],
     });
+    setSelectedFiles([]); // Clear any selected files when editing
     setShowForm(true);
   };
 
@@ -194,37 +266,19 @@ export default function SellerProducts() {
     });
   };
 
-  // Handle escape key to close modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && showForm) {
-        setShowForm(false);
-        setEditingProduct(null);
-        resetForm();
-      }
-    };
-
-    if (showForm) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "unset";
-    };
-  }, [showForm]);
+  const removeSelectedFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe">
+      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 md:py-12 pb-safe">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-10">
           <div>
             <div className="flex items-center gap-2 sm:gap-3 mb-2">
-              <CubeIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">My Products</h1>
+              <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">My Products</h1>
             </div>
             <p className="text-sm sm:text-base text-gray-600">Manage your product catalog</p>
           </div>
@@ -242,50 +296,53 @@ export default function SellerProducts() {
           </button>
         </div>
 
-        {/* Product Form Modal */}
-        {showForm && (
-          <div
-            className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                setShowForm(false);
-                setEditingProduct(null);
-                resetForm();
-              }
-            }}
-          >
-            <div
-              className="bg-white rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl w-full h-[95vh] sm:h-auto sm:max-h-[90vh] overflow-y-auto shadow-2xl relative animate-slide-up sm:animate-none"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Mobile drag handle */}
-              <div className="sm:hidden flex justify-center mb-4 pt-2">
-                <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-              </div>
-              
-              <div className="flex justify-between items-center mb-4 sm:mb-6 border-b border-gray-100 pb-4 sm:pb-6">
-                <div className="flex-1 min-w-0 pr-2">
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {editingProduct ? "Edit Product" : "Add New Product"}
-                  </h2>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                    {editingProduct ? "Update product information" : "Create a new product listing"}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingProduct(null);
-                    resetForm();
-                  }}
-                  className="text-gray-500 hover:text-gray-700 w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition flex-shrink-0 touch-manipulation"
-                  aria-label="Close modal"
-                >
-                  <XMarkIcon className="h-6 w-6" />
-                </button>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+        {/* Product Form Dialog */}
+        <Dialog
+          isOpen={showForm}
+          onClose={() => {
+            setShowForm(false);
+            setEditingProduct(null);
+            resetForm();
+          }}
+          title={editingProduct ? "Edit Product" : "Add New Product"}
+          subtitle={editingProduct ? "Update product information" : "Create a new product listing"}
+          formId="product-form"
+          footer={
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <button
+                type="submit"
+                form="product-form"
+                disabled={submitting}
+                className="flex-1 bg-[#98b964] text-white px-6 py-4 sm:py-3 rounded-xl sm:rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base sm:text-sm touch-manipulation min-h-[48px]"
+              >
+                {submitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    <span>{editingProduct ? "Updating..." : "Creating..."}</span>
+                  </>
+                ) : (
+                  <span>{editingProduct ? "Update Product" : "Create Product"}</span>
+                )}
+              </button>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => {
+                  setShowForm(false);
+                  setEditingProduct(null);
+                  resetForm();
+                }}
+                className="flex-1 border border-[#98b964] text-[#98b964] px-6 py-4 sm:py-3 rounded-xl sm:rounded-lg font-medium hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm touch-manipulation min-h-[48px]"
+              >
+                Cancel
+              </button>
+            </div>
+          }
+        >
+          <form onSubmit={handleSubmit} id="product-form" className="pb-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
+              {/* Left Column */}
+              <div className="space-y-4 sm:space-y-5">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Product Title *
@@ -350,44 +407,70 @@ export default function SellerProducts() {
                     />
                   </div>
                 </div>
-                <div>
+       
+              </div>
+
+              {/* Right Column */}
+              <div className="space-y-4 sm:space-y-5">
+              <div className="relative z-10">
                   <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                     Category
                   </label>
-                  <select
-                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
+                  <Select
+                    options={[
+                      { value: "", label: "Select Category (Optional)" },
+                      ...categories.map((cat) => ({
+                        value: cat._id,
+                        label: cat.name,
+                      })),
+                    ]}
                     value={formData.category}
                     onChange={(e) =>
                       setFormData({...formData, category: e.target.value})
                     }
-                  >
-                    <option value="">Select Category (Optional)</option>
-                    {categories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="Select Category (Optional)"
+                    backgroundColor="bg-white"
+                    borderColor="border-gray-300"
+                    textColor="text-gray-900"
+                    iconColor="text-gray-500"
+                    focusRingColor="focus:ring-[#98b964]"
+                    optionHoverColor="hover:bg-gray-100"
+                    optionSelectedColor="bg-[#98b964]/10"
+                    className="w-full"
+                    selectClassName="px-4 py-3.5 sm:py-3 text-base sm:text-sm"
+                    optionClassName=""
+                  />
                   {categories.length === 0 && (
                     <p className="text-xs sm:text-sm text-gray-500 mt-1">
                       No categories available. Contact admin to create categories.
                     </p>
                   )}
                 </div>
-                <div>
+                <div className="relative z-10">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Status
                   </label>
-                  <select
-                    className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
+                  <Select
+                    options={[
+                      { value: "draft", label: "Draft" },
+                      { value: "available", label: "Available" },
+                    ]}
                     value={formData.status}
                     onChange={(e) =>
                       setFormData({...formData, status: e.target.value})
                     }
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="available">Available</option>
-                  </select>
+                    placeholder="Select Status"
+                    backgroundColor="bg-white"
+                    borderColor="border-gray-300"
+                    textColor="text-gray-900"
+                    iconColor="text-gray-500"
+                    focusRingColor="focus:ring-[#98b964]"
+                    optionHoverColor="hover:bg-gray-100"
+                    optionSelectedColor="bg-[#98b964]/10"
+                    className="w-full"
+                    selectClassName="px-4 py-3.5 sm:py-3 text-base sm:text-sm"
+                    optionClassName=""
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -398,73 +481,78 @@ export default function SellerProducts() {
                     type="file"
                     multiple
                     accept="image/*"
-                    onChange={(e) =>
-                      e.target.files && handleImageUpload(e.target.files)
-                    }
+                    onChange={(e) => handleFileSelect(e.target.files)}
                     className="w-full px-4 py-3.5 sm:py-3 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
                     disabled={uploadingImages || submitting}
                   />
                   {uploadingImages && (
                     <p className="text-sm text-gray-500 mt-2">Uploading images...</p>
                   )}
+                  
+                  {/* Selected files preview (not yet uploaded) */}
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Selected files (will be uploaded on submit): {selectedFiles.length}
+                      </p>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+                        {selectedFiles.map((file, idx) => (
+                          <div key={idx} className="relative group">
+                            <div className="w-full h-24 sm:h-28 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
+                              <span className="text-xs text-gray-500 text-center px-2 truncate w-full">
+                                {file.name}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeSelectedFile(idx)}
+                              disabled={submitting}
+                              className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-red-500 text-white rounded-full w-8 h-8 sm:w-7 sm:h-7 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50 touch-manipulation z-10"
+                            >
+                              <XMarkIcon className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Uploaded images preview */}
                   {formData.images.length > 0 && (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 mt-4">
-                      {formData.images.map((img, idx) => (
-                        <div key={idx} className="relative group">
-                          <img
-                            src={img}
-                            alt={`Product ${idx + 1}`}
-                            className="w-full h-24 sm:h-28 object-cover rounded-lg border border-gray-200"
-                            onError={(e) => {
-                              console.error("Failed to load image:", img);
-                              (e.target as HTMLImageElement).src = "/placeholder.png";
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(idx)}
-                            disabled={submitting}
-                            className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-red-500 text-white rounded-full w-8 h-8 sm:w-7 sm:h-7 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50 touch-manipulation"
-                          >
-                            <XMarkIcon className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
+                    <div className={`mt-4 space-y-2 ${selectedFiles.length > 0 ? 'mt-6' : ''}`}>
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Uploaded images: {formData.images.length}
+                      </p>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+                        {formData.images.map((img, idx) => (
+                          <div key={idx} className="relative group">
+                            <img
+                              src={img}
+                              alt={`Product ${idx + 1}`}
+                              className="w-full h-24 sm:h-28 object-cover rounded-lg border border-gray-200"
+                              onError={(e) => {
+                                console.error("Failed to load image:", img);
+                                (e.target as HTMLImageElement).src = "/placeholder.png";
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(idx)}
+                              disabled={submitting}
+                              className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-red-500 text-white rounded-full w-8 h-8 sm:w-7 sm:h-7 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50 touch-manipulation z-10"
+                            >
+                              <XMarkIcon className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 pb-2 sm:pb-0">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="flex-1 bg-[#98b964] text-white px-6 py-4 sm:py-3 rounded-xl sm:rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base sm:text-sm touch-manipulation min-h-[48px]"
-                  >
-                    {submitting ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                        <span>{editingProduct ? "Updating..." : "Creating..."}</span>
-                      </>
-                    ) : (
-                      <span>{editingProduct ? "Update Product" : "Create Product"}</span>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={submitting}
-                    onClick={() => {
-                      setShowForm(false);
-                      setEditingProduct(null);
-                      resetForm();
-                    }}
-                    className="flex-1 border border-[#98b964] text-[#98b964] px-6 py-4 sm:py-3 rounded-xl sm:rounded-lg font-medium hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm touch-manipulation min-h-[48px]"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
+              </div>
             </div>
-          </div>
-        )}
+          </form>
+        </Dialog>
 
         {loading ? (
           <div className="text-center py-20">

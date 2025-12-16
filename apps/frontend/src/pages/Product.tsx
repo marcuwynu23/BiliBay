@@ -3,7 +3,7 @@ import {useParams, useNavigate} from "react-router-dom";
 import {Page} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
-import {useDialogStore} from "~/stores/common/dialogStore";
+import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
 import {
   ArrowLeftIcon,
@@ -17,7 +17,7 @@ export default function ProductDetail() {
   const {id} = useParams();
   const navigate = useNavigate();
   const {token, user} = useAuthStore();
-  const {alert, confirm} = useDialogStore();
+  const {alert, confirm} = usePromptStore();
   const [product, setProduct] = useState<any>(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -80,7 +80,7 @@ export default function ProductDetail() {
     return (
       <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <NavBar />
-        <div className="container mx-auto px-4 py-12">
+        <div className="container-fluid mx-auto px-4 py-12">
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#98b964] border-t-transparent"></div>
             <p className="mt-4 text-gray-600">Loading product...</p>
@@ -94,7 +94,7 @@ export default function ProductDetail() {
     return (
       <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <NavBar />
-        <div className="container mx-auto px-4 py-12">
+        <div className="container-fluid mx-auto px-4 py-12">
           <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
             <XCircleIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">

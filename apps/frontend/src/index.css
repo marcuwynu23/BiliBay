@@ -50,6 +50,25 @@ body {
   will-change: transform;
 }
 
+/* Slide down animation for accordions */
+@keyframes slide-down {
+  from {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
+  overflow: hidden;
+}
+
 /* Better touch targets */
 .touch-manipulation {
   touch-action: manipulation;
@@ -89,4 +108,14 @@ button, a {
 .animate-slide-background {
   animation: slide-background 30s linear infinite;
   will-change: transform;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }

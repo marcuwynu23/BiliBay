@@ -80,8 +80,9 @@ export const uploadReceipt = multer({
 
 // Helper to get file URL
 export const getFileUrl = (filename: string, type: "product" | "receipt" = "product") => {
-  const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+  // Use relative URL for frontend proxy compatibility
+  // The frontend proxy will handle routing to the correct backend
   const folder = type === "product" ? "products" : "receipts";
-  return `${baseUrl}/uploads/${folder}/${filename}`;
+  return `/uploads/${folder}/${filename}`;
 };
 
