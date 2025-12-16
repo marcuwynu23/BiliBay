@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react";
 import onlineShopping from "~/assets/illustrations/online-shopping.svg";
 import shopping from "~/assets/illustrations/shopping.svg";
-import addToCard from "~/assets/illustrations/add-to-card.svg";
+import addToCart from "~/assets/illustrations/add-to-cart.svg";
 import deliveries from "~/assets/illustrations/deliveries.svg";
 import paymentWithCreditCard from "~/assets/illustrations/payment-with-credit-card.svg";
 import mobilePayments from "~/assets/illustrations/mobile-payments.svg";
@@ -21,7 +21,7 @@ const bilibayFeatures = [
     description: "Discover thousands of authentic Filipino products and local favorites",
   },
   {
-    illustration: addToCard,
+    illustration: addToCart,
     title: "Easy Shopping Experience",
     description: "Add items to your cart with just one click and checkout seamlessly",
   },

@@ -69,18 +69,7 @@ export default function BuyerDashboard() {
                 to={card.link}
                 className="group relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
               >
-                {/* Gradient Accent */}
-                <div
-                  className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${card.color}`}
-                />
-
-                {/* Icon Container */}
-                <div
-                  className={`${card.bgColor} w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}
-                >
-                  <Icon className={`h-6 w-6 sm:h-7 sm:w-7 text-gray-700`} />
-                </div>
-
+            
                 {/* Content */}
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-[#98b964] transition-colors">
                   {card.title}

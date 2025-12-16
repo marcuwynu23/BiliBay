@@ -5,7 +5,6 @@ import {useAuthStore} from "~/stores/common/authStore";
 import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
 import {
-  ClipboardDocumentListIcon,
   CalendarIcon,
   UserIcon,
   EnvelopeIcon,
@@ -14,12 +13,14 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@heroicons/react/24/outline";
+import deliveriesIllustration from "~/assets/illustrations/deliveries.svg";
 
 export default function SellerOrders() {
   const {token} = useAuthStore();
   const {alert, confirm} = usePromptStore();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeStatusTab, setActiveStatusTab] = useState<string>("all");
   const [expandedAccordions, setExpandedAccordions] = useState<Record<string, boolean>>({});
   const [activeTabs, setActiveTabs] = useState<Record<string, string>>({});
 
@@ -109,6 +110,30 @@ export default function SellerOrders() {
 
   const getActiveTab = (orderId: string) => activeTabs[orderId] || "items";
 
+  // Filter orders by status
+  const filteredOrders = activeStatusTab === "all" 
+    ? orders 
+    : orders.filter(order => order.status === activeStatusTab);
+
+  // Get order counts per status
+  const statusCounts = {
+    all: orders.length,
+    pending: orders.filter(o => o.status === "pending").length,
+    processing: orders.filter(o => o.status === "processing").length,
+    shipped: orders.filter(o => o.status === "shipped").length,
+    delivered: orders.filter(o => o.status === "delivered").length,
+    cancelled: orders.filter(o => o.status === "cancelled").length,
+  };
+
+  const statusTabs = [
+    { value: "all", label: "All", count: statusCounts.all },
+    { value: "pending", label: "Pending", count: statusCounts.pending },
+    { value: "processing", label: "Processing", count: statusCounts.processing },
+    { value: "shipped", label: "Shipped", count: statusCounts.shipped },
+    { value: "delivered", label: "Delivered", count: statusCounts.delivered },
+    { value: "cancelled", label: "Cancelled", count: statusCounts.cancelled },
+  ];
+
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
@@ -128,13 +153,66 @@ export default function SellerOrders() {
           </div>
         ) : orders.length === 0 ? (
           <div className="bg-white rounded-xl sm:rounded-2xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
-            <ClipboardDocumentListIcon className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+            <img
+              src={deliveriesIllustration}
+              alt="No orders"
+              className="h-48 sm:h-64 mx-auto mb-4 sm:mb-6"
+            />
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No orders yet</h3>
             <p className="text-sm sm:text-base text-gray-600">Orders from customers will appear here</p>
           </div>
         ) : (
-          <div className="space-y-4 sm:space-y-6">
-            {orders.map((order) => {
+          <>
+            {/* Status Filter Tabs */}
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 mb-4 sm:mb-6 p-2">
+              <div className="flex gap-1 sm:gap-2 overflow-x-auto -mx-2 px-2 scrollbar-hide">
+                {statusTabs.map((tab) => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setActiveStatusTab(tab.value)}
+                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium transition-all duration-200 text-xs sm:text-sm whitespace-nowrap touch-manipulation ${
+                      activeStatusTab === tab.value
+                        ? "bg-[#98b964] text-white shadow-sm"
+                        : "text-gray-600 hover:bg-gray-50"
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    {tab.count > 0 && (
+                      <span
+                        className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${
+                          activeStatusTab === tab.value
+                            ? "bg-white/20 text-white"
+                            : "bg-gray-200 text-gray-700"
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Orders List */}
+            {filteredOrders.length === 0 ? (
+              <div className="bg-white rounded-xl sm:rounded-2xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
+                <img
+                  src={deliveriesIllustration}
+                  alt="No orders"
+                  className="h-48 sm:h-64 mx-auto mb-4 sm:mb-6 opacity-50"
+                />
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+                  No {activeStatusTab !== "all" ? activeStatusTab : ""} orders
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600">
+                  {activeStatusTab === "all" 
+                    ? "Orders from customers will appear here"
+                    : `No orders with status "${activeStatusTab}" found`}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4 sm:space-y-6">
+                {filteredOrders.map((order) => {
               const isAccordionOpen = expandedAccordions[order._id] || false;
               const activeTab = getActiveTab(order._id);
               
@@ -150,9 +228,7 @@ export default function SellerOrders() {
                   <div className="p-3 sm:p-4">
                     <div className="flex items-center justify-between gap-3 mb-3">
                       <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                        <div className="bg-blue-50 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
-                          <ClipboardDocumentListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-                        </div>
+                       
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-base sm:text-lg text-gray-900 break-words">
                             Order #{order.orderNumber}
@@ -253,7 +329,7 @@ export default function SellerOrders() {
 
                       {activeTab === "status" && (
                         <div className="space-y-3">
-                          <div className="relative z-10">
+                          <div className="relative">
                             <Select
                               options={[
                                 { value: "pending", label: "Pending" },
@@ -348,8 +424,10 @@ export default function SellerOrders() {
                   </div>
                 </div>
               );
-            })}
-          </div>
+                })}
+              </div>
+            )}
+          </>
         )}
       </div>
     </Page>

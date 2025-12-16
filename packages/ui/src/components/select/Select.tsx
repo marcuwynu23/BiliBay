@@ -57,24 +57,33 @@ export const Select: React.FC<SelectProps> = ({
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const selectRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const selectedOption = options.find((opt) => opt.value === value);
 
   // Calculate dropdown position
   const updateDropdownPosition = () => {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
+      // Use getBoundingClientRect directly since we're using position: fixed
+      // which is relative to the viewport, not the document
       setDropdownPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
+        top: rect.bottom + 4,
+        left: rect.left,
         width: rect.width,
       });
     }
   };
 
-  // Update position when opening or window resizes
+  // Update position when opening
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && buttonRef.current) {
+      // Calculate position immediately
       updateDropdownPosition();
+      // Also calculate after a frame to ensure accurate positioning
+      const frameId = requestAnimationFrame(() => {
+        updateDropdownPosition();
+      });
+      
       const handleResize = () => updateDropdownPosition();
       const handleScroll = () => updateDropdownPosition();
       
@@ -82,35 +91,45 @@ export const Select: React.FC<SelectProps> = ({
       window.addEventListener("scroll", handleScroll, true);
       
       return () => {
+        cancelAnimationFrame(frameId);
         window.removeEventListener("resize", handleResize);
         window.removeEventListener("scroll", handleScroll, true);
       };
     }
   }, [isOpen]);
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside or when prompt opens
   useEffect(() => {
+    if (!isOpen) return;
+
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Element;
       if (
         selectRef.current &&
         !selectRef.current.contains(target) &&
-        !target.closest('[data-select-dropdown="true"]')
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
       ) {
         setIsOpen(false);
       }
     }
 
-    if (isOpen) {
-      updateDropdownPosition();
-      // Use a slight delay to avoid immediate closure
-      setTimeout(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-      }, 0);
+    function handleCloseAllSelects() {
+      setIsOpen(false);
     }
 
+    // Use a slight delay to avoid immediate closure
+    const timeoutId = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside, true);
+    }, 0);
+    
+    // Listen for custom event to close when prompt opens
+    document.addEventListener("close-all-selects", handleCloseAllSelects);
+
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      clearTimeout(timeoutId);
+      document.removeEventListener("mousedown", handleClickOutside, true);
+      document.removeEventListener("close-all-selects", handleCloseAllSelects);
     };
   }, [isOpen]);
 
@@ -145,9 +164,13 @@ export const Select: React.FC<SelectProps> = ({
         type="button"
         onClick={() => {
           if (!disabled) {
-            setIsOpen(!isOpen);
-            if (!isOpen) {
-              setTimeout(updateDropdownPosition, 0);
+            const willOpen = !isOpen;
+            setIsOpen(willOpen);
+            if (willOpen) {
+              // Calculate position immediately when opening
+              setTimeout(() => {
+                updateDropdownPosition();
+              }, 0);
             }
           }
         }}
@@ -186,22 +209,31 @@ export const Select: React.FC<SelectProps> = ({
       {/* Dropdown Options - Rendered via Portal */}
       {isOpen &&
         typeof document !== "undefined" &&
+        dropdownPosition.width > 0 &&
         createPortal(
           <div
+            ref={dropdownRef}
             data-select-dropdown="true"
-            className={`fixed z-[99999] ${backgroundColor} ${borderColor} border rounded-lg shadow-2xl max-h-60 overflow-auto ${optionClassName}`}
+            className={`!fixed !z-[99999] ${backgroundColor} ${borderColor} border rounded-lg shadow-2xl max-h-60 overflow-auto pointer-events-auto ${optionClassName}`}
             style={{
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
               width: `${dropdownPosition.width}px`,
+              minWidth: `${dropdownPosition.width}px`,
+              position: 'fixed',
+              zIndex: 99999,
             }}
             onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
           >
             {options.map((option) => (
               <button
                 key={option.value}
                 type="button"
-                onClick={() => handleSelect(option.value)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelect(option.value);
+                }}
                 className={`w-full px-4 py-3 sm:py-2.5 text-left text-base sm:text-sm ${textColor} transition-colors ${option.value === value ? optionSelectedColor : ""} ${optionHoverColor} ${option.value === value ? "font-semibold" : ""}`}
               >
                 {option.label}

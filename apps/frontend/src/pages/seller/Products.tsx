@@ -412,7 +412,7 @@ export default function SellerProducts() {
 
               {/* Right Column */}
               <div className="space-y-4 sm:space-y-5">
-              <div className="relative z-10">
+                <div>
                   <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                     Category
                   </label>
@@ -446,7 +446,7 @@ export default function SellerProducts() {
                     </p>
                   )}
                 </div>
-                <div className="relative z-10">
+                <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Status
                   </label>
