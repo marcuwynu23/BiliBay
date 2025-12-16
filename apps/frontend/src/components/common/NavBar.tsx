@@ -6,8 +6,6 @@ import {
   ShoppingBagIcon,
   UserIcon,
   ArrowRightOnRectangleIcon,
-  Bars3Icon,
-  XMarkIcon,
   ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 import {useAuthStore} from "~/stores/common/authStore";
@@ -85,10 +83,6 @@ export const NavBar = () => {
             <span>Dashboard</span>
           </Link>
         )}
-        <div className="border-t border-gray-200 my-2"></div>
-        <div className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-600 font-medium">
-          {user.name}
-        </div>
       </>
     ) : (
       <>
@@ -226,13 +220,22 @@ export const NavBar = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2.5 text-gray-600 hover:text-[#98b964] rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center z-50 relative"
+              className="lg:hidden p-1 text-gray-600 hover:text-[#98b964] rounded-full hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center z-50 relative"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? (
-                <XMarkIcon className="h-6 w-6" />
+              {user && token ? (
+                <div className="w-8 h-8 rounded-full bg-[#98b964] flex items-center justify-center text-white font-semibold text-sm">
+                  {user.name
+                    ?.split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2) || "U"}
+                </div>
               ) : (
-                <Bars3Icon className="h-6 w-6" />
+                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                  <UserIcon className="h-5 w-5 text-gray-600" />
+                </div>
               )}
             </button>
           </div>
@@ -260,15 +263,8 @@ export const NavBar = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile menu header */}
-            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-200 flex-shrink-0 pt-safe">
+            <div className="flex items-center justify-center p-4 sm:p-5 flex-shrink-0 pt-safe">
               <h2 className="text-base sm:text-lg font-bold text-gray-900">Menu</h2>
-              <button
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2 text-gray-500 hover:text-gray-700 active:text-gray-900 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-all touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-                aria-label="Close menu"
-              >
-                <XMarkIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-              </button>
             </div>
             
             {/* Mobile menu content */}
@@ -280,7 +276,7 @@ export const NavBar = () => {
 
             {/* Logout button at bottom - only for logged in users */}
             {user && token && (
-              <div className="flex-shrink-0 border-t border-gray-200 px-2 sm:px-4 py-4 pb-safe flex justify-center">
+              <div className="flex-shrink-0 px-2 sm:px-4 py-4 pb-safe flex justify-center">
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
