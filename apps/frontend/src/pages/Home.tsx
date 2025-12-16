@@ -64,9 +64,9 @@ function Home() {
   return (
     <Page id="bilibay-home" className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Top Slider */}
-        <section className="relative mb-16 overflow-hidden rounded-2xl shadow-xl">
+        <section className="relative mb-8 sm:mb-12 md:mb-16 overflow-hidden rounded-xl sm:rounded-2xl shadow-xl">
           <div
             className="flex transition-transform duration-700 ease-in-out"
             style={{transform: `translateX(-${currentSlide * 100}%)`}}
@@ -96,17 +96,17 @@ function Home() {
           {/* Slider buttons */}
           <button
             onClick={prevSlide}
-            className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/90 text-[#98b964] p-3 rounded-full shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 z-20"
+            className="absolute top-1/2 left-2 sm:left-4 -translate-y-1/2 bg-white/90 text-[#98b964] p-2 sm:p-3 rounded-full shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 z-20"
             aria-label="Previous slide"
           >
-            <ChevronLeftIcon className="h-6 w-6" />
+            <ChevronLeftIcon className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/90 text-[#98b964] p-3 rounded-full shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 z-20"
+            className="absolute top-1/2 right-2 sm:right-4 -translate-y-1/2 bg-white/90 text-[#98b964] p-2 sm:p-3 rounded-full shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 z-20"
             aria-label="Next slide"
           >
-            <ChevronRightIcon className="h-6 w-6" />
+            <ChevronRightIcon className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
 
           {/* Slider indicators */}

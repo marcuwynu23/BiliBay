@@ -79,14 +79,14 @@ export default function Orders() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-2">
-            <ClipboardDocumentListIcon className="h-8 w-8 text-[#98b964]" />
-            <h1 className="text-4xl font-bold text-gray-900">My Orders</h1>
+        <div className="mb-6 sm:mb-10">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <ClipboardDocumentListIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">My Orders</h1>
           </div>
-          <p className="text-gray-600">View and manage your order history</p>
+          <p className="text-sm sm:text-base text-gray-600">View and manage your order history</p>
         </div>
 
         {loading ? (
@@ -113,19 +113,19 @@ export default function Orders() {
               >
                 {/* Header with gradient accent */}
                 <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
-                <div className="p-6">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                    <div className="flex items-start gap-4">
-                      <div className="bg-blue-50 p-3 rounded-xl">
-                        <ClipboardDocumentListIcon className="h-6 w-6 text-blue-600" />
+                <div className="p-4 sm:p-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="bg-blue-50 p-2 sm:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
+                        <ClipboardDocumentListIcon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-xl text-gray-900 mb-1">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-1 break-words">
                           Order #{order.orderNumber}
                         </h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <CalendarIcon className="h-4 w-4" />
-                          <span>
+                        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                          <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                          <span className="truncate">
                             {new Date(order.createdAt).toLocaleDateString(
                               "en-US",
                               {
@@ -138,12 +138,12 @@ export default function Orders() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col md:items-end gap-2">
-                      <p className="font-bold text-2xl text-[#98b964]">
+                    <div className="flex flex-row md:flex-col md:items-end gap-2 sm:gap-3">
+                      <p className="font-bold text-xl sm:text-2xl text-[#98b964]">
                         ₱{order.totalAmount}
                       </p>
                       <span
-                        className={`px-4 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(
+                        className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border ${getStatusColor(
                           order.status
                         )}`}
                       >
@@ -154,32 +154,32 @@ export default function Orders() {
                   </div>
 
                   {/* Order Items */}
-                  <div className="border-t border-gray-100 pt-6">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-4">
+                  <div className="border-t border-gray-100 pt-4 sm:pt-6">
+                    <h4 className="text-xs sm:text-sm font-semibold text-gray-700 mb-3 sm:mb-4">
                       Order Items
                     </h4>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {order.items?.map((item: any, idx: number) => (
                         <div
                           key={idx}
-                          className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                          className="flex items-start sm:items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                         >
                           <img
                             src={
                               item.product?.images?.[0] || "/placeholder.png"
                             }
                             alt={item.product?.title}
-                            className="w-20 h-20 object-cover rounded-lg"
+                            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
                           />
-                          <div className="flex-1">
-                            <p className="font-semibold text-gray-900">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm sm:text-base text-gray-900 break-words">
                               {item.product?.title}
                             </p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-xs sm:text-sm text-gray-600">
                               Quantity: {item.quantity} × ₱
                               {item.price.toFixed(2)}
                             </p>
-                            <p className="text-sm font-medium text-gray-700 mt-1">
+                            <p className="text-xs sm:text-sm font-medium text-gray-700 mt-1">
                               Subtotal: ₱
                               {(item.quantity * item.price).toFixed(2)}
                             </p>
@@ -191,14 +191,14 @@ export default function Orders() {
 
                   {/* Actions */}
                   {order.status === "pending" && (
-                    <div className="border-t border-gray-100 pt-6 mt-6">
+                    <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
                       <button
                         onClick={() =>
                           cancelOrder(order._id, order.orderNumber)
                         }
-                        className="flex items-center gap-2 border border-[#98b964] text-[#98b964] px-6 py-2.5 rounded-lg hover:bg-[#98b964] hover:text-white transition-all duration-200 font-medium"
+                        className="flex items-center justify-center gap-2 border border-[#98b964] text-[#98b964] px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-[#98b964] hover:text-white transition-all duration-200 font-medium text-sm sm:text-base w-full sm:w-auto"
                       >
-                        <XCircleIcon className="h-5 w-5" />
+                        <XCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                         Cancel Order
                       </button>
                     </div>

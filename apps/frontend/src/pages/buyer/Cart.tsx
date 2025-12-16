@@ -99,56 +99,60 @@ export default function Cart() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-2">
-            <ShoppingCartIcon className="h-8 w-8 text-[#98b964]" />
-            <h1 className="text-4xl font-bold text-gray-900">Shopping Cart</h1>
+        <div className="mb-6 sm:mb-10">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <ShoppingCartIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+              Shopping Cart
+            </h1>
           </div>
-          <p className="text-gray-600">Review your items before checkout</p>
+          <p className="text-sm sm:text-base text-gray-600">
+            Review your items before checkout
+          </p>
         </div>
 
         {!cart || cart.items?.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
-            <ShoppingCartIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <div className="bg-white rounded-xl sm:rounded-2xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
+            <ShoppingCartIcon className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
               Your cart is empty
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
               Start adding products to your cart
             </p>
             <button
               onClick={() => navigate("/products")}
-              className="inline-flex items-center gap-2 bg-[#98b964] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+              className="inline-flex items-center gap-2 bg-[#98b964] text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow text-sm sm:text-base"
             >
-              <ArrowRightIcon className="h-5 w-5" />
+              <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>Continue Shopping</span>
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-3 sm:space-y-4">
               {cart.items.map((item: any, index: number) => (
                 <div
                   key={item._id || `cart-item-${index}`}
-                  className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
+                  className="bg-white rounded-xl sm:rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
                 >
                   {/* Gradient accent */}
                   <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
-                  <div className="p-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                       <img
                         src={item.product?.images?.[0] || "/placeholder.png"}
                         alt={item.product?.title}
-                        className="w-full sm:w-32 h-32 object-cover rounded-lg"
+                        className="w-full sm:w-28 sm:h-28 h-48 object-cover rounded-lg"
                       />
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg text-gray-900 mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-1 sm:mb-2 break-words">
                           {item.product?.title}
                         </h3>
-                        <p className="text-2xl font-bold text-[#98b964] mb-4">
+                        <p className="text-xl sm:text-2xl font-bold text-[#98b964] mb-3 sm:mb-4">
                           ₱{item.product?.price?.toFixed(2)}
                         </p>
                         <div className="flex items-center gap-4">

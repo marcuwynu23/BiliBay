@@ -102,35 +102,35 @@ export default function Products() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-2">
-            <ShoppingBagIcon className="h-8 w-8 text-[#98b964]" />
-            <h1 className="text-4xl font-bold text-gray-900">Products</h1>
+        <div className="mb-6 sm:mb-10">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <ShoppingBagIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Products</h1>
           </div>
-          <p className="text-gray-600">Discover amazing products from local sellers</p>
+          <p className="text-sm sm:text-base text-gray-600">Discover amazing products from local sellers</p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <FunnelIcon className="h-5 w-5 text-gray-500" />
-            <h2 className="font-semibold text-gray-900">Filters</h2>
+        <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <FunnelIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+            <h2 className="text-sm sm:text-base font-semibold text-gray-900">Filters</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent"
+                className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-sm sm:text-base"
                 value={filters.search}
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
               />
             </div>
             <select
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-sm sm:text-base"
               value={filters.category}
               onChange={(e) => setFilters({...filters, category: e.target.value})}
             >
@@ -142,7 +142,7 @@ export default function Products() {
               ))}
             </select>
             <select
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent text-sm sm:text-base"
               value={filters.sortBy}
               onChange={(e) => setFilters({...filters, sortBy: e.target.value})}
             >
@@ -151,7 +151,7 @@ export default function Products() {
               <option value="price_high">Price: High to Low</option>
               <option value="popularity">Popularity</option>
             </select>
-            <label className="flex items-center px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            <label className="flex items-center px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
               <input
                 type="checkbox"
                 checked={filters.inStock === "true"}
@@ -160,7 +160,7 @@ export default function Products() {
                 }
                 className="mr-2 w-4 h-4 text-[#98b964] focus:ring-[#98b964] rounded"
               />
-              <span className="text-sm font-medium text-gray-700">In Stock Only</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-700">In Stock Only</span>
             </label>
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function Products() {
             <p className="text-gray-600">Try adjusting your filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {products.map((product) => (
               <Card
                 key={product._id}

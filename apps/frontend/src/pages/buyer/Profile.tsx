@@ -170,35 +170,35 @@ export default function Profile() {
           <div className="flex space-x-2">
             <button
               onClick={() => setActiveTab("profile")}
-              className={`flex items-center gap-2 py-2.5 px-6 rounded-lg font-medium transition-all duration-200 ${
+              className={`flex items-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-6 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base ${
                 activeTab === "profile"
                   ? "bg-[#98b964] text-white shadow-sm"
                   : "text-gray-600 hover:bg-gray-50"
               }`}
             >
-              <UserIcon className="h-5 w-5" />
+              <UserIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>Profile</span>
             </button>
             <button
               onClick={() => setActiveTab("password")}
-              className={`flex items-center gap-2 py-2.5 px-6 rounded-lg font-medium transition-all duration-200 ${
+              className={`flex items-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-6 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base ${
                 activeTab === "password"
                   ? "bg-[#98b964] text-white shadow-sm"
                   : "text-gray-600 hover:bg-gray-50"
               }`}
             >
-              <KeyIcon className="h-5 w-5" />
+              <KeyIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>Password</span>
             </button>
             <button
               onClick={() => setActiveTab("address")}
-              className={`flex items-center gap-2 py-2.5 px-6 rounded-lg font-medium transition-all duration-200 ${
+              className={`flex items-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-6 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base ${
                 activeTab === "address"
                   ? "bg-[#98b964] text-white shadow-sm"
                   : "text-gray-600 hover:bg-gray-50"
               }`}
             >
-              <MapPinIcon className="h-5 w-5" />
+              <MapPinIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>Address</span>
             </button>
           </div>
