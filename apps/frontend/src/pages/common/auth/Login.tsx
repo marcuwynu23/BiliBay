@@ -53,7 +53,7 @@ export default function Login() {
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* Gradient accent */}
           <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
-          
+
           <div className="p-8 space-y-6">
             {/* Header */}
             <div className="text-center">
@@ -75,7 +75,10 @@ export default function Login() {
 
               {/* Email Input */}
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Email address
                 </label>
                 <div className="relative">
@@ -98,7 +101,10 @@ export default function Login() {
 
               {/* Password Input */}
               <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -120,7 +126,9 @@ export default function Login() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
                       <EyeSlashIcon className="h-5 w-5" />
@@ -179,4 +187,3 @@ export default function Login() {
     </Page>
   );
 }
-
