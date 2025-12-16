@@ -24,7 +24,7 @@ interface AuthStore {
   checkAuth: () => Promise<void>;
 }
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "/api";
 
 export const useAuthStore = create<AuthStore>()(
   persist(

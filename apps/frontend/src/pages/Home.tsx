@@ -64,7 +64,7 @@ function Home() {
   return (
     <Page id="bilibay-home" className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-8 pb-safe">
         {/* Top Slider */}
         <section className="relative mb-8 sm:mb-12 md:mb-16 overflow-hidden rounded-xl sm:rounded-2xl shadow-xl">
           <div

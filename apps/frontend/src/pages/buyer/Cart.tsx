@@ -99,7 +99,7 @@ export default function Cart() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
@@ -162,11 +162,11 @@ export default function Cart() {
                                 updateQuantity(item._id, item.quantity - 1)
                               }
                               disabled={item.quantity <= 1}
-                              className="p-2 text-[#98b964] hover:bg-[#98b964] hover:text-white disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#98b964] transition-all rounded-l-lg"
+                              className="p-2.5 sm:p-2 text-[#98b964] hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#98b964] transition-all rounded-l-lg touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
                             >
                               <MinusIcon className="h-4 w-4" />
                             </button>
-                            <span className="min-w-[3rem] text-center font-semibold">
+                            <span className="min-w-[3rem] text-center font-semibold text-sm sm:text-base">
                               {item.quantity}
                             </span>
                             <button
@@ -176,7 +176,7 @@ export default function Cart() {
                               disabled={
                                 item.quantity >= (item.product?.stock || 0)
                               }
-                              className="p-2 text-[#98b964] hover:bg-[#98b964] hover:text-white disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#98b964] transition-all rounded-r-lg"
+                              className="p-2.5 sm:p-2 text-[#98b964] hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#98b964] transition-all rounded-r-lg touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
                             >
                               <PlusIcon className="h-4 w-4" />
                             </button>
@@ -188,10 +188,10 @@ export default function Cart() {
                                 item.product?.title || "this item"
                               )
                             }
-                            className="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium transition-colors"
+                            className="flex items-center gap-2 text-red-500 hover:text-red-700 active:text-red-800 font-medium transition-colors touch-manipulation min-h-[44px] px-2"
                           >
                             <TrashIcon className="h-5 w-5" />
-                            <span>Remove</span>
+                            <span className="text-sm sm:text-base">Remove</span>
                           </button>
                         </div>
                         <p className="text-sm text-gray-600 mt-3">
@@ -246,7 +246,7 @@ export default function Cart() {
                   </div>
                   <button
                     onClick={() => navigate("/checkout")}
-                    className="w-full flex items-center justify-center gap-2 bg-[#98b964] text-white py-3 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+                    className="w-full flex items-center justify-center gap-2 bg-[#98b964] text-white py-4 sm:py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
                   >
                     <span>Proceed to Checkout</span>
                     <ArrowRightIcon className="h-5 w-5" />

@@ -119,7 +119,7 @@ export default function ProductDetail() {
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 md:py-12 max-w-7xl pb-safe">
         <button
           onClick={() => navigate(-1)}
           className="mb-4 sm:mb-6 flex items-center gap-2 text-[#98b964] hover:text-[#5e7142] font-medium transition-colors text-sm sm:text-base"
@@ -167,7 +167,7 @@ export default function ProductDetail() {
                   <>
                     <div className="border-t border-gray-200 pt-6 mb-6">
                       <div className="flex items-center gap-4">
-                        <label className="text-sm font-semibold text-gray-700">
+                        <label className="text-xs sm:text-sm font-semibold text-gray-700">
                           Quantity:
                         </label>
                         <div className="flex items-center gap-2 border border-gray-300 rounded-lg">
@@ -176,9 +176,9 @@ export default function ProductDetail() {
                               setQuantity(Math.max(1, quantity - 1))
                             }
                             disabled={quantity <= 1}
-                            className="p-2 text-[#98b964] hover:bg-[#98b964] hover:text-white disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#98b964] transition-all rounded-l-lg"
+                            className="p-2.5 sm:p-2 text-[#98b964] hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#98b964] transition-all rounded-l-lg touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
                           >
-                            <span className="text-xl">−</span>
+                            <span className="text-lg sm:text-xl">−</span>
                           </button>
                           <input
                             type="number"
@@ -191,19 +191,19 @@ export default function ProductDetail() {
                                 setQuantity(val);
                               }
                             }}
-                            className="w-20 px-4 py-2 text-center border-0 focus:outline-none focus:ring-0 font-semibold"
+                            className="w-20 px-2 sm:px-4 py-2 text-center border-0 focus:outline-none focus:ring-0 font-semibold text-base sm:text-sm touch-manipulation"
                           />
                           <button
                             onClick={() =>
                               setQuantity(Math.min(product.stock, quantity + 1))
                             }
                             disabled={quantity >= product.stock}
-                            className="p-2 text-[#98b964] hover:bg-[#98b964] hover:text-white disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#98b964] transition-all rounded-r-lg"
+                            className="p-2.5 sm:p-2 text-[#98b964] hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#98b964] transition-all rounded-r-lg touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
                           >
-                            <span className="text-xl">+</span>
+                            <span className="text-lg sm:text-xl">+</span>
                           </button>
                         </div>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-xs sm:text-sm text-gray-600">
                           {product.stock} available
                         </span>
                       </div>
@@ -211,7 +211,7 @@ export default function ProductDetail() {
                     <div className="flex flex-col sm:flex-row gap-4">
                       <button
                         onClick={addToCart}
-                        className="flex-1 flex items-center justify-center gap-2 bg-[#98b964] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+                        className="flex-1 flex items-center justify-center gap-2 bg-[#98b964] text-white px-6 py-3.5 sm:py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
                       >
                         <ShoppingCartIcon className="h-5 w-5" />
                         <span>Add to Cart</span>
@@ -249,7 +249,7 @@ export default function ProductDetail() {
                             },
                           });
                         }}
-                        className="flex-1 flex items-center justify-center gap-2 border-2 border-[#98b964] text-[#98b964] px-6 py-3 rounded-lg font-medium hover:bg-[#98b964] hover:text-white transition-all duration-200"
+                        className="flex-1 flex items-center justify-center gap-2 border-2 border-[#98b964] text-[#98b964] px-6 py-3.5 sm:py-3 rounded-lg font-medium hover:bg-[#98b964] hover:text-white active:bg-[#5e7142] transition-all duration-200 touch-manipulation min-h-[48px] text-base sm:text-sm"
                       >
                         <BoltIcon className="h-5 w-5" />
                         <span>Buy Now</span>
@@ -271,30 +271,30 @@ export default function ProductDetail() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
               <div className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
                   Product Details
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Stock Available:</span>
-                    <span className="font-semibold text-gray-900">
+                    <span className="text-xs sm:text-sm text-gray-600">Stock Available:</span>
+                    <span className="font-semibold text-xs sm:text-sm text-gray-900">
                       {product.stock} units
                     </span>
                   </div>
                   {product.category && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Category:</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-xs sm:text-sm text-gray-600">Category:</span>
+                      <span className="font-semibold text-xs sm:text-sm text-gray-900">
                         {product.category?.name || "Uncategorized"}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Status:</span>
-                    <span className="font-semibold">
+                    <span className="text-xs sm:text-sm text-gray-600">Status:</span>
+                    <span className="font-semibold text-xs sm:text-sm">
                       {product.status === "available" ? (
                         <span className="text-green-600 flex items-center gap-1">
-                          <CheckCircleIcon className="h-5 w-5" />
+                          <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                           Available
                         </span>
                       ) : (

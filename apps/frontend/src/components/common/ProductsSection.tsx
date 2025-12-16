@@ -72,25 +72,25 @@ export default function ProductsSection({products}: ProductsSectionProps) {
   return (
     <section className="container mx-auto px-4 py-12 max-w-7xl">
       {/* Header */}
-      <div className="mb-10">
-        <div className="flex items-center gap-3 mb-2">
-          <SparklesIcon className="h-8 w-8 text-[#98b964]" />
-          <h2 className="text-4xl font-bold text-gray-900">
+      <div className="mb-6 sm:mb-10">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2">
+          <SparklesIcon className="h-6 w-6 sm:h-8 sm:w-8 text-[#98b964]" />
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
             Featured Products
           </h2>
         </div>
-        <p className="text-gray-600">
+        <p className="text-sm sm:text-base text-gray-600">
           Discover our handpicked selection of amazing products
         </p>
       </div>
 
       {products.length === 0 ? (
-        <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
-          <SparklesIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="bg-white rounded-xl sm:rounded-2xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
+          <SparklesIcon className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
             No products available
           </h3>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Check back soon for new featured products
           </p>
         </div>
@@ -120,19 +120,24 @@ export default function ProductsSection({products}: ProductsSectionProps) {
                     </div>
                   )}
                 </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-lg mb-2 text-gray-900 line-clamp-1 group-hover:text-[#98b964] transition-colors">
+                <div className="p-4 sm:p-5">
+                  <h3 className="font-bold text-base sm:text-lg mb-2 text-gray-900 line-clamp-1 group-hover:text-[#98b964] transition-colors">
                     {product.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                  {product.category && (
+                    <p className="text-xs sm:text-sm text-gray-500 mb-1">
+                      {product.category.name}
+                    </p>
+                  )}
+                  <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">
                     {product.description}
                   </p>
                   <div className="flex items-center justify-between mb-3">
-                    <p className="font-bold text-2xl text-[#98b964]">
+                    <p className="font-bold text-xl sm:text-2xl text-[#98b964]">
                       ₱{product.price?.toFixed(2)}
                     </p>
                     {product.stock > 0 && (
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
                         {product.stock} left
                       </span>
                     )}
@@ -140,7 +145,7 @@ export default function ProductsSection({products}: ProductsSectionProps) {
                 </div>
               </div>
               {product.stock > 0 && (
-                <div className="px-5 pb-5">
+                <div className="px-4 sm:px-5 pb-4 sm:pb-5">
                   <button
                     onClick={(e) =>
                       handleAddToCart(
@@ -150,9 +155,9 @@ export default function ProductsSection({products}: ProductsSectionProps) {
                         product.price
                       )
                     }
-                    className="w-full flex items-center justify-center gap-2 bg-[#98b964] text-white px-4 py-2.5 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
+                    className="w-full flex items-center justify-center gap-2 bg-[#98b964] text-white px-4 py-3.5 sm:py-2.5 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[48px] text-base sm:text-sm"
                   >
-                    <ShoppingCartIcon className="h-5 w-5" />
+                    <ShoppingCartIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>Add to Cart</span>
                   </button>
                 </div>
