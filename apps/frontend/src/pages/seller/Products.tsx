@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import { Page, Select } from "@bilibay/ui";
-import { Dialog } from "~/components/common/Dialog";
-import { NavBar } from "~/components/common/NavBar";
-import { useAuthStore } from "~/stores/common/authStore";
-import { usePromptStore } from "~/stores/common/promptStore";
-import { api } from "~/utils/api";
+import {useState, useEffect, useRef} from "react";
+import {Page, Select} from "@bilibay/ui";
+import {Dialog} from "~/components/common/Dialog";
+import {NavBar} from "~/components/common/NavBar";
+import {useAuthStore} from "~/stores/common/authStore";
+import {usePromptStore} from "~/stores/common/promptStore";
+import {api} from "~/utils/api";
 import {
   CubeIcon,
   PlusIcon,
@@ -134,10 +134,17 @@ export default function SellerProducts() {
         uploadFormData.append("images", file);
       });
 
-      console.log("Uploading images:", selectedFiles.map(f => ({ name: f.name, size: f.size, type: f.type })));
+      console.log(
+        "Uploading images:",
+        selectedFiles.map((f) => ({name: f.name, size: f.size, type: f.type})),
+      );
 
-      const data = await api.upload("/seller/upload/products", uploadFormData, token);
-      
+      const data = await api.upload(
+        "/seller/upload/products",
+        uploadFormData,
+        token,
+      );
+
       if (!data || !data.images || !Array.isArray(data.images)) {
         throw new Error("Invalid response from server");
       }
@@ -165,7 +172,8 @@ export default function SellerProducts() {
         } catch (uploadErr: any) {
           await alert({
             title: "Upload Error",
-            message: uploadErr.message || "Failed to upload images. Please try again.",
+            message:
+              uploadErr.message || "Failed to upload images. Please try again.",
             type: "error",
           });
           setSubmitting(false);
@@ -183,7 +191,7 @@ export default function SellerProducts() {
         await api.put(
           `/seller/products/${editingProduct._id}`,
           finalFormData,
-          token
+          token,
         );
         // Close dialog first, then show success message
         setShowForm(false);
@@ -278,9 +286,13 @@ export default function SellerProducts() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-10">
           <div>
             <div className="flex items-center gap-2 sm:gap-3 mb-2">
-              <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">My Products</h1>
+              <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">
+                My Products
+              </h1>
             </div>
-            <p className="text-sm sm:text-base text-gray-600">Manage your product catalog</p>
+            <p className="text-sm sm:text-base text-gray-600">
+              Manage your product catalog
+            </p>
           </div>
           <button
             onClick={() => {
@@ -305,7 +317,11 @@ export default function SellerProducts() {
             resetForm();
           }}
           title={editingProduct ? "Edit Product" : "Add New Product"}
-          subtitle={editingProduct ? "Update product information" : "Create a new product listing"}
+          subtitle={
+            editingProduct
+              ? "Update product information"
+              : "Create a new product listing"
+          }
           formId="product-form"
           footer={
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -318,10 +334,14 @@ export default function SellerProducts() {
                 {submitting ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    <span>{editingProduct ? "Updating..." : "Creating..."}</span>
+                    <span>
+                      {editingProduct ? "Updating..." : "Creating..."}
+                    </span>
                   </>
                 ) : (
-                  <span>{editingProduct ? "Update Product" : "Create Product"}</span>
+                  <span>
+                    {editingProduct ? "Update Product" : "Create Product"}
+                  </span>
                 )}
               </button>
               <button
@@ -407,7 +427,6 @@ export default function SellerProducts() {
                     />
                   </div>
                 </div>
-       
               </div>
 
               {/* Right Column */}
@@ -418,7 +437,7 @@ export default function SellerProducts() {
                   </label>
                   <Select
                     options={[
-                      { value: "", label: "Select Category (Optional)" },
+                      {value: "", label: "Select Category (Optional)"},
                       ...categories.map((cat) => ({
                         value: cat._id,
                         label: cat.name,
@@ -442,7 +461,8 @@ export default function SellerProducts() {
                   />
                   {categories.length === 0 && (
                     <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                      No categories available. Contact admin to create categories.
+                      No categories available. Contact admin to create
+                      categories.
                     </p>
                   )}
                 </div>
@@ -452,8 +472,8 @@ export default function SellerProducts() {
                   </label>
                   <Select
                     options={[
-                      { value: "draft", label: "Draft" },
-                      { value: "available", label: "Available" },
+                      {value: "draft", label: "Draft"},
+                      {value: "available", label: "Available"},
                     ]}
                     value={formData.status}
                     onChange={(e) =>
@@ -486,14 +506,17 @@ export default function SellerProducts() {
                     disabled={uploadingImages || submitting}
                   />
                   {uploadingImages && (
-                    <p className="text-sm text-gray-500 mt-2">Uploading images...</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Uploading images...
+                    </p>
                   )}
-                  
+
                   {/* Selected files preview (not yet uploaded) */}
                   {selectedFiles.length > 0 && (
                     <div className="mt-4 space-y-2">
                       <p className="text-xs sm:text-sm text-gray-600">
-                        Selected files (will be uploaded on submit): {selectedFiles.length}
+                        Selected files (will be uploaded on submit):{" "}
+                        {selectedFiles.length}
                       </p>
                       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                         {selectedFiles.map((file, idx) => (
@@ -519,7 +542,9 @@ export default function SellerProducts() {
 
                   {/* Uploaded images preview */}
                   {formData.images.length > 0 && (
-                    <div className={`mt-4 space-y-2 ${selectedFiles.length > 0 ? 'mt-6' : ''}`}>
+                    <div
+                      className={`mt-4 space-y-2 ${selectedFiles.length > 0 ? "mt-6" : ""}`}
+                    >
                       <p className="text-xs sm:text-sm text-gray-600">
                         Uploaded images: {formData.images.length}
                       </p>
@@ -532,7 +557,8 @@ export default function SellerProducts() {
                               className="w-full h-24 sm:h-28 object-cover rounded-lg border border-gray-200"
                               onError={(e) => {
                                 console.error("Failed to load image:", img);
-                                (e.target as HTMLImageElement).src = "/placeholder.png";
+                                (e.target as HTMLImageElement).src =
+                                  "/placeholder.png";
                               }}
                             />
                             <button
@@ -562,8 +588,12 @@ export default function SellerProducts() {
         ) : products.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
             <CubeIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No products yet</h3>
-            <p className="text-gray-600 mb-6">Start building your catalog by adding your first product</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No products yet
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Start building your catalog by adding your first product
+            </p>
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center gap-2 bg-[#98b964] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] transition-all duration-200 shadow-sm hover:shadow"
@@ -608,10 +638,13 @@ export default function SellerProducts() {
                       {product.category.name}
                     </p>
                   )}
-                  <p className="text-xl sm:text-2xl font-bold text-[#98b964] mb-2 sm:mb-3">₱{product.price}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-[#98b964] mb-2 sm:mb-3">
+                    ₱{product.price}
+                  </p>
                   <div className="flex items-center justify-between mb-3 sm:mb-4 text-xs sm:text-sm">
                     <span className="text-gray-600">
-                      <span className="font-semibold">Stock:</span> {product.stock}
+                      <span className="font-semibold">Stock:</span>{" "}
+                      {product.stock}
                     </span>
                   </div>
                   <div className="flex gap-2 pt-3 sm:pt-4 border-t border-gray-100">
@@ -624,7 +657,7 @@ export default function SellerProducts() {
                     </button>
                     <button
                       onClick={() => handleDelete(product._id, product.title)}
-                      className="flex-1 flex items-center justify-center gap-2 border border-red-500 text-red-500 px-3 sm:px-4 py-2.5 sm:py-2.5 rounded-lg hover:bg-red-500 hover:text-white active:bg-red-600 transition-all duration-200 font-medium text-sm sm:text-base touch-manipulation min-h-[44px]"
+                      className="flex-1 flex items-center justify-center gap-2  text-white bg-[#98b964] px-3 sm:px-4 py-2.5 sm:py-2.5 rounded-lg hover:bg-[#98b964]/80 transition-all duration-200 font-medium text-sm sm:text-base touch-manipulation min-h-[44px]"
                     >
                       <TrashIcon className="h-4 w-4" />
                       <span>Delete</span>
