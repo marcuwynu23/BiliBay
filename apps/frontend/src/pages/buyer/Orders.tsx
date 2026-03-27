@@ -9,7 +9,7 @@ import {
   CalendarIcon,
   Squares2X2Icon,
   ClockIcon,
-  Cog6ToothIcon,
+  ArrowPathIcon,
   TruckIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -208,7 +208,7 @@ export default function Orders() {
       id: "processing",
       label: "Processing",
       count: orders.filter((o) => o.status === "processing").length,
-      icon: Cog6ToothIcon,
+      icon: ArrowPathIcon,
     },
     {
       id: "shipped",
