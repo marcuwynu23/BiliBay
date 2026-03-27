@@ -21,6 +21,11 @@ import adminPaymentRoutes from "./routes/admin/payment.route";
 import adminCategoryRoutes from "./routes/admin/category.route";
 import sellerUploadRoutes from "./routes/seller/upload.route";
 import buyerUploadRoutes from "./routes/buyer/upload.route";
+import courierUserRoutes from "./routes/courier/user.route";
+import delivererUserRoutes from "./routes/deliverer/user.route";
+import courierOrderRoutes from "./routes/courier/order.route";
+import delivererOrderRoutes from "./routes/deliverer/order.route";
+import delivererUploadRoutes from "./routes/deliverer/upload.route";
 
 // Middleware
 import {authMiddleware} from "./middlewares/auth.middleware";
@@ -94,6 +99,13 @@ app.use("/api/seller/users", authMiddleware, sellerUserRoutes);
 app.use("/api/seller/products", authMiddleware, sellerProductRoutes);
 app.use("/api/seller/orders", authMiddleware, sellerOrderRoutes);
 app.use("/api/seller/upload", sellerUploadRoutes);
+
+// --- Courier / Deliverer Routes ---
+app.use("/api/courier/users", authMiddleware, courierUserRoutes);
+app.use("/api/courier/orders", authMiddleware, courierOrderRoutes);
+app.use("/api/deliverer/users", authMiddleware, delivererUserRoutes);
+app.use("/api/deliverer/orders", authMiddleware, delivererOrderRoutes);
+app.use("/api/deliverer/upload", authMiddleware, delivererUploadRoutes);
 
 // --- Admin Routes ---
 app.use("/api/admin/dashboard", adminDashboardRoutes);
