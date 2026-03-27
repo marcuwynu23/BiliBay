@@ -28,6 +28,15 @@ type Cart = {
   total: number;
 };
 
+type SavedAddress = {
+  street: string;
+  city: string;
+  province: string;
+  zipCode: string;
+  country?: string;
+  location?: LatLng;
+};
+
 function LeafletLocationPicker({
   center,
   value,
@@ -141,6 +150,8 @@ export default function Checkout() {
   const [paymentReference, setPaymentReference] = useState("");
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [locating, setLocating] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState<string>("");
 
   const defaultCenter = useMemo<LatLng>(() => ({lat: 14.5995, lng: 120.9842}), []); // Manila
   const pickedLocation = shippingAddress.location ?? null;
@@ -164,6 +175,14 @@ export default function Checkout() {
   const fetchUserProfile = useCallback(async () => {
     try {
       const profile = await api.get("/buyer/users/me", token);
+      const next = Array.isArray(profile.shippingAddresses)
+        ? (profile.shippingAddresses as SavedAddress[])
+        : profile.defaultShippingAddress
+          ? ([profile.defaultShippingAddress] as SavedAddress[])
+          : [];
+      setSavedAddresses(next);
+      if (next.length > 0) setSelectedAddressIndex("0");
+
       if (profile.defaultShippingAddress) {
         setShippingAddress(profile.defaultShippingAddress);
       }
@@ -181,6 +200,18 @@ export default function Checkout() {
     fetchCart();
     fetchUserProfile();
   }, [fetchCart, fetchUserProfile, navigate, token, user]);
+
+  useEffect(() => {
+    if (!savedAddresses.length) return;
+    if (selectedAddressIndex === "") return;
+    const selected = savedAddresses[Number(selectedAddressIndex)];
+    if (!selected) return;
+    setShippingAddress((prev) => ({
+      ...prev,
+      ...selected,
+      country: selected.country ?? prev.country ?? "Philippines",
+    }));
+  }, [savedAddresses, selectedAddressIndex]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -343,6 +374,39 @@ export default function Checkout() {
                   </div>
                 </div>
                 <div className="space-y-3 sm:space-y-4">
+                  <div className="p-3 sm:p-4 rounded-xl border border-gray-200 bg-gray-50">
+                    <div className="flex items-center justify-between gap-3 mb-2">
+                      <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                        Use a saved address
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => navigate("/buyer/addresses")}
+                        className="text-xs sm:text-sm text-[#5e7142] underline underline-offset-2"
+                      >
+                        Manage
+                      </button>
+                    </div>
+
+                    {savedAddresses.length === 0 ? (
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        No saved addresses yet.
+                      </p>
+                    ) : (
+                      <select
+                        value={selectedAddressIndex}
+                        onChange={(e) => setSelectedAddressIndex(e.target.value)}
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white"
+                      >
+                        {savedAddresses.map((addr, idx) => (
+                          <option key={`${addr.street}-${idx}`} value={String(idx)}>
+                            {addr.street}, {addr.city}, {addr.province}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+
                   <div>
                     <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                       Street Address
