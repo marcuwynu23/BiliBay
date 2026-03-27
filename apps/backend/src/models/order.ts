@@ -51,6 +51,10 @@ const ShippingAddressSchema = new Schema(
     province: {type: String, required: true},
     zipCode: {type: String, required: true},
     country: {type: String, default: "Philippines"},
+    location: {
+      lat: {type: Number},
+      lng: {type: Number},
+    },
   },
   {_id: false}
 );
