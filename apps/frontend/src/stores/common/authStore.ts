@@ -5,7 +5,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "buyer" | "seller" | "admin";
+  role: "buyer" | "seller" | "courier" | "deliverer" | "admin";
   emailVerified: boolean;
 }
 
