@@ -47,7 +47,7 @@ export const Dialog = ({
 
   return (
     <div
-      className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
+      className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -55,14 +55,9 @@ export const Dialog = ({
       }}
     >
       <div
-        className={`bg-white rounded-t-3xl sm:rounded-2xl sm:rounded-b-2xl ${maxWidth} w-full max-h-[95vh] sm:h-auto sm:max-h-[calc(100vh-2rem)] shadow-2xl relative animate-slide-up sm:animate-none flex flex-col overflow-hidden`}
+        className={`bg-white rounded-2xl ${maxWidth} w-full max-h-[calc(100vh-2rem)] shadow-2xl relative flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Mobile drag handle */}
-        <div className="sm:hidden flex justify-center pt-2 pb-2 flex-shrink-0">
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-        </div>
-
         {/* Fixed Header */}
         <div className="flex justify-between items-center px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b border-gray-100 flex-shrink-0">
           <div className="flex-1 min-w-0 pr-2">

@@ -98,14 +98,14 @@ export default function SellerOrders() {
     const handlerId = selectedHandlerByOrder[orderId];
     if (!handlerId) return;
     confirm({
-      title: "Assign Delivery Handler",
-      message: `Assign this order${orderNumber ? ` (#${orderNumber})` : ""} to selected handler?`,
+      title: "Assign Shipping Courier",
+      message: `Ship this order${orderNumber ? ` (#${orderNumber})` : ""} by assigning the selected shipping courier?`,
       onConfirm: async () => {
         try {
           await api.put(`/seller/orders/${orderId}/assign-handler`, {handlerId}, token);
           await alert({
             title: "Success",
-            message: "Delivery handler assigned successfully.",
+            message: "Shipping courier assigned successfully.",
             type: "success",
           });
           fetchOrders();
@@ -141,7 +141,7 @@ export default function SellerOrders() {
     }
     if (order.status === "processing") {
       if (!order.assignedHandler) {
-        return "Order is being prepared. Assign a courier or deliverer to continue shipping.";
+        return "Order is being prepared. Assign a courier to continue shipping.";
       }
       return `Order is assigned to ${order.assignedHandler.firstName} ${order.assignedHandler.lastName} (${order.assignedHandler.role}) for shipping.`;
     }
@@ -404,7 +404,7 @@ export default function SellerOrders() {
                     <div className="pt-3 border-t border-gray-200">
                       {order.status === "processing" && (
                         <div className="mb-3">
-                          <p className="text-xs text-gray-600 mb-1.5">Delivery Handler</p>
+                          <p className="text-xs text-gray-600 mb-1.5">Shipping Courier</p>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <select
                               value={selectedHandlerByOrder[order._id] || ""}
@@ -416,7 +416,7 @@ export default function SellerOrders() {
                               }
                               className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
                             >
-                              <option value="">Select courier/deliverer</option>
+                              <option value="">Select shipping courier</option>
                               {handlers.map((handler) => (
                                 <option key={handler._id} value={handler._id}>
                                   {handler.firstName} {handler.lastName} ({handler.role})

@@ -1,13 +1,6 @@
 import {useEffect, ReactNode} from "react";
 // @ts-ignore - react-dom types may not be available in all environments
 import {createPortal} from "react-dom";
-import {
-  XMarkIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  InformationCircleIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
 
 export interface PromptProps {
   isOpen: boolean;
@@ -118,17 +111,11 @@ export const Prompt = ({
       }}
     >
       <div
-        className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl relative overflow-hidden mx-4 z-[999999]"
+        className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl relative overflow-hidden z-[999999]"
         onClick={(e) => e.stopPropagation()}
       >
-
-        <div className="flex justify-between items-start mb-4 sm:mb-4 pt-2">
-          <div className="flex items-start gap-2 sm:gap-3 flex-1">
-            <div className="flex-1">
-              <h2 className={`text-center text-xl sm:text-2xl font-bold ${getTypeStyles()}`}>{title}</h2>
-            </div>
-          </div>
-         
+        <div className="mb-4 pt-1">
+          <h2 className={`text-center text-xl sm:text-2xl font-bold ${getTypeStyles()}`}>{title}</h2>
         </div>
 
         {message && (
