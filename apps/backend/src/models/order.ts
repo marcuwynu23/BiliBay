@@ -25,6 +25,12 @@ export interface IOrder extends Document {
   paymentReference?: string; // For bank transfer
   status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   trackingNumber?: string;
+  assignedHandler?: Types.ObjectId;
+  assignedHandlerRole?: "courier" | "deliverer";
+  shippedAt?: Date;
+  deliveredAt?: Date;
+  deliveryEvidenceImage?: string;
+  receivedAt?: Date;
   cancelledAt?: Date;
   cancelledReason?: string;
   createdAt: Date;
@@ -85,6 +91,12 @@ const OrderSchema: Schema = new Schema(
       default: "pending",
     },
     trackingNumber: {type: String},
+    assignedHandler: {type: Schema.Types.ObjectId, ref: "User"},
+    assignedHandlerRole: {type: String, enum: ["courier", "deliverer"]},
+    shippedAt: {type: Date},
+    deliveredAt: {type: Date},
+    deliveryEvidenceImage: {type: String},
+    receivedAt: {type: Date},
     cancelledAt: {type: Date},
     cancelledReason: {type: String},
   },
