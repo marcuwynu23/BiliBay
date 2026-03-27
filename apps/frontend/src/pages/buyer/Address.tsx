@@ -171,6 +171,48 @@ export default function Address() {
     run();
   }, [token]);
 
+  const persistAddresses = async (nextAddresses: AddressItem[]) => {
+    if (!token) return;
+    setSaving(true);
+    try {
+      const cleaned = nextAddresses
+        .map((a) => normalizeAddress(a))
+        .filter((a) => a.street && a.city && a.province && a.zipCode);
+
+      const response = await api.put(
+        "/buyer/users/me",
+        {
+          shippingAddresses: cleaned,
+          defaultShippingAddress: cleaned[0],
+        },
+        token,
+      );
+
+      const returned = Array.isArray(response?.shippingAddresses)
+        ? response.shippingAddresses.map((a: Partial<AddressItem>) =>
+            normalizeAddress(a),
+          )
+        : cleaned;
+
+      setAddresses(returned);
+      await alert({
+        title: "Saved",
+        message: "Address saved successfully.",
+        type: "success",
+      });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to save address";
+      await alert({
+        title: "Error",
+        message,
+        type: "error",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const canAdd = useMemo(() => {
     return (
       form.street.trim() &&
@@ -180,11 +222,13 @@ export default function Address() {
     );
   }, [form]);
 
-  const addAddress = () => {
+  const addAddress = async () => {
     if (!canAdd) return;
     const next = normalizeAddress(form);
-    setAddresses((prev) => [...prev, next]);
+    const updated = [...addresses, next];
+    setAddresses(updated);
     setForm(emptyAddress);
+    await persistAddresses(updated);
   };
 
   const handleUseMyLocation = async () => {
@@ -218,46 +262,10 @@ export default function Address() {
     );
   };
 
-  const removeAddress = (index: number) => {
-    setAddresses((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const saveAddresses = async () => {
-    if (!token) return;
-    setSaving(true);
-    try {
-      const cleaned = addresses
-        .map((a) => normalizeAddress(a))
-        .filter((a) => a.street && a.city && a.province && a.zipCode);
-      const response = await api.put(
-        "/buyer/users/me",
-        {
-          shippingAddresses: cleaned,
-          defaultShippingAddress: cleaned[0],
-        },
-        token,
-      );
-      const returned = Array.isArray(response?.shippingAddresses)
-        ? response.shippingAddresses.map((a: Partial<AddressItem>) =>
-            normalizeAddress(a),
-          )
-        : cleaned;
-      setAddresses(returned);
-      await alert({
-        title: "Saved",
-        message: "Your addresses were updated.",
-        type: "success",
-      });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to save addresses";
-      await alert({
-        title: "Error",
-        message,
-        type: "error",
-      });
-    } finally {
-      setSaving(false);
-    }
+  const removeAddress = async (index: number) => {
+    const updated = addresses.filter((_, i) => i !== index);
+    setAddresses(updated);
+    await persistAddresses(updated);
   };
 
   return (
@@ -386,14 +394,9 @@ export default function Address() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-lg text-gray-900">Saved Addresses</h2>
-                <button
-                  type="button"
-                  onClick={saveAddresses}
-                  disabled={saving}
-                  className="px-4 py-2 rounded-lg bg-[#5e7142] text-white text-sm disabled:opacity-60"
-                >
-                  {saving ? "Saving..." : "Save All"}
-                </button>
+                {saving && (
+                  <span className="text-xs text-gray-600">Saving...</span>
+                )}
               </div>
 
               <div className="space-y-3">
