@@ -29,7 +29,7 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "buyer" as "buyer" | "seller",
+    role: "buyer" as "buyer" | "seller" | "courier" | "deliverer",
     phone: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -125,6 +125,10 @@ export default function Register() {
               ? "/admin/dashboard"
               : currentUser.role === "seller"
               ? "/seller/dashboard"
+              : currentUser.role === "courier"
+              ? "/courier/dashboard"
+              : currentUser.role === "deliverer"
+              ? "/deliverer/dashboard"
               : "/buyer/dashboard"
           );
         }
@@ -415,6 +419,8 @@ export default function Register() {
                       options={[
                         {value: "buyer", label: "Buyer"},
                         {value: "seller", label: "Seller"},
+                        {value: "courier", label: "Courier"},
+                        {value: "deliverer", label: "Deliverer"},
                       ]}
                       leftIcon={<UserGroupIcon className="h-5 w-5 text-white/70" />}
                     />
