@@ -21,7 +21,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   phone?: string;
-  role: "buyer" | "seller" | "admin";
+  role: "buyer" | "seller" | "courier" | "deliverer" | "admin";
   emailVerified: boolean;
   emailVerificationToken?: string;
   passwordResetToken?: string;
@@ -59,7 +59,7 @@ const UserSchema: Schema = new Schema(
     phone: {type: String},
     role: {
       type: String,
-      enum: ["buyer", "seller", "admin"],
+      enum: ["buyer", "seller", "courier", "deliverer", "admin"],
       default: "buyer",
     },
     emailVerified: {type: Boolean, default: false},
