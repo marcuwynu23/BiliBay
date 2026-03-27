@@ -65,6 +65,30 @@ export default function Orders() {
     });
   };
 
+  const markAsReceived = (orderId: string, orderNumber: string) => {
+    confirm({
+      title: "Confirm Received",
+      message: `Have you received Order #${orderNumber}?`,
+      onConfirm: async () => {
+        try {
+          await api.post(`/buyer/orders/${orderId}/received`, {}, token);
+          fetchOrders();
+          await alert({
+            title: "Success",
+            message: "Order marked as delivered.",
+            type: "success",
+          });
+        } catch (err: any) {
+          await alert({
+            title: "Error",
+            message: err.message || "Failed to mark order as received",
+            type: "error",
+          });
+        }
+      },
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "delivered":
@@ -78,6 +102,45 @@ export default function Orders() {
       default:
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
     }
+  };
+
+  const getStatusDescription = (order: {
+    status: string;
+    assignedHandlerRole?: string;
+    assignedHandler?: unknown;
+    receivedAt?: string;
+  }) => {
+    if (order.status === "pending") {
+      return "Your order has been placed and is waiting for seller confirmation.";
+    }
+
+    if (order.status === "shipped") {
+      if (order.assignedHandlerRole === "deliverer") {
+        return "Your order is at the local branch and is out for final area delivery.";
+      }
+      return "Your order is in transit with the shipping team.";
+    }
+
+    if (order.status === "processing") {
+      if (!order.assignedHandler) {
+        return "The seller is preparing your order and has not assigned a courier yet.";
+      }
+      const roleLabel =
+        order.assignedHandlerRole === "deliverer" ? "deliverer" : "courier";
+      return `Your order is being processed and has been assigned to a ${roleLabel} for shipment.`;
+    }
+
+    if (order.status === "delivered") {
+      return order.receivedAt
+        ? "Delivery completed and confirmed. Thank you for your purchase."
+        : "Marked delivered. Please confirm once you receive your order.";
+    }
+
+    if (order.status === "cancelled") {
+      return "This order has been cancelled.";
+    }
+
+    return "Your order status has been updated.";
   };
 
   // Filter orders based on active tab
@@ -215,6 +278,13 @@ export default function Orders() {
                       </span>
                     </div>
                   </div>
+                  {getStatusDescription(order) && (
+                    <div className="mb-4 -mt-1">
+                      <p className="text-xs sm:text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                        {getStatusDescription(order)}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Order Items */}
                   <div className="border-t border-gray-100 pt-4 sm:pt-6">
@@ -264,6 +334,30 @@ export default function Orders() {
                         <XCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                         Cancel Order
                       </button>
+                    </div>
+                  )}
+                  {order.status === "delivered" && !order.receivedAt && (
+                    <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
+                      <button
+                        onClick={() => markAsReceived(order._id, order.orderNumber)}
+                        className="flex items-center justify-center gap-2 bg-[#98b964] text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-[#5e7142] transition-all duration-200 font-medium text-sm sm:text-base w-full sm:w-auto"
+                      >
+                        Confirm Received
+                      </button>
+                    </div>
+                  )}
+                  {order.receivedAt && (
+                    <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Received on{" "}
+                        <span className="font-semibold text-gray-900">
+                          {new Date(order.receivedAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </p>
                     </div>
                   )}
                 </div>
