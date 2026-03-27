@@ -20,6 +20,10 @@ import Address from "./pages/buyer/Address";
 import SellerDashboard from "./pages/seller/Dashboard";
 import SellerProducts from "./pages/seller/Products";
 import SellerOrders from "./pages/seller/Orders";
+import CourierDashboard from "./pages/courier/Dashboard";
+import DelivererDashboard from "./pages/deliverer/Dashboard";
+import CourierOrders from "./pages/courier/Orders";
+import DelivererOrders from "./pages/deliverer/Orders";
 import AdminDashboard from "./pages/seller/Dashboard"; // Will create separate admin pages
 
 // Protected Route Component
@@ -44,7 +48,13 @@ function ProtectedRoute({
 }
 
 function App() {
-  const {checkAuth, token} = useAuthStore();
+  const {checkAuth, user, token} = useAuthStore();
+  const isScopedLogisticsUser =
+    !!user &&
+    !!token &&
+    (user.role === "courier" || user.role === "deliverer");
+  const logisticsDashboardPath =
+    user?.role === "courier" ? "/courier/dashboard" : "/deliverer/dashboard";
 
   // Only check auth on mount if token exists from localStorage
   // This prevents calling checkAuth immediately after login/register
@@ -96,13 +106,40 @@ function App() {
       <PromptProvider />
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={
+            isScopedLogisticsUser ? (
+              <Navigate to={logisticsDashboardPath} replace />
+            ) : (
+              <Home />
+            )
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route
+          path="/products"
+          element={
+            isScopedLogisticsUser ? (
+              <Navigate to={logisticsDashboardPath} replace />
+            ) : (
+              <Products />
+            )
+          }
+        />
+        <Route
+          path="/product/:id"
+          element={
+            isScopedLogisticsUser ? (
+              <Navigate to={logisticsDashboardPath} replace />
+            ) : (
+              <ProductDetail />
+            )
+          }
+        />
 
         {/* Buyer Routes */}
         <Route
@@ -176,6 +213,42 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["seller"]}>
               <SellerOrders />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Courier Routes */}
+        <Route
+          path="/courier/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["courier"]}>
+              <CourierDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/courier/orders"
+          element={
+            <ProtectedRoute allowedRoles={["courier"]}>
+              <CourierOrders />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Deliverer Routes */}
+        <Route
+          path="/deliverer/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["deliverer"]}>
+              <DelivererDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/deliverer/orders"
+          element={
+            <ProtectedRoute allowedRoles={["deliverer"]}>
+              <DelivererOrders />
             </ProtectedRoute>
           }
         />

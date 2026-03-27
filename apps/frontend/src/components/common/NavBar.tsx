@@ -18,6 +18,8 @@ export const NavBar = () => {
   const location = useLocation();
   const {confirm} = usePromptStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isScopedLogisticsUser =
+    user?.role === "courier" || user?.role === "deliverer";
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -64,6 +66,10 @@ export const NavBar = () => {
         return "/buyer/dashboard";
       case "seller":
         return "/seller/dashboard";
+      case "courier":
+        return "/courier/dashboard";
+      case "deliverer":
+        return "/deliverer/dashboard";
       case "admin":
         return "/admin/dashboard";
       default:
@@ -135,20 +141,24 @@ export const NavBar = () => {
               {user && token ? (
                 <>
                   {/* Main Navigation */}
-                  <Link
-                    to="/"
-                    className="flex items-center space-x-1.5 px-3 py-2 text-sm text-gray-600 hover:text-[#98b964] rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium"
-                  >
-                    <HomeIcon className="h-4 w-4" />
-                    <span>Home</span>
-                  </Link>
-                  <Link
-                    to="/products"
-                    className="flex items-center space-x-1.5 px-3 py-2 text-sm text-gray-600 hover:text-[#98b964] rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium"
-                  >
-                    <ShoppingBagIcon className="h-4 w-4" />
-                    <span>Products</span>
-                  </Link>
+                  {!isScopedLogisticsUser && (
+                    <>
+                      <Link
+                        to="/"
+                        className="flex items-center space-x-1.5 px-3 py-2 text-sm text-gray-600 hover:text-[#98b964] rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium"
+                      >
+                        <HomeIcon className="h-4 w-4" />
+                        <span>Home</span>
+                      </Link>
+                      <Link
+                        to="/products"
+                        className="flex items-center space-x-1.5 px-3 py-2 text-sm text-gray-600 hover:text-[#98b964] rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium"
+                      >
+                        <ShoppingBagIcon className="h-4 w-4" />
+                        <span>Products</span>
+                      </Link>
+                    </>
+                  )}
                   {user && user.role === "buyer" && (
                     <Link
                       to="/buyer/cart"
@@ -298,28 +308,47 @@ export const NavBar = () => {
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 pb-safe shadow-lg">
         <div className="flex items-center justify-around h-9">
           {/* Home Button */}
-          <Link
-            to="/"
-            className={`flex flex-col items-center justify-center flex-1 h-full min-h-[64px] transition-colors touch-manipulation ${
-              location.pathname === "/"
-                ? "text-[#98b964]"
-                : "text-gray-600 hover:text-[#98b964]"
-            }`}
-          >
-            <HomeIcon className="h-6 w-6" />
-          </Link>
+          {isScopedLogisticsUser ? (
+            <Link
+              to={getDashboardLink() || "/"}
+              className={`flex flex-col items-center justify-center flex-1 h-full min-h-[64px] transition-colors touch-manipulation ${
+                location.pathname === getDashboardLink()
+                  ? "text-[#98b964]"
+                  : "text-gray-600 hover:text-[#98b964]"
+              }`}
+            >
+              <UserIcon className="h-6 w-6" />
+            </Link>
+          ) : (
+            <Link
+              to="/"
+              className={`flex flex-col items-center justify-center flex-1 h-full min-h-[64px] transition-colors touch-manipulation ${
+                location.pathname === "/"
+                  ? "text-[#98b964]"
+                  : "text-gray-600 hover:text-[#98b964]"
+              }`}
+            >
+              <HomeIcon className="h-6 w-6" />
+            </Link>
+          )}
 
           {/* Products Button */}
-          <Link
-            to="/products"
-            className={`flex flex-col items-center justify-center flex-1 h-full min-h-[64px] transition-colors touch-manipulation ${
-              location.pathname === "/products"
-                ? "text-[#98b964]"
-                : "text-gray-600 hover:text-[#98b964]"
-            }`}
-          >
-            <ShoppingBagIcon className="h-6 w-6" />
-          </Link>
+          {isScopedLogisticsUser ? (
+            <div className="flex flex-col items-center justify-center flex-1 h-full min-h-[64px] text-gray-300 cursor-not-allowed">
+              <ShoppingBagIcon className="h-6 w-6" />
+            </div>
+          ) : (
+            <Link
+              to="/products"
+              className={`flex flex-col items-center justify-center flex-1 h-full min-h-[64px] transition-colors touch-manipulation ${
+                location.pathname === "/products"
+                  ? "text-[#98b964]"
+                  : "text-gray-600 hover:text-[#98b964]"
+              }`}
+            >
+              <ShoppingBagIcon className="h-6 w-6" />
+            </Link>
+          )}
 
           {/* Third Button - Cart for buyers, Orders for sellers */}
           {user && user.role === "buyer" ? (
@@ -338,6 +367,28 @@ export const NavBar = () => {
               to="/seller/orders"
               className={`flex flex-col items-center justify-center flex-1 h-full min-h-[64px] transition-colors touch-manipulation ${
                 location.pathname === "/seller/orders"
+                  ? "text-[#98b964]"
+                  : "text-gray-600 hover:text-[#98b964]"
+              }`}
+            >
+              <QueueListIcon className="h-6 w-6" />
+            </Link>
+          ) : user && user.role === "courier" ? (
+            <Link
+              to="/courier/orders"
+              className={`flex flex-col items-center justify-center flex-1 h-full min-h-[64px] transition-colors touch-manipulation ${
+                location.pathname === "/courier/orders"
+                  ? "text-[#98b964]"
+                  : "text-gray-600 hover:text-[#98b964]"
+              }`}
+            >
+              <QueueListIcon className="h-6 w-6" />
+            </Link>
+          ) : user && user.role === "deliverer" ? (
+            <Link
+              to="/deliverer/orders"
+              className={`flex flex-col items-center justify-center flex-1 h-full min-h-[64px] transition-colors touch-manipulation ${
+                location.pathname === "/deliverer/orders"
                   ? "text-[#98b964]"
                   : "text-gray-600 hover:text-[#98b964]"
               }`}
