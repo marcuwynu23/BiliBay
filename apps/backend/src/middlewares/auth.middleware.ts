@@ -6,7 +6,7 @@ import {JWT_SECRET} from "../config/jwt.config";
 
 interface IUserPayload {
   id: string;
-  role: "buyer" | "seller" | "admin";
+  role: "buyer" | "seller" | "courier" | "deliverer" | "admin";
 }
 
 declare global {

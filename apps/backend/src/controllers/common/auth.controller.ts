@@ -32,8 +32,13 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Validate role
-    if (role && !["buyer", "seller"].includes(role)) {
-      return res.status(400).json({error: "Invalid role. Must be 'buyer' or 'seller'"});
+    if (role && !["buyer", "seller", "courier", "deliverer"].includes(role)) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Invalid role. Must be 'buyer', 'seller', 'courier', or 'deliverer'",
+        });
     }
 
     // Validate birthday if provided
