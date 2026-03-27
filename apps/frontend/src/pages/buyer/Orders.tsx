@@ -1,10 +1,18 @@
-import {useState, useEffect, useMemo, useCallback} from "react";
+import {useState, useEffect, useMemo, useCallback, type ComponentType} from "react";
 import {Page} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
 import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
-import {XCircleIcon, CalendarIcon} from "@heroicons/react/24/outline";
+import {
+  XCircleIcon,
+  CalendarIcon,
+  Squares2X2Icon,
+  ClockIcon,
+  Cog6ToothIcon,
+  TruckIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/24/outline";
 import deliveriesIllustration from "~/assets/illustrations/deliveries.svg";
 
 type OrderStatus =
@@ -34,6 +42,13 @@ type BuyerOrder = {
   assignedHandlerRole?: string;
   assignedHandler?: unknown;
   items?: OrderItem[];
+};
+
+type BuyerTabConfig = {
+  id: OrderStatus;
+  label: string;
+  count: number;
+  icon: ComponentType<{className?: string}>;
 };
 
 export default function Orders() {
@@ -181,32 +196,37 @@ export default function Orders() {
     return orders.filter((order) => order.status === activeTab);
   }, [orders, activeTab]);
 
-  const tabs: {id: OrderStatus; label: string; count: number}[] = [
-    {id: "all", label: "All", count: orders.length},
+  const tabs: BuyerTabConfig[] = [
+    {id: "all", label: "All", count: orders.length, icon: Squares2X2Icon},
     {
       id: "pending",
       label: "Pending",
       count: orders.filter((o) => o.status === "pending").length,
+      icon: ClockIcon,
     },
     {
       id: "processing",
       label: "Processing",
       count: orders.filter((o) => o.status === "processing").length,
+      icon: Cog6ToothIcon,
     },
     {
       id: "shipped",
       label: "Shipped",
       count: orders.filter((o) => o.status === "shipped").length,
+      icon: TruckIcon,
     },
     {
       id: "delivered",
       label: "Delivered",
       count: orders.filter((o) => o.status === "delivered").length,
+      icon: CheckCircleIcon,
     },
     {
       id: "cancelled",
       label: "Cancelled",
       count: orders.filter((o) => o.status === "cancelled").length,
+      icon: XCircleIcon,
     },
   ];
 
@@ -237,32 +257,38 @@ export default function Orders() {
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
               <div className="flex overflow-x-auto scrollbar-hide">
                 <div className="flex min-w-full sm:min-w-0">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-medium transition-all duration-200 border-b-2 min-w-[120px] sm:min-w-0 ${
+                  {tabs.map((tab) => {
+                    const TabIcon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        aria-label={tab.label}
+                        title={tab.label}
+                        className={`flex-1 sm:flex-none px-3 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-medium transition-all duration-200 border-b-2 min-w-[60px] sm:min-w-0 ${
                         activeTab === tab.id
                           ? "border-[#98b964] text-[#98b964] bg-[#98b964]/5"
                           : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                      }`}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        <span>{tab.label}</span>
-                        {tab.count > 0 && (
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          <TabIcon className="h-4 w-4 sm:h-4.5 sm:w-4.5 flex-shrink-0" />
+                          <span className="hidden sm:inline">{tab.label}</span>
+                          {tab.count > 0 && (
+                            <span
+                              className={`hidden sm:inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${
                               activeTab === tab.id
                                 ? "bg-[#98b964] text-white"
                                 : "bg-gray-200 text-gray-700"
-                            }`}
-                          >
-                            {tab.count}
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  ))}
+                              }`}
+                            >
+                              {tab.count}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

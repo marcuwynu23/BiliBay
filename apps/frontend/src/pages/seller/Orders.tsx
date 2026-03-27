@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, type ComponentType} from "react";
 import {Page, Select} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
@@ -10,8 +10,21 @@ import {
   EnvelopeIcon,
   MapPinIcon,
   PhoneIcon,
+  Squares2X2Icon,
+  ClockIcon,
+  Cog6ToothIcon,
+  TruckIcon,
+  CheckCircleIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 import deliveriesIllustration from "~/assets/illustrations/deliveries.svg";
+
+type SellerTabConfig = {
+  value: string;
+  label: string;
+  count: number;
+  icon: ComponentType<{className?: string}>;
+};
 
 export default function SellerOrders() {
   const {token} = useAuthStore();
@@ -172,19 +185,19 @@ export default function SellerOrders() {
     cancelled: orders.filter(o => o.status === "cancelled").length,
   };
 
-  const statusTabs = [
-    { value: "all", label: "All", count: statusCounts.all },
-    { value: "pending", label: "Pending", count: statusCounts.pending },
-    { value: "processing", label: "Processing", count: statusCounts.processing },
-    { value: "shipped", label: "Shipped", count: statusCounts.shipped },
-    { value: "delivered", label: "Delivered", count: statusCounts.delivered },
-    { value: "cancelled", label: "Cancelled", count: statusCounts.cancelled },
+  const statusTabs: SellerTabConfig[] = [
+    { value: "all", label: "All", count: statusCounts.all, icon: Squares2X2Icon },
+    { value: "pending", label: "Pending", count: statusCounts.pending, icon: ClockIcon },
+    { value: "processing", label: "Processing", count: statusCounts.processing, icon: Cog6ToothIcon },
+    { value: "shipped", label: "Shipped", count: statusCounts.shipped, icon: TruckIcon },
+    { value: "delivered", label: "Delivered", count: statusCounts.delivered, icon: CheckCircleIcon },
+    { value: "cancelled", label: "Cancelled", count: statusCounts.cancelled, icon: XCircleIcon },
   ];
 
   return (
     <Page className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar />
-      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 md:py-12 pb-safe-nav">
+      <div className="w-full px-4 sm:px-6 py-6 sm:py-12 pb-safe-nav">
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
@@ -211,32 +224,40 @@ export default function SellerOrders() {
         ) : (
           <>
             {/* Status Filter Tabs */}
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 mb-4 sm:mb-6 p-2">
-              <div className="flex gap-1 sm:gap-2 overflow-x-auto -mx-2 px-2 scrollbar-hide">
-                {statusTabs.map((tab) => (
-                  <button
-                    key={tab.value}
-                    onClick={() => setActiveStatusTab(tab.value)}
-                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium transition-all duration-200 text-xs sm:text-sm whitespace-nowrap touch-manipulation ${
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+              <div className="flex overflow-x-auto scrollbar-hide">
+                <div className="flex min-w-full sm:min-w-0">
+                {statusTabs.map((tab) => {
+                  const TabIcon = tab.icon;
+                  return (
+                    <button
+                      key={tab.value}
+                      onClick={() => setActiveStatusTab(tab.value)}
+                      aria-label={tab.label}
+                      title={tab.label}
+                      className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-3 sm:py-4 font-medium transition-all duration-200 text-xs sm:text-sm border-b-2 min-w-[60px] sm:min-w-0 whitespace-nowrap touch-manipulation ${
                       activeStatusTab === tab.value
-                        ? "bg-[#98b964] text-white shadow-sm"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    {tab.count > 0 && (
-                      <span
-                        className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${
+                        ? "border-[#98b964] text-[#98b964] bg-[#98b964]/5"
+                        : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      }`}
+                    >
+                      <TabIcon className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden sm:inline">{tab.label}</span>
+                      {tab.count > 0 && (
+                        <span
+                          className={`hidden sm:inline-flex px-1.5 py-0.5 rounded-full text-xs font-semibold ${
                           activeStatusTab === tab.value
                             ? "bg-white/20 text-white"
                             : "bg-gray-200 text-gray-700"
-                        }`}
-                      >
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                ))}
+                          }`}
+                        >
+                          {tab.count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+                </div>
               </div>
             </div>
 
@@ -258,27 +279,26 @@ export default function SellerOrders() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-4 sm:space-y-6">
+              <div className="space-y-6">
                 {filteredOrders.map((order) => {
               return (
                 <div
                   key={order._id}
-                  className="bg-white rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100"
+                  className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
                 >
                   {/* Header with gradient accent */}
                   <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
                   
                   {/* Compact Header */}
-                  <div className="p-3 sm:p-4">
-                    <div className="flex items-center justify-between gap-3 mb-3">
-                      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                       
+                  <div className="p-4 sm:p-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+                      <div className="flex items-start gap-3 sm:gap-4">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-base sm:text-lg text-gray-900 break-words">
+                          <h3 className="font-bold text-lg sm:text-xl text-gray-900 break-words">
                             Order #{order.orderNumber}
                           </h3>
-                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                            <CalendarIcon className="h-3 w-3 flex-shrink-0" />
+                          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                            <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                             <span className="truncate">
                               {new Date(order.createdAt).toLocaleDateString("en-US", {
                                 month: "short",
@@ -289,10 +309,10 @@ export default function SellerOrders() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                        <p className="font-bold text-lg sm:text-xl text-[#98b964]">₱{order.totalAmount?.toFixed(2)}</p>
+                      <div className="flex flex-row md:flex-col md:items-end gap-2 sm:gap-3">
+                        <p className="font-bold text-xl sm:text-2xl text-[#98b964]">₱{order.totalAmount?.toFixed(2)}</p>
                         <span
-                          className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                          className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border ${getStatusColor(
                             order.status
                           )}`}
                         >
@@ -300,7 +320,7 @@ export default function SellerOrders() {
                         </span>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-600 mb-3 bg-gray-50 border border-gray-200 rounded-md px-2.5 py-1.5">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-4 -mt-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
                       {getSellerStatusDescription(order)}
                     </p>
                     {/* Customer Information */}
@@ -374,18 +394,18 @@ export default function SellerOrders() {
                     )}
 
                     {/* Items */}
-                    <div className="mb-4">
-                      <p className="text-xs font-semibold text-gray-700 mb-2">Items</p>
-                      <div className="space-y-2">
+                    <div className="mb-4 border-t border-gray-100 pt-4 sm:pt-6">
+                      <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-3 sm:mb-4">Items</p>
+                      <div className="space-y-2 sm:space-y-3">
                         {order.items?.map((item: any, idx: number) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-2 sm:gap-3 p-2 rounded-lg bg-gray-50"
+                            className="flex items-start sm:items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-lg bg-gray-50"
                           >
                             <img
                               src={item.product?.images?.[0] || "/placeholder.png"}
                               alt={item.product?.title}
-                              className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
+                              className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
                             />
                             <div className="flex-1 min-w-0">
                               <p className="font-semibold text-xs sm:text-sm text-gray-900 break-words line-clamp-1">
@@ -401,7 +421,7 @@ export default function SellerOrders() {
                     </div>
 
                     {/* Bottom Actions */}
-                    <div className="pt-3 border-t border-gray-200">
+                    <div className="pt-4 sm:pt-6 border-t border-gray-100">
                       {order.status === "processing" && (
                         <div className="mb-3">
                           <p className="text-xs text-gray-600 mb-1.5">Shipping Courier</p>
@@ -433,7 +453,7 @@ export default function SellerOrders() {
                               type="button"
                               onClick={() => assignHandler(order._id, order.orderNumber)}
                               disabled={!selectedHandlerByOrder[order._id]}
-                              className="px-3 py-2 text-sm rounded-lg bg-[#98b964] text-white disabled:opacity-60"
+                              className="w-full sm:w-auto px-4 py-2.5 text-sm rounded-lg bg-[#98b964] text-white disabled:opacity-60"
                             >
                               Ship
                             </button>
