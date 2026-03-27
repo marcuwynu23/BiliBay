@@ -199,7 +199,7 @@ export const getDeliveryHandlers = async (req: Request, res: Response) => {
     }
 
     const handlers = await User.find({
-      role: {$in: ["courier", "deliverer"]},
+      role: "courier",
       isActive: true,
     }).select("firstName middleName lastName email role");
 
@@ -238,8 +238,8 @@ export const assignOrderHandler = async (req: Request, res: Response) => {
     }
 
     const handler = await User.findById(handlerId);
-    if (!handler || !["courier", "deliverer"].includes(handler.role)) {
-      return res.status(400).json({error: "Invalid delivery handler"});
+    if (!handler || handler.role !== "courier") {
+      return res.status(400).json({error: "Invalid courier handler"});
     }
 
     order.assignedHandler = handler._id as any;

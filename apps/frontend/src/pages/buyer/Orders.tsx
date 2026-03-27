@@ -1,4 +1,4 @@
-import {useState, useEffect, useMemo} from "react";
+import {useState, useEffect, useMemo, useCallback} from "react";
 import {Page} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
@@ -13,34 +13,55 @@ import deliveriesIllustration from "~/assets/illustrations/deliveries.svg";
 
 type OrderStatus = "all" | "pending" | "processing" | "shipped" | "delivered" | "cancelled";
 
+type OrderItem = {
+  quantity: number;
+  price: number;
+  product?: {
+    title?: string;
+    images?: string[];
+  };
+};
+
+type BuyerOrder = {
+  _id: string;
+  orderNumber: string;
+  createdAt: string;
+  status: Exclude<OrderStatus, "all">;
+  totalAmount: number;
+  receivedAt?: string;
+  assignedHandlerRole?: string;
+  assignedHandler?: unknown;
+  items?: OrderItem[];
+};
+
 export default function Orders() {
   const {token} = useAuthStore();
   const {alert, confirm} = usePromptStore();
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<BuyerOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<OrderStatus>("all");
 
-  useEffect(() => {
-    if (token) {
-      fetchOrders();
-    }
-  }, [token]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const data = await api.get("/buyer/orders", token);
-      setOrders(data);
+      setOrders(data as BuyerOrder[]);
     } catch (err) {
       console.error("Failed to fetch orders:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchOrders();
+    }
+  }, [token, fetchOrders]);
 
   const cancelOrder = (orderId: string, orderNumber: string) => {
     confirm({
       title: "Cancel Order",
-      message: `Are you sure you want to cancel Order #${orderNumber}? This action cannot be undone.`,
+      message: `Are you sure you want to cancel Order #${orderNumber}? This cannot be undone once confirmed.`,
       onConfirm: async () => {
         try {
           await api.post(
@@ -51,13 +72,15 @@ export default function Orders() {
           fetchOrders();
           await alert({
             title: "Success",
-            message: "Order cancelled successfully",
+            message: "Your order has been cancelled successfully.",
             type: "success",
           });
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const errorMessage =
+            err instanceof Error ? err.message : "Failed to cancel order";
           await alert({
             title: "Error",
-            message: err.message || "Failed to cancel order",
+            message: errorMessage,
             type: "error",
           });
         }
@@ -68,20 +91,22 @@ export default function Orders() {
   const markAsReceived = (orderId: string, orderNumber: string) => {
     confirm({
       title: "Confirm Received",
-      message: `Have you received Order #${orderNumber}?`,
+      message: `Please confirm that you have received Order #${orderNumber}.`,
       onConfirm: async () => {
         try {
           await api.post(`/buyer/orders/${orderId}/received`, {}, token);
           fetchOrders();
           await alert({
             title: "Success",
-            message: "Order marked as delivered.",
+            message: "Thanks for confirming. This order is now marked as received.",
             type: "success",
           });
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const errorMessage =
+            err instanceof Error ? err.message : "Failed to mark order as received";
           await alert({
             title: "Error",
-            message: err.message || "Failed to mark order as received",
+            message: errorMessage,
             type: "error",
           });
         }
@@ -111,33 +136,33 @@ export default function Orders() {
     receivedAt?: string;
   }) => {
     if (order.status === "pending") {
-      return "Your order has been placed and is waiting for seller confirmation.";
+      return "Order placed successfully. The seller will review and confirm it shortly.";
     }
 
     if (order.status === "shipped") {
       if (order.assignedHandlerRole === "deliverer") {
-        return "Your order is at the local branch and is out for final area delivery.";
+        return "Your order has reached the local branch and is now with your local deliverer for final delivery.";
       }
-      return "Your order is in transit with the shipping team.";
+      return "Your order is currently in transit with the shipping courier.";
     }
 
     if (order.status === "processing") {
       if (!order.assignedHandler) {
-        return "The seller is preparing your order and has not assigned a courier yet.";
+        return "The seller is currently preparing your order before handoff to a courier.";
       }
       const roleLabel =
         order.assignedHandlerRole === "deliverer" ? "deliverer" : "courier";
-      return `Your order is being processed and has been assigned to a ${roleLabel} for shipment.`;
+      return `Your order is being prepared and has been assigned to a ${roleLabel} for shipping.`;
     }
 
     if (order.status === "delivered") {
       return order.receivedAt
-        ? "Delivery completed and confirmed. Thank you for your purchase."
-        : "Marked delivered. Please confirm once you receive your order.";
+        ? "Delivery completed and confirmed. Thank you for shopping with us."
+        : "Marked as delivered. Please confirm once the package is in your hands.";
     }
 
     if (order.status === "cancelled") {
-      return "This order has been cancelled.";
+      return "This order was cancelled.";
     }
 
     return "Your order status has been updated.";
@@ -169,7 +194,7 @@ export default function Orders() {
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
             <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">My Orders</h1>
           </div>
-          <p className="text-sm sm:text-base text-gray-600">View and manage your order history</p>
+          <p className="text-sm sm:text-base text-gray-600">Track each order and stay updated on delivery progress.</p>
         </div>
 
         {loading ? (
@@ -226,8 +251,8 @@ export default function Orders() {
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-6">
                   {activeTab === "all"
-                    ? "Start shopping to see your orders here"
-                    : `You don't have any ${tabs.find((t) => t.id === activeTab)?.label.toLowerCase()} orders at the moment`}
+                    ? "You have no orders yet. Start shopping to place your first order."
+                    : `No ${tabs.find((t) => t.id === activeTab)?.label.toLowerCase()} orders found right now.`}
                 </p>
               </div>
             ) : (
@@ -292,7 +317,7 @@ export default function Orders() {
                       Order Items
                     </h4>
                     <div className="space-y-2 sm:space-y-3">
-                      {order.items?.map((item: any, idx: number) => (
+                      {order.items?.map((item: OrderItem, idx: number) => (
                         <div
                           key={idx}
                           className="flex items-start sm:items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
@@ -332,7 +357,7 @@ export default function Orders() {
                         className="flex items-center justify-center gap-2 border border-[#98b964] text-[#98b964] px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-[#98b964] hover:text-white transition-all duration-200 font-medium text-sm sm:text-base w-full sm:w-auto"
                       >
                         <XCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                        Cancel Order
+                        Cancel This Order
                       </button>
                     </div>
                   )}
@@ -349,7 +374,7 @@ export default function Orders() {
                   {order.receivedAt && (
                     <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
                       <p className="text-xs sm:text-sm text-gray-600">
-                        Received on{" "}
+                        Confirmed received on{" "}
                         <span className="font-semibold text-gray-900">
                           {new Date(order.receivedAt).toLocaleDateString("en-US", {
                             year: "numeric",
