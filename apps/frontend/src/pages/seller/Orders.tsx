@@ -23,10 +23,13 @@ export default function SellerOrders() {
   const [activeStatusTab, setActiveStatusTab] = useState<string>("all");
   const [expandedAccordions, setExpandedAccordions] = useState<Record<string, boolean>>({});
   const [activeTabs, setActiveTabs] = useState<Record<string, string>>({});
+  const [handlers, setHandlers] = useState<any[]>([]);
+  const [selectedHandlerByOrder, setSelectedHandlerByOrder] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (token) {
       fetchOrders();
+      fetchHandlers();
     }
   }, [token]);
 
@@ -34,6 +37,15 @@ export default function SellerOrders() {
     try {
       const data = await api.get("/seller/orders", token);
       setOrders(data);
+      setSelectedHandlerByOrder((prev) => {
+        const next = {...prev};
+        data.forEach((order: any) => {
+          if (!next[order._id] && order.assignedHandler?._id) {
+            next[order._id] = order.assignedHandler._id;
+          }
+        });
+        return next;
+      });
     } catch (err) {
       console.error("Failed to fetch orders:", err);
     } finally {
@@ -41,11 +53,18 @@ export default function SellerOrders() {
     }
   };
 
+  const fetchHandlers = async () => {
+    try {
+      const data = await api.get("/seller/orders/handlers", token);
+      setHandlers(data);
+    } catch (err) {
+      console.error("Failed to fetch handlers:", err);
+    }
+  };
+
   const updateOrderStatus = (orderId: string, status: string, trackingNumber?: string, orderNumber?: string) => {
     const statusMessages: Record<string, string> = {
       processing: "mark this order as processing",
-      shipped: "mark this order as shipped",
-      delivered: "mark this order as delivered",
     };
 
     const message = statusMessages[status] 
@@ -79,6 +98,32 @@ export default function SellerOrders() {
     });
   };
 
+  const assignHandler = (orderId: string, orderNumber?: string) => {
+    const handlerId = selectedHandlerByOrder[orderId];
+    if (!handlerId) return;
+    confirm({
+      title: "Assign Delivery Handler",
+      message: `Assign this order${orderNumber ? ` (#${orderNumber})` : ""} to selected handler?`,
+      onConfirm: async () => {
+        try {
+          await api.put(`/seller/orders/${orderId}/assign-handler`, {handlerId}, token);
+          await alert({
+            title: "Success",
+            message: "Delivery handler assigned successfully.",
+            type: "success",
+          });
+          fetchOrders();
+        } catch (err: any) {
+          await alert({
+            title: "Error",
+            message: err.message || "Failed to assign delivery handler",
+            type: "error",
+          });
+        }
+      },
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "delivered":
@@ -92,6 +137,28 @@ export default function SellerOrders() {
       default:
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
     }
+  };
+
+  const getSellerStatusDescription = (order: any) => {
+    if (order.status === "pending") {
+      return "New order received. Review and move to processing when preparation starts.";
+    }
+    if (order.status === "processing") {
+      if (!order.assignedHandler) {
+        return "Order is being prepared. Assign a courier or deliverer to continue shipping.";
+      }
+      return `Order is assigned to ${order.assignedHandler.firstName} ${order.assignedHandler.lastName} (${order.assignedHandler.role}) for shipping.`;
+    }
+    if (order.status === "shipped") {
+      return "Order has been handed off and is currently in transit/local delivery.";
+    }
+    if (order.status === "delivered") {
+      return "Order delivery completed.";
+    }
+    if (order.status === "cancelled") {
+      return "Order has been cancelled.";
+    }
+    return "Order status updated.";
   };
 
   const toggleAccordion = (orderId: string) => {
@@ -256,6 +323,9 @@ export default function SellerOrders() {
                         </span>
                       </div>
                     </div>
+                    <p className="text-xs text-gray-600 mb-3 bg-gray-50 border border-gray-200 rounded-md px-2.5 py-1.5">
+                      {getSellerStatusDescription(order)}
+                    </p>
 
                     {/* Tabs */}
                     <div className="border-b border-gray-200 mb-3">
@@ -334,8 +404,6 @@ export default function SellerOrders() {
                               options={[
                                 { value: "pending", label: "Pending" },
                                 { value: "processing", label: "Processing" },
-                                { value: "shipped", label: "Shipped" },
-                                { value: "delivered", label: "Delivered" },
                               ]}
                               value={order.status}
                               onChange={(e) =>
@@ -354,22 +422,44 @@ export default function SellerOrders() {
                               optionClassName=""
                             />
                           </div>
-                          {order.status === "shipped" && (
-                            <input
-                              type="text"
-                              placeholder="Enter tracking number"
-                              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#98b964] focus:border-transparent transition-all touch-manipulation"
-                              onBlur={(e) =>
-                                e.target.value &&
-                                updateOrderStatus(
-                                  order._id,
-                                  order.status,
-                                  e.target.value,
-                                  order.orderNumber
-                                )
-                              }
-                            />
-                          )}
+                          <p className="text-xs text-gray-600">
+                            Seller cannot cancel, ship, or deliver buyer orders.
+                          </p>
+                          <div className="pt-2 border-t border-gray-200">
+                            <p className="text-xs text-gray-600 mb-1.5">Delivery Handler</p>
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <select
+                                value={selectedHandlerByOrder[order._id] || ""}
+                                onChange={(e) =>
+                                  setSelectedHandlerByOrder((prev) => ({
+                                    ...prev,
+                                    [order._id]: e.target.value,
+                                  }))
+                                }
+                                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                              >
+                                <option value="">Select courier/deliverer</option>
+                                {handlers.map((handler) => (
+                                  <option key={handler._id} value={handler._id}>
+                                    {handler.firstName} {handler.lastName} ({handler.role})
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => assignHandler(order._id, order.orderNumber)}
+                                disabled={!selectedHandlerByOrder[order._id]}
+                                className="px-3 py-2 text-sm rounded-lg bg-[#98b964] text-white disabled:opacity-60"
+                              >
+                                Assign
+                              </button>
+                            </div>
+                            {order.assignedHandler && (
+                              <p className="text-xs text-gray-700 mt-2">
+                                Assigned to: {order.assignedHandler.firstName} {order.assignedHandler.lastName} ({order.assignedHandler.role})
+                              </p>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
