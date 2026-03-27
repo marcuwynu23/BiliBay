@@ -12,7 +12,7 @@ import {
   PhoneIcon,
   Squares2X2Icon,
   ClockIcon,
-  Cog6ToothIcon,
+  ArrowPathIcon,
   TruckIcon,
   CheckCircleIcon,
   XCircleIcon,
@@ -188,7 +188,7 @@ export default function SellerOrders() {
   const statusTabs: SellerTabConfig[] = [
     { value: "all", label: "All", count: statusCounts.all, icon: Squares2X2Icon },
     { value: "pending", label: "Pending", count: statusCounts.pending, icon: ClockIcon },
-    { value: "processing", label: "Processing", count: statusCounts.processing, icon: Cog6ToothIcon },
+    { value: "processing", label: "Processing", count: statusCounts.processing, icon: ArrowPathIcon },
     { value: "shipped", label: "Shipped", count: statusCounts.shipped, icon: TruckIcon },
     { value: "delivered", label: "Delivered", count: statusCounts.delivered, icon: CheckCircleIcon },
     { value: "cancelled", label: "Cancelled", count: statusCounts.cancelled, icon: XCircleIcon },
