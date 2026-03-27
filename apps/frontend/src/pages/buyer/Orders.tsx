@@ -4,11 +4,7 @@ import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
 import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
-import {
-  ClipboardDocumentListIcon,
-  XCircleIcon,
-  CalendarIcon,
-} from "@heroicons/react/24/outline";
+import {XCircleIcon, CalendarIcon} from "@heroicons/react/24/outline";
 import deliveriesIllustration from "~/assets/illustrations/deliveries.svg";
 
 type OrderStatus =
@@ -302,9 +298,6 @@ export default function Orders() {
                     <div className="p-4 sm:p-6">
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
                         <div className="flex items-start gap-3 sm:gap-4">
-                          <div className="bg-blue-50 p-2 sm:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
-                            <ClipboardDocumentListIcon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-                          </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-1 break-words">
                               Order #{order.orderNumber}
