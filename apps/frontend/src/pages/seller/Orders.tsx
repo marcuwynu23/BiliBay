@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {Page, Select} from "@bilibay/ui";
+import {Page} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
 import {usePromptStore} from "~/stores/common/promptStore";
@@ -10,8 +10,6 @@ import {
   EnvelopeIcon,
   MapPinIcon,
   PhoneIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 import deliveriesIllustration from "~/assets/illustrations/deliveries.svg";
 
@@ -21,8 +19,6 @@ export default function SellerOrders() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeStatusTab, setActiveStatusTab] = useState<string>("all");
-  const [expandedAccordions, setExpandedAccordions] = useState<Record<string, boolean>>({});
-  const [activeTabs, setActiveTabs] = useState<Record<string, string>>({});
   const [handlers, setHandlers] = useState<any[]>([]);
   const [selectedHandlerByOrder, setSelectedHandlerByOrder] = useState<Record<string, string>>({});
 
@@ -161,22 +157,6 @@ export default function SellerOrders() {
     return "Order status updated.";
   };
 
-  const toggleAccordion = (orderId: string) => {
-    setExpandedAccordions((prev) => ({
-      ...prev,
-      [orderId]: !prev[orderId],
-    }));
-  };
-
-  const setActiveTab = (orderId: string, tab: string) => {
-    setActiveTabs((prev) => ({
-      ...prev,
-      [orderId]: tab,
-    }));
-  };
-
-  const getActiveTab = (orderId: string) => activeTabs[orderId] || "items";
-
   // Filter orders by status
   const filteredOrders = activeStatusTab === "all" 
     ? orders 
@@ -280,9 +260,6 @@ export default function SellerOrders() {
             ) : (
               <div className="space-y-4 sm:space-y-6">
                 {filteredOrders.map((order) => {
-              const isAccordionOpen = expandedAccordions[order._id] || false;
-              const activeTab = getActiveTab(order._id);
-              
               return (
                 <div
                   key={order._id}
@@ -326,214 +303,160 @@ export default function SellerOrders() {
                     <p className="text-xs text-gray-600 mb-3 bg-gray-50 border border-gray-200 rounded-md px-2.5 py-1.5">
                       {getSellerStatusDescription(order)}
                     </p>
-
-                    {/* Tabs */}
-                    <div className="border-b border-gray-200 mb-3">
-                      <div className="flex gap-1 overflow-x-auto -mb-px">
-                        <button
-                          onClick={() => setActiveTab(order._id, "items")}
-                          className={`px-3 py-2 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors touch-manipulation ${
-                            activeTab === "items"
-                              ? "border-[#98b964] text-[#98b964]"
-                              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                          }`}
-                        >
-                          Items
-                        </button>
-                        <button
-                          onClick={() => setActiveTab(order._id, "status")}
-                          className={`px-3 py-2 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors touch-manipulation ${
-                            activeTab === "status"
-                              ? "border-[#98b964] text-[#98b964]"
-                              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                          }`}
-                        >
-                          Status
-                        </button>
-                        {order.buyer && (
-                          <button
-                            onClick={() => toggleAccordion(order._id)}
-                            className={`px-3 py-2 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors touch-manipulation flex items-center gap-1 ${
-                              isAccordionOpen
-                                ? "border-[#98b964] text-[#98b964]"
-                                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                            }`}
-                          >
-                            Customer
-                            {isAccordionOpen ? (
-                              <ChevronUpIcon className="h-3 w-3" />
-                            ) : (
-                              <ChevronDownIcon className="h-3 w-3" />
-                            )}
-                          </button>
+                    {/* Customer Information */}
+                    {order.buyer && (
+                      <div className="mb-4 bg-gray-50 rounded-lg p-3 space-y-2.5">
+                        <p className="text-xs font-semibold text-gray-700">Customer Information</p>
+                        <div className="flex items-start gap-2">
+                          <UserIcon className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-600">Customer Name</p>
+                            <p className="text-sm font-semibold text-gray-900 break-words">
+                              {order.buyer.firstName} {order.buyer.middleName ? `${order.buyer.middleName} ` : ""}{order.buyer.lastName}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <EnvelopeIcon className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-600">Email</p>
+                            <p className="text-sm font-medium text-gray-900 break-all">
+                              {order.buyer.email}
+                            </p>
+                          </div>
+                        </div>
+                        {order.buyer.phone && (
+                          <div className="flex items-start gap-2">
+                            <PhoneIcon className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-600">Phone</p>
+                              <p className="text-sm font-medium text-gray-900">
+                                {order.buyer.phone}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {order.shippingAddress && (
+                          <div className="flex items-start gap-2">
+                            <MapPinIcon className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-600">Shipping Address</p>
+                              <p className="text-sm font-medium text-gray-900 break-words">
+                                {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.province} {order.shippingAddress.zipCode}, {order.shippingAddress.country || "Philippines"}
+                              </p>
+                              {order.shippingAddress.location?.lat != null &&
+                                order.shippingAddress.location?.lng != null && (
+                                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                                    <span className="text-xs text-gray-700">
+                                      <span className="font-semibold">Lat:</span>{" "}
+                                      {Number(order.shippingAddress.location.lat).toFixed(6)}
+                                    </span>
+                                    <span className="text-xs text-gray-700">
+                                      <span className="font-semibold">Lng:</span>{" "}
+                                      {Number(order.shippingAddress.location.lng).toFixed(6)}
+                                    </span>
+                                    <a
+                                      className="text-xs font-medium text-[#5e7142] hover:text-[#4a5a35] underline underline-offset-2"
+                                      href={`https://www.google.com/maps?q=${encodeURIComponent(
+                                        `${order.shippingAddress.location.lat},${order.shippingAddress.location.lng}`,
+                                      )}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      View on map
+                                    </a>
+                                  </div>
+                                )}
+                            </div>
+                          </div>
                         )}
                       </div>
-                    </div>
-
-                    {/* Tab Content */}
-                    <div className="min-h-[100px]">
-                      {activeTab === "items" && (
-                        <div className="space-y-2">
-                          {order.items?.map((item: any, idx: number) => (
-                            <div
-                              key={idx}
-                              className="flex items-center gap-2 sm:gap-3 p-2 rounded-lg bg-gray-50"
-                            >
-                              <img
-                                src={item.product?.images?.[0] || "/placeholder.png"}
-                                alt={item.product?.title}
-                                className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-xs sm:text-sm text-gray-900 break-words line-clamp-1">
-                                  {item.product?.title}
-                                </p>
-                                <p className="text-xs text-gray-600">
-                                  {item.quantity} × ₱{item.price.toFixed(2)} = ₱{(item.quantity * item.price).toFixed(2)}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {activeTab === "status" && (
-                        <div className="space-y-3">
-                          <div className="relative">
-                            <Select
-                              options={[
-                                { value: "pending", label: "Pending" },
-                                { value: "processing", label: "Processing" },
-                              ]}
-                              value={order.status}
-                              onChange={(e) =>
-                                updateOrderStatus(order._id, e.target.value, undefined, order.orderNumber)
-                              }
-                              placeholder="Select Status"
-                              backgroundColor="bg-white"
-                              borderColor="border-gray-300"
-                              textColor="text-gray-900"
-                              iconColor="text-gray-500"
-                              focusRingColor="focus:ring-[#98b964]"
-                              optionHoverColor="hover:bg-gray-100"
-                              optionSelectedColor="bg-[#98b964]/10"
-                              className="w-full"
-                              selectClassName="px-3 py-2 text-sm font-medium"
-                              optionClassName=""
-                            />
-                          </div>
-                          <p className="text-xs text-gray-600">
-                            Seller cannot cancel, ship, or deliver buyer orders.
-                          </p>
-                          <div className="pt-2 border-t border-gray-200">
-                            <p className="text-xs text-gray-600 mb-1.5">Delivery Handler</p>
-                            <div className="flex flex-col sm:flex-row gap-2">
-                              <select
-                                value={selectedHandlerByOrder[order._id] || ""}
-                                onChange={(e) =>
-                                  setSelectedHandlerByOrder((prev) => ({
-                                    ...prev,
-                                    [order._id]: e.target.value,
-                                  }))
-                                }
-                                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
-                              >
-                                <option value="">Select courier/deliverer</option>
-                                {handlers.map((handler) => (
-                                  <option key={handler._id} value={handler._id}>
-                                    {handler.firstName} {handler.lastName} ({handler.role})
-                                  </option>
-                                ))}
-                              </select>
-                              <button
-                                type="button"
-                                onClick={() => assignHandler(order._id, order.orderNumber)}
-                                disabled={!selectedHandlerByOrder[order._id]}
-                                className="px-3 py-2 text-sm rounded-lg bg-[#98b964] text-white disabled:opacity-60"
-                              >
-                                Assign
-                              </button>
-                            </div>
-                            {order.assignedHandler && (
-                              <p className="text-xs text-gray-700 mt-2">
-                                Assigned to: {order.assignedHandler.firstName} {order.assignedHandler.lastName} ({order.assignedHandler.role})
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Customer Information Accordion */}
-                    {order.buyer && isAccordionOpen && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <div className="bg-gray-50 rounded-lg p-3 space-y-2.5">
-                          <div className="flex items-start gap-2">
-                            <UserIcon className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs text-gray-600">Customer Name</p>
-                              <p className="text-sm font-semibold text-gray-900 break-words">
-                                {order.buyer.firstName} {order.buyer.middleName ? `${order.buyer.middleName} ` : ""}{order.buyer.lastName}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <EnvelopeIcon className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs text-gray-600">Email</p>
-                              <p className="text-sm font-medium text-gray-900 break-all">
-                                {order.buyer.email}
-                              </p>
-                            </div>
-                          </div>
-                          {order.buyer.phone && (
-                            <div className="flex items-start gap-2">
-                              <PhoneIcon className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs text-gray-600">Phone</p>
-                                <p className="text-sm font-medium text-gray-900">
-                                  {order.buyer.phone}
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                          {order.shippingAddress && (
-                            <div className="flex items-start gap-2">
-                              <MapPinIcon className="h-4 w-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs text-gray-600">Shipping Address</p>
-                                <p className="text-sm font-medium text-gray-900 break-words">
-                                  {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.province} {order.shippingAddress.zipCode}, {order.shippingAddress.country || "Philippines"}
-                                </p>
-                                {order.shippingAddress.location?.lat != null &&
-                                  order.shippingAddress.location?.lng != null && (
-                                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                                      <span className="text-xs text-gray-700">
-                                        <span className="font-semibold">Lat:</span>{" "}
-                                        {Number(order.shippingAddress.location.lat).toFixed(6)}
-                                      </span>
-                                      <span className="text-xs text-gray-700">
-                                        <span className="font-semibold">Lng:</span>{" "}
-                                        {Number(order.shippingAddress.location.lng).toFixed(6)}
-                                      </span>
-                                      <a
-                                        className="text-xs font-medium text-[#5e7142] hover:text-[#4a5a35] underline underline-offset-2"
-                                        href={`https://www.google.com/maps?q=${encodeURIComponent(
-                                          `${order.shippingAddress.location.lat},${order.shippingAddress.location.lng}`,
-                                        )}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                      >
-                                        View on map
-                                      </a>
-                                    </div>
-                                  )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
                     )}
+
+                    {/* Items */}
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold text-gray-700 mb-2">Items</p>
+                      <div className="space-y-2">
+                        {order.items?.map((item: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex items-center gap-2 sm:gap-3 p-2 rounded-lg bg-gray-50"
+                          >
+                            <img
+                              src={item.product?.images?.[0] || "/placeholder.png"}
+                              alt={item.product?.title}
+                              className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-xs sm:text-sm text-gray-900 break-words line-clamp-1">
+                                {item.product?.title}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                {item.quantity} × ₱{item.price.toFixed(2)} = ₱{(item.quantity * item.price).toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bottom Actions */}
+                    <div className="pt-3 border-t border-gray-200">
+                      {order.status === "processing" && (
+                        <div className="mb-3">
+                          <p className="text-xs text-gray-600 mb-1.5">Delivery Handler</p>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <select
+                              value={selectedHandlerByOrder[order._id] || ""}
+                              onChange={(e) =>
+                                setSelectedHandlerByOrder((prev) => ({
+                                  ...prev,
+                                  [order._id]: e.target.value,
+                                }))
+                              }
+                              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                            >
+                              <option value="">Select courier/deliverer</option>
+                              {handlers.map((handler) => (
+                                <option key={handler._id} value={handler._id}>
+                                  {handler.firstName} {handler.lastName} ({handler.role})
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() => assignHandler(order._id, order.orderNumber)}
+                              disabled={!selectedHandlerByOrder[order._id]}
+                              className="px-3 py-2 text-sm rounded-lg bg-[#98b964] text-white disabled:opacity-60"
+                            >
+                              Ship
+                            </button>
+                          </div>
+                          {order.assignedHandler && (
+                            <p className="text-xs text-gray-700 mt-2">
+                              Assigned to: {order.assignedHandler.firstName} {order.assignedHandler.lastName} ({order.assignedHandler.role})
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {order.status === "pending" && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateOrderStatus(
+                              order._id,
+                              "processing",
+                              undefined,
+                              order.orderNumber,
+                            )
+                          }
+                          className="w-full sm:w-auto px-4 py-2.5 text-sm rounded-lg bg-[#98b964] text-white hover:bg-[#5e7142] transition-colors"
+                        >
+                          To Ship
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
