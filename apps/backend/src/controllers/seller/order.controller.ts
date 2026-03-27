@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
 import Order from "../../models/order";
 import Product from "../../models/product";
+import User from "../../models/user";
 import logger from "../../utils/logger";
 
 export const getOrders = async (req: Request, res: Response) => {
@@ -32,6 +33,7 @@ export const getOrders = async (req: Request, res: Response) => {
       "items.product": {$in: productIds},
     })
       .populate("buyer", "firstName middleName lastName email phone")
+      .populate("assignedHandler", "firstName middleName lastName email role")
       .populate({
         path: "items.product",
         populate: {
@@ -85,6 +87,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 
     const order = await Order.findById(id)
       .populate("buyer", "firstName middleName lastName email phone")
+      .populate("assignedHandler", "firstName middleName lastName email role")
       .populate({
         path: "items.product",
         populate: {
@@ -127,7 +130,7 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     const {id} = req.params;
     const {status, trackingNumber} = req.body;
 
-    if (!status || !["pending", "processing", "shipped", "delivered", "cancelled"].includes(status)) {
+    if (!status || !["pending", "processing"].includes(status)) {
       return res.status(400).json({error: "Valid status is required"});
     }
 
@@ -158,8 +161,17 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       return res.status(400).json({error: "Cannot update cancelled order"});
     }
 
-    if (status === "cancelled" && order.status !== "pending") {
-      return res.status(400).json({error: "Can only cancel pending orders"});
+    // Seller cannot directly set shipped/delivered
+    if (status === "shipped" || status === "delivered") {
+      return res.status(403).json({
+        error: "Seller is not allowed to set shipped or delivered status",
+      });
+    }
+
+    if (status === "cancelled") {
+      return res
+        .status(403)
+        .json({error: "Seller is not allowed to cancel buyer orders"});
     }
 
     order.status = status as any;
@@ -167,20 +179,76 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       order.trackingNumber = trackingNumber;
     }
 
-    if (status === "cancelled") {
-      order.cancelledAt = new Date();
-      // Restore stock
-      for (const item of order.items) {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: {stock: item.quantity},
-        });
-      }
-    }
-
     await order.save();
 
     // TODO: Send status update email
 
+    res.json(order);
+  } catch (err: any) {
+    res.status(400).json({error: err.message});
+  }
+};
+
+export const getDeliveryHandlers = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({error: "Unauthorized"});
+    if (req.user.role !== "seller") {
+      return res
+        .status(403)
+        .json({error: "Forbidden: Access is allowed only for sellers"});
+    }
+
+    const handlers = await User.find({
+      role: {$in: ["courier", "deliverer"]},
+      isActive: true,
+    }).select("firstName middleName lastName email role");
+
+    res.json(handlers);
+  } catch (err: any) {
+    res.status(400).json({error: err.message});
+  }
+};
+
+export const assignOrderHandler = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({error: "Unauthorized"});
+    if (req.user.role !== "seller") {
+      return res
+        .status(403)
+        .json({error: "Forbidden: Access is allowed only for sellers"});
+    }
+
+    const {id} = req.params;
+    const {handlerId} = req.body;
+    if (!handlerId) {
+      return res.status(400).json({error: "handlerId is required"});
+    }
+
+    const sellerProducts = await Product.find({seller: req.user.id}).select("_id");
+    const productIds = sellerProducts.map((p) => p._id.toString());
+    const order = await Order.findById(id);
+    if (!order) return res.status(404).json({error: "Order not found"});
+
+    const isSellerOrder = order.items.every((item: any) => {
+      const itemProductId = item.product?.toString();
+      return productIds.includes(itemProductId);
+    });
+    if (!isSellerOrder) {
+      return res.status(403).json({error: "Forbidden: Not your order"});
+    }
+
+    const handler = await User.findById(handlerId);
+    if (!handler || !["courier", "deliverer"].includes(handler.role)) {
+      return res.status(400).json({error: "Invalid delivery handler"});
+    }
+
+    order.assignedHandler = handler._id as any;
+    order.assignedHandlerRole = handler.role as "courier" | "deliverer";
+    if (order.status === "pending") {
+      order.status = "processing";
+    }
+    await order.save();
+    await order.populate("assignedHandler", "firstName middleName lastName email role");
     res.json(order);
   } catch (err: any) {
     res.status(400).json({error: err.message});

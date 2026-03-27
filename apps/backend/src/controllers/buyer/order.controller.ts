@@ -149,6 +149,7 @@ export const getOrders = async (req: Request, res: Response) => {
   try {
     const orders = await Order.find({buyer: buyerId})
       .populate("items.product")
+      .populate("assignedHandler", "firstName middleName lastName role")
       .sort({createdAt: -1});
 
     res.json(orders);
@@ -169,9 +170,9 @@ export const getOrderById = async (req: Request, res: Response) => {
   const {id} = req.params;
 
   try {
-    const order = await Order.findOne({_id: id, buyer: buyerId}).populate(
-      "items.product"
-    );
+    const order = await Order.findOne({_id: id, buyer: buyerId})
+      .populate("items.product")
+      .populate("assignedHandler", "firstName middleName lastName role");
 
     if (!order) {
       return res.status(404).json({error: "Order not found"});
@@ -227,6 +228,45 @@ export const cancelOrder = async (req: Request, res: Response) => {
     await order.save();
 
     // TODO: Send cancellation email
+
+    res.json(order);
+  } catch (err: any) {
+    res.status(400).json({error: err.message});
+  }
+};
+
+export const markOrderAsReceived = async (req: Request, res: Response) => {
+  if (!req.user) return res.status(401).json({error: "Unauthorized"});
+  if (req.user.role !== "buyer") {
+    return res
+      .status(403)
+      .json({error: "Forbidden: Access is allowed only for buyers"});
+  }
+
+  const buyerId = req.user.id;
+  const {id} = req.params;
+
+  try {
+    const order = await Order.findOne({_id: id, buyer: buyerId});
+
+    if (!order) {
+      return res.status(404).json({error: "Order not found"});
+    }
+
+    if (order.receivedAt) {
+      return res
+        .status(400)
+        .json({error: "Order is already confirmed as received"});
+    }
+
+    if (order.status !== "delivered") {
+      return res
+        .status(400)
+        .json({error: "Only delivered orders can be confirmed as received"});
+    }
+
+    order.receivedAt = new Date();
+    await order.save();
 
     res.json(order);
   } catch (err: any) {
