@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {Page} from "@bilibay/ui";
+import {Page, Select} from "@bilibay/ui";
 import {NavBar} from "~/components/common/NavBar";
 import {useAuthStore} from "~/stores/common/authStore";
 import {usePromptStore} from "~/stores/common/promptStore";
@@ -406,7 +406,7 @@ export default function SellerOrders() {
                         <div className="mb-3">
                           <p className="text-xs text-gray-600 mb-1.5">Shipping Courier</p>
                           <div className="flex flex-col sm:flex-row gap-2">
-                            <select
+                            <Select
                               value={selectedHandlerByOrder[order._id] || ""}
                               onChange={(e) =>
                                 setSelectedHandlerByOrder((prev) => ({
@@ -414,15 +414,21 @@ export default function SellerOrders() {
                                   [order._id]: e.target.value,
                                 }))
                               }
-                              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
-                            >
-                              <option value="">Select shipping courier</option>
-                              {handlers.map((handler) => (
-                                <option key={handler._id} value={handler._id}>
-                                  {handler.firstName} {handler.lastName} ({handler.role})
-                                </option>
-                              ))}
-                            </select>
+                              options={handlers.map((handler) => ({
+                                value: handler._id,
+                                label: `${handler.firstName} ${handler.lastName} (${handler.role})`,
+                              }))}
+                              placeholder="Select shipping courier"
+                              containerClassName="flex-1"
+                              backgroundColor="bg-white"
+                              borderColor="border-gray-300"
+                              textColor="text-gray-900"
+                              iconColor="text-gray-500"
+                              focusRingColor="focus:ring-[#98b964]/40"
+                              optionHoverColor="hover:bg-gray-100"
+                              optionSelectedColor="bg-[#98b964]/15"
+                              selectClassName="py-2.5 sm:py-2.5 px-3 rounded-lg"
+                            />
                             <button
                               type="button"
                               onClick={() => assignHandler(order._id, order.orderNumber)}
