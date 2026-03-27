@@ -415,6 +415,29 @@ export default function SellerOrders() {
                                 <p className="text-sm font-medium text-gray-900 break-words">
                                   {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.province} {order.shippingAddress.zipCode}, {order.shippingAddress.country || "Philippines"}
                                 </p>
+                                {order.shippingAddress.location?.lat != null &&
+                                  order.shippingAddress.location?.lng != null && (
+                                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                                      <span className="text-xs text-gray-700">
+                                        <span className="font-semibold">Lat:</span>{" "}
+                                        {Number(order.shippingAddress.location.lat).toFixed(6)}
+                                      </span>
+                                      <span className="text-xs text-gray-700">
+                                        <span className="font-semibold">Lng:</span>{" "}
+                                        {Number(order.shippingAddress.location.lng).toFixed(6)}
+                                      </span>
+                                      <a
+                                        className="text-xs font-medium text-[#5e7142] hover:text-[#4a5a35] underline underline-offset-2"
+                                        href={`https://www.google.com/maps?q=${encodeURIComponent(
+                                          `${order.shippingAddress.location.lat},${order.shippingAddress.location.lng}`,
+                                        )}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                      >
+                                        View on map
+                                      </a>
+                                    </div>
+                                  )}
                               </div>
                             </div>
                           )}
