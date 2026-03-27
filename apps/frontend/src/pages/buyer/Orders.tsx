@@ -11,7 +11,13 @@ import {
 } from "@heroicons/react/24/outline";
 import deliveriesIllustration from "~/assets/illustrations/deliveries.svg";
 
-type OrderStatus = "all" | "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+type OrderStatus =
+  | "all"
+  | "pending"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 type OrderItem = {
   quantity: number;
@@ -67,7 +73,7 @@ export default function Orders() {
           await api.post(
             `/buyer/orders/${orderId}/cancel`,
             {reason: "Cancelled by user"},
-            token
+            token,
           );
           fetchOrders();
           await alert({
@@ -98,12 +104,15 @@ export default function Orders() {
           fetchOrders();
           await alert({
             title: "Success",
-            message: "Thanks for confirming. This order is now marked as received.",
+            message:
+              "Thanks for confirming. This order is now marked as received.",
             type: "success",
           });
         } catch (err: unknown) {
           const errorMessage =
-            err instanceof Error ? err.message : "Failed to mark order as received";
+            err instanceof Error
+              ? err.message
+              : "Failed to mark order as received";
           await alert({
             title: "Error",
             message: errorMessage,
@@ -178,11 +187,31 @@ export default function Orders() {
 
   const tabs: {id: OrderStatus; label: string; count: number}[] = [
     {id: "all", label: "All", count: orders.length},
-    {id: "pending", label: "Pending", count: orders.filter((o) => o.status === "pending").length},
-    {id: "processing", label: "Processing", count: orders.filter((o) => o.status === "processing").length},
-    {id: "shipped", label: "Shipped", count: orders.filter((o) => o.status === "shipped").length},
-    {id: "delivered", label: "Delivered", count: orders.filter((o) => o.status === "delivered").length},
-    {id: "cancelled", label: "Cancelled", count: orders.filter((o) => o.status === "cancelled").length},
+    {
+      id: "pending",
+      label: "Pending",
+      count: orders.filter((o) => o.status === "pending").length,
+    },
+    {
+      id: "processing",
+      label: "Processing",
+      count: orders.filter((o) => o.status === "processing").length,
+    },
+    {
+      id: "shipped",
+      label: "Shipped",
+      count: orders.filter((o) => o.status === "shipped").length,
+    },
+    {
+      id: "delivered",
+      label: "Delivered",
+      count: orders.filter((o) => o.status === "delivered").length,
+    },
+    {
+      id: "cancelled",
+      label: "Cancelled",
+      count: orders.filter((o) => o.status === "cancelled").length,
+    },
   ];
 
   return (
@@ -192,9 +221,13 @@ export default function Orders() {
         {/* Header */}
         <div className="mb-6 sm:mb-10">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
-            <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">My Orders</h1>
+            <h1 className="text-lg sm:text-xl lg:text-xl font-bold text-gray-900">
+              My Orders
+            </h1>
           </div>
-          <p className="text-sm sm:text-base text-gray-600">Track each order and stay updated on delivery progress.</p>
+          <p className="text-sm sm:text-base text-gray-600">
+            Track each order and stay updated on delivery progress.
+          </p>
         </div>
 
         {loading ? (
@@ -247,7 +280,9 @@ export default function Orders() {
                   className="h-48 sm:h-64 mx-auto mb-4 sm:mb-6"
                 />
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-                  {activeTab === "all" ? "No orders yet" : `No ${tabs.find((t) => t.id === activeTab)?.label.toLowerCase()} orders`}
+                  {activeTab === "all"
+                    ? "No orders yet"
+                    : `No ${tabs.find((t) => t.id === activeTab)?.label.toLowerCase()} orders`}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-6">
                   {activeTab === "all"
@@ -258,135 +293,141 @@ export default function Orders() {
             ) : (
               <div className="space-y-6">
                 {filteredOrders.map((order) => (
-              <div
-                key={order._id}
-                className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
-              >
-                {/* Header with gradient accent */}
-                <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
-                <div className="p-4 sm:p-6">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      <div className="bg-blue-50 p-2 sm:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
-                        <ClipboardDocumentListIcon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-1 break-words">
-                          Order #{order.orderNumber}
-                        </h3>
-                        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
-                          <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                          <span className="truncate">
-                            {new Date(order.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              }
-                            )}
+                  <div
+                    key={order._id}
+                    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
+                  >
+                    {/* Header with gradient accent */}
+                    <div className="bg-gradient-to-r from-[#98b964] to-[#5e7142] h-1"></div>
+                    <div className="p-4 sm:p-6">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+                        <div className="flex items-start gap-3 sm:gap-4">
+                          <div className="bg-blue-50 p-2 sm:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
+                            <ClipboardDocumentListIcon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-1 break-words">
+                              Order #{order.orderNumber}
+                            </h3>
+                            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                              <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                              <span className="truncate">
+                                {new Date(order.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  },
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-row md:flex-col md:items-end gap-2 sm:gap-3">
+                          <p className="font-bold text-xl sm:text-2xl text-[#98b964]">
+                            ₱{order.totalAmount}
+                          </p>
+                          <span
+                            className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border ${getStatusColor(
+                              order.status,
+                            )}`}
+                          >
+                            {order.status.charAt(0).toUpperCase() +
+                              order.status.slice(1)}
                           </span>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex flex-row md:flex-col md:items-end gap-2 sm:gap-3">
-                      <p className="font-bold text-xl sm:text-2xl text-[#98b964]">
-                        ₱{order.totalAmount}
-                      </p>
-                      <span
-                        className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border ${getStatusColor(
-                          order.status
-                        )}`}
-                      >
-                        {order.status.charAt(0).toUpperCase() +
-                          order.status.slice(1)}
-                      </span>
-                    </div>
-                  </div>
-                  {getStatusDescription(order) && (
-                    <div className="mb-4 -mt-1">
-                      <p className="text-xs sm:text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-                        {getStatusDescription(order)}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Order Items */}
-                  <div className="border-t border-gray-100 pt-4 sm:pt-6">
-                    <h4 className="text-xs sm:text-sm font-semibold text-gray-700 mb-3 sm:mb-4">
-                      Order Items
-                    </h4>
-                    <div className="space-y-2 sm:space-y-3">
-                      {order.items?.map((item: OrderItem, idx: number) => (
-                        <div
-                          key={idx}
-                          className="flex items-start sm:items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                        >
-                          <img
-                            src={
-                              item.product?.images?.[0] || "/placeholder.png"
-                            }
-                            alt={item.product?.title}
-                            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm sm:text-base text-gray-900 break-words">
-                              {item.product?.title}
-                            </p>
-                            <p className="text-xs sm:text-sm text-gray-600">
-                              Quantity: {item.quantity} × ₱
-                              {item.price.toFixed(2)}
-                            </p>
-                            <p className="text-xs sm:text-sm font-medium text-gray-700 mt-1">
-                              Subtotal: ₱
-                              {(item.quantity * item.price).toFixed(2)}
-                            </p>
-                          </div>
+                      {getStatusDescription(order) && (
+                        <div className="mb-4 -mt-1">
+                          <p className="text-xs sm:text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                            {getStatusDescription(order)}
+                          </p>
                         </div>
-                      ))}
+                      )}
+
+                      {/* Order Items */}
+                      <div className="border-t border-gray-100 pt-4 sm:pt-6">
+                        <h4 className="text-xs sm:text-sm font-semibold text-gray-700 mb-3 sm:mb-4">
+                          Order Items
+                        </h4>
+                        <div className="space-y-2 sm:space-y-3">
+                          {order.items?.map((item: OrderItem, idx: number) => (
+                            <div
+                              key={idx}
+                              className="flex items-start sm:items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                            >
+                              <img
+                                src={
+                                  item.product?.images?.[0] ||
+                                  "/placeholder.png"
+                                }
+                                alt={item.product?.title}
+                                className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-sm sm:text-base text-gray-900 break-words">
+                                  {item.product?.title}
+                                </p>
+                                <p className="text-xs sm:text-sm text-gray-600">
+                                  Quantity: {item.quantity} × ₱
+                                  {item.price.toFixed(2)}
+                                </p>
+                                <p className="text-xs sm:text-sm font-medium text-gray-700 mt-1">
+                                  Subtotal: ₱
+                                  {(item.quantity * item.price).toFixed(2)}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      {order.status === "pending" && (
+                        <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
+                          <button
+                            onClick={() =>
+                              cancelOrder(order._id, order.orderNumber)
+                            }
+                            className="flex items-center justify-center gap-2 border border-[#98b964] text-[#98b964] px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-[#98b964] hover:text-white transition-all duration-200 font-medium text-sm sm:text-base w-full sm:w-auto"
+                          >
+                            <XCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                            Cancel This Order
+                          </button>
+                        </div>
+                      )}
+                      {order.status === "delivered" && !order.receivedAt && (
+                        <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
+                          <button
+                            onClick={() =>
+                              markAsReceived(order._id, order.orderNumber)
+                            }
+                            className="flex items-center justify-center gap-2 bg-[#98b964] text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-[#5e7142] transition-all duration-200 font-medium text-sm sm:text-base w-full sm:w-auto"
+                          >
+                            Confirm Received
+                          </button>
+                        </div>
+                      )}
+                      {order.receivedAt && (
+                        <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
+                          <p className="text-xs sm:text-sm text-gray-600">
+                            Confirmed received on{" "}
+                            <span className="font-semibold text-gray-900">
+                              {new Date(order.receivedAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                },
+                              )}
+                            </span>
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
-
-                  {/* Actions */}
-                  {order.status === "pending" && (
-                    <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
-                      <button
-                        onClick={() =>
-                          cancelOrder(order._id, order.orderNumber)
-                        }
-                        className="flex items-center justify-center gap-2 border border-[#98b964] text-[#98b964] px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-[#98b964] hover:text-white transition-all duration-200 font-medium text-sm sm:text-base w-full sm:w-auto"
-                      >
-                        <XCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                        Cancel This Order
-                      </button>
-                    </div>
-                  )}
-                  {order.status === "delivered" && !order.receivedAt && (
-                    <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
-                      <button
-                        onClick={() => markAsReceived(order._id, order.orderNumber)}
-                        className="flex items-center justify-center gap-2 bg-[#98b964] text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-[#5e7142] transition-all duration-200 font-medium text-sm sm:text-base w-full sm:w-auto"
-                      >
-                        Confirm Received
-                      </button>
-                    </div>
-                  )}
-                  {order.receivedAt && (
-                    <div className="border-t border-gray-100 pt-4 sm:pt-6 mt-4 sm:mt-6">
-                      <p className="text-xs sm:text-sm text-gray-600">
-                        Confirmed received on{" "}
-                        <span className="font-semibold text-gray-900">
-                          {new Date(order.receivedAt).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </span>
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
                 ))}
               </div>
             )}
