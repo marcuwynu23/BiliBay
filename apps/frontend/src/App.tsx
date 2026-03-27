@@ -16,6 +16,7 @@ import Checkout from "./pages/buyer/Checkout";
 import Orders from "./pages/buyer/Orders";
 import BuyerDashboard from "./pages/buyer/Dashboard";
 import Profile from "./pages/buyer/Profile";
+import Address from "./pages/buyer/Address";
 import SellerDashboard from "./pages/seller/Dashboard";
 import SellerProducts from "./pages/seller/Products";
 import SellerOrders from "./pages/seller/Orders";
@@ -141,6 +142,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["buyer"]}>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/buyer/addresses"
+          element={
+            <ProtectedRoute allowedRoles={["buyer"]}>
+              <Address />
             </ProtectedRoute>
           }
         />
