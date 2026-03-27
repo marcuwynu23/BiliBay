@@ -27,6 +27,7 @@ export interface IUser extends Document {
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   defaultShippingAddress?: IShippingAddress;
+  shippingAddresses?: IShippingAddress[];
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -66,6 +67,7 @@ const UserSchema: Schema = new Schema(
     passwordResetToken: {type: String},
     passwordResetExpires: {type: Date},
     defaultShippingAddress: {type: ShippingAddressSchema},
+    shippingAddresses: {type: [ShippingAddressSchema], default: []},
     isActive: {type: Boolean, default: true},
   },
   {timestamps: true}
