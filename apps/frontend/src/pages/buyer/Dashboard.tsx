@@ -6,6 +6,7 @@ import {
   ShoppingCartIcon,
   UserIcon,
   ShoppingBagIcon,
+  MapPinIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 
@@ -36,6 +37,14 @@ export default function BuyerDashboard() {
       bgColor: "bg-purple-50",
     },
     {
+      title: "My Addresses",
+      description: "Manage your saved delivery addresses",
+      icon: MapPinIcon,
+      link: "/buyer/addresses",
+      color: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
+    },
+    {
       title: "Browse Products",
       description: "Shop for new products",
       icon: ShoppingBagIcon,
@@ -62,7 +71,6 @@ export default function BuyerDashboard() {
         {/* Dashboard Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {dashboardCards.map((card) => {
-            const Icon = card.icon;
             return (
               <Link
                 key={card.link}
