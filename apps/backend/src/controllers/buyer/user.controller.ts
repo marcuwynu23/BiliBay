@@ -27,7 +27,15 @@ export const updateProfile = async (req: Request, res: Response) => {
         .json({error: "Forbidden: Access is allowed only for buyers"});
     }
 
-    const {firstName, middleName, lastName, birthday, phone, defaultShippingAddress} = req.body;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      birthday,
+      phone,
+      defaultShippingAddress,
+      shippingAddresses,
+    } = req.body;
     const user = await User.findById(req.user.id);
 
     if (!user) return res.status(404).json({error: "User not found"});
@@ -43,6 +51,9 @@ export const updateProfile = async (req: Request, res: Response) => {
     }
     if (phone) user.phone = phone;
     if (defaultShippingAddress) user.defaultShippingAddress = defaultShippingAddress;
+    if (Array.isArray(shippingAddresses)) {
+      user.shippingAddresses = shippingAddresses;
+    }
 
     await user.save();
 
