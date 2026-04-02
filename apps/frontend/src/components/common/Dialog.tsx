@@ -1,4 +1,4 @@
-import {useEffect,type ReactNode }  from "react";
+import {useEffect, type ReactNode} from "react";
 import {XMarkIcon} from "@heroicons/react/24/outline";
 
 export interface DialogProps {
@@ -10,7 +10,6 @@ export interface DialogProps {
   footer?: ReactNode;
   maxWidth?: string;
   formId?: string;
-  onSubmit?: () => void;
 }
 
 export const Dialog = ({
@@ -22,7 +21,6 @@ export const Dialog = ({
   footer,
   maxWidth = "max-w-2xl",
   formId,
-  onSubmit,
 }: DialogProps) => {
   // Handle escape key to close dialog
   useEffect(() => {
@@ -55,15 +53,20 @@ export const Dialog = ({
       }}
     >
       <div
+        data-form-id={formId}
         className={`bg-white rounded-2xl ${maxWidth} w-full max-h-[calc(100vh-2rem)] shadow-2xl relative flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Fixed Header */}
         <div className="flex justify-between items-center px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b border-gray-100 flex-shrink-0">
           <div className="flex-1 min-w-0 pr-2">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{title}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              {title}
+            </h2>
             {subtitle && (
-              <p className="text-xs sm:text-sm text-gray-600 mt-1">{subtitle}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                {subtitle}
+              </p>
             )}
           </div>
           <button
@@ -91,4 +94,3 @@ export const Dialog = ({
     </div>
   );
 };
-
