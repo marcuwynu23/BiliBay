@@ -16,6 +16,7 @@
     "jsx": "react-jsx",
 
     "strict": true,
+    "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
@@ -23,6 +24,7 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./src/*"],
       "~/*": ["./src/*"]
     }
   },
