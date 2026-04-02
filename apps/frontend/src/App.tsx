@@ -27,8 +27,11 @@ const SellerDashboard = lazy(() => import("./pages/seller/Dashboard"));
 const SellerProducts = lazy(() => import("./pages/seller/Products"));
 const SellerCategories = lazy(() => import("./pages/seller/Categories"));
 const SellerOrders = lazy(() => import("./pages/seller/Orders"));
+const SellerProfile = lazy(() => import("./pages/seller/Profile"));
 const CourierDashboard = lazy(() => import("./pages/courier/Dashboard"));
+const CourierProfile = lazy(() => import("./pages/courier/Profile"));
 const DelivererDashboard = lazy(() => import("./pages/deliverer/Dashboard"));
+const DelivererProfile = lazy(() => import("./pages/deliverer/Profile"));
 const CourierOrders = lazy(() => import("./pages/courier/Orders"));
 const DelivererOrders = lazy(() => import("./pages/deliverer/Orders"));
 const AdminDashboard = lazy(() => import("./pages/seller/Dashboard")); // Will create separate admin pages
@@ -225,6 +228,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/seller/profile"
+        element={
+          <ProtectedRoute allowedRoles={["seller"]}>
+            <SellerProfile />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Courier Routes */}
       <Route
@@ -243,6 +254,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/courier/profile"
+        element={
+          <ProtectedRoute allowedRoles={["courier"]}>
+            <CourierProfile />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Deliverer Routes */}
       <Route
@@ -258,6 +277,14 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={["deliverer"]}>
             <DelivererOrders />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/deliverer/profile"
+        element={
+          <ProtectedRoute allowedRoles={["deliverer"]}>
+            <DelivererProfile />
           </ProtectedRoute>
         }
       />
