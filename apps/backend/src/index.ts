@@ -13,6 +13,7 @@ import buyerOrderRoutes from "./routes/buyer/order.route";
 import buyerProductRoutes from "./routes/buyer/product.route";
 import sellerUserRoutes from "./routes/seller/user.route";
 import sellerProductRoutes from "./routes/seller/product.route";
+import sellerCategoryRoutes from "./routes/seller/category.route";
 import sellerOrderRoutes from "./routes/seller/order.route";
 import adminDashboardRoutes from "./routes/admin/dashboard.route";
 import adminUserRoutes from "./routes/admin/user.route";
@@ -97,6 +98,7 @@ app.use("/api/buyer/upload", buyerUploadRoutes);
 // --- Seller Routes ---
 app.use("/api/seller/users", authMiddleware, sellerUserRoutes);
 app.use("/api/seller/products", authMiddleware, sellerProductRoutes);
+app.use("/api/seller/categories", authMiddleware, sellerCategoryRoutes);
 app.use("/api/seller/orders", authMiddleware, sellerOrderRoutes);
 app.use("/api/seller/upload", sellerUploadRoutes);
 
