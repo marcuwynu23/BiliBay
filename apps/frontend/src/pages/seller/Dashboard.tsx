@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import {
   CubeIcon,
   ClipboardDocumentListIcon,
+  TagIcon,
   ArrowRightIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
@@ -25,6 +26,21 @@ export default function SellerDashboard() {
           <circle cx="35" cy="45" r="3" fill="#98b964" opacity="0.4" />
           <circle cx="75" cy="45" r="3" fill="#98b964" opacity="0.4" />
           <circle cx="55" cy="85" r="3" fill="#98b964" opacity="0.4" />
+        </svg>
+      ),
+    },
+    {
+      title: "Categories",
+      description: "Create and organize product categories",
+      icon: TagIcon,
+      link: "/seller/categories",
+      color: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
+      illustration: (
+        <svg viewBox="0 0 120 120" className="w-full h-full">
+          <path d="M30 30h40l20 20-40 40-20-20z" fill="#10b981" opacity="0.15" />
+          <circle cx="45" cy="45" r="4" fill="#10b981" opacity="0.4" />
+          <path d="M60 30l30 30" stroke="#10b981" strokeWidth="2" opacity="0.3" />
         </svg>
       ),
     },
@@ -58,9 +74,8 @@ export default function SellerDashboard() {
         </div>
 
         {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
           {dashboardCards.map((card) => {
-            const Icon = card.icon;
             return (
               <Link
                 key={card.link}
