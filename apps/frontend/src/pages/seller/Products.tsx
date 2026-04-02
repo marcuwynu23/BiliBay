@@ -1,7 +1,8 @@
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef, useCallback} from "react";
 import {Page, Select} from "@bilibay/ui";
 import {Dialog} from "~/components/common/Dialog";
 import {NavBar} from "~/components/common/NavBar";
+import {Link} from "react-router-dom";
 import {useAuthStore} from "~/stores/common/authStore";
 import {usePromptStore} from "~/stores/common/promptStore";
 import {api} from "~/utils/api";
@@ -13,14 +14,31 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
+type ProductCategory = {
+  _id: string;
+  name: string;
+  description?: string;
+};
+
+type SellerProduct = {
+  _id: string;
+  title: string;
+  description?: string;
+  price: number;
+  category?: ProductCategory;
+  stock: number;
+  status: "draft" | "available" | string;
+  images?: string[];
+};
+
 export default function SellerProducts() {
   const {token} = useAuthStore();
   const {alert, confirm} = usePromptStore();
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<SellerProduct[]>([]);
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [editingProduct, setEditingProduct] = useState<SellerProduct | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -35,14 +53,10 @@ export default function SellerProducts() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (token) {
-      fetchProducts();
-      fetchCategories();
-    }
-  }, [token]);
+  const getErrorMessage = (err: unknown, fallback: string) =>
+    err instanceof Error ? err.message : fallback;
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const data = await api.get("/seller/products", token);
       setProducts(data);
@@ -51,16 +65,23 @@ export default function SellerProducts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
-      const data = await api.get("/buyer/products/categories");
+      const data = await api.get("/seller/categories", token);
       setCategories(data);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchProducts();
+      fetchCategories();
+    }
+  }, [token, fetchProducts, fetchCategories]);
 
   const resetForm = () => {
     setFormData({
@@ -152,7 +173,7 @@ export default function SellerProducts() {
       console.log("Upload successful, received images:", data.images);
       setSelectedFiles([]); // Clear selected files after successful upload
       return data.images;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Image upload error:", err);
       throw err;
     } finally {
@@ -169,11 +190,11 @@ export default function SellerProducts() {
       if (selectedFiles.length > 0) {
         try {
           uploadedImageUrls = await uploadSelectedImages();
-        } catch (uploadErr: any) {
+        } catch (uploadErr: unknown) {
           await alert({
             title: "Upload Error",
             message:
-              uploadErr.message || "Failed to upload images. Please try again.",
+              getErrorMessage(uploadErr, "Failed to upload images. Please try again."),
             type: "error",
           });
           setSubmitting(false);
@@ -216,11 +237,11 @@ export default function SellerProducts() {
           type: "success",
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Show error message but keep dialog open so user can fix issues
       await alert({
         title: "Error",
-        message: err.message || "Failed to save product",
+        message: getErrorMessage(err, "Failed to save product"),
         type: "error",
       });
     } finally {
@@ -228,7 +249,7 @@ export default function SellerProducts() {
     }
   };
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: SellerProduct) => {
     setEditingProduct(product);
     setFormData({
       title: product.title,
@@ -256,10 +277,10 @@ export default function SellerProducts() {
             type: "success",
           });
           fetchProducts();
-        } catch (err: any) {
+        } catch (err: unknown) {
           await alert({
             title: "Error",
-            message: err.message || "Failed to delete product",
+            message: getErrorMessage(err, "Failed to delete product"),
             type: "error",
           });
         }
@@ -294,18 +315,26 @@ export default function SellerProducts() {
               Manage your product catalog
             </p>
           </div>
-          <button
-            onClick={() => {
-              setShowForm(true);
-              setEditingProduct(null);
-              resetForm();
-            }}
-            className="flex items-center gap-2 bg-[#98b964] text-white px-4 sm:px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[44px] text-sm sm:text-base"
-          >
-            <PlusIcon className="h-5 w-5" />
-            <span className="hidden sm:inline">Add Product</span>
-            <span className="sm:hidden">Add</span>
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Link
+              to="/seller/categories"
+              className="px-4 sm:px-5 py-3 rounded-lg border border-[#98b964] text-[#5e7142] font-medium hover:bg-[#98b964]/10 transition-all duration-200 text-sm sm:text-base"
+            >
+              Categories
+            </Link>
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setEditingProduct(null);
+                resetForm();
+              }}
+              className="flex items-center justify-center gap-2 bg-[#98b964] text-white px-4 sm:px-6 py-3 rounded-lg font-medium hover:bg-[#5e7142] active:bg-[#4a5a35] transition-all duration-200 shadow-sm hover:shadow touch-manipulation min-h-[44px] text-sm sm:text-base"
+            >
+              <PlusIcon className="h-5 w-5" />
+              <span className="hidden sm:inline">Add Product</span>
+              <span className="sm:hidden">Add</span>
+            </button>
+          </div>
         </div>
 
         {/* Product Form Dialog */}
