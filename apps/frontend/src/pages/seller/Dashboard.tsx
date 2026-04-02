@@ -7,6 +7,7 @@ import {
   TagIcon,
   ArrowRightIcon,
   PlusIcon,
+  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 
 export default function SellerDashboard() {
@@ -61,6 +62,26 @@ export default function SellerDashboard() {
         </svg>
       ),
     },
+    {
+      title: "Profile",
+      description: "Update your account and password",
+      icon: UserCircleIcon,
+      link: "/seller/profile",
+      color: "from-violet-500 to-violet-600",
+      bgColor: "bg-violet-50",
+      illustration: (
+        <svg viewBox="0 0 120 120" className="w-full h-full">
+          <circle cx="60" cy="45" r="16" fill="#8b5cf6" opacity="0.2" />
+          <path
+            d="M30 95c6-14 18-22 30-22s24 8 30 22"
+            fill="none"
+            stroke="#8b5cf6"
+            strokeWidth="4"
+            opacity="0.35"
+          />
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -74,7 +95,7 @@ export default function SellerDashboard() {
         </div>
 
         {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
           {dashboardCards.map((card) => {
             return (
               <Link
