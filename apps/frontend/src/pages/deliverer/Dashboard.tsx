@@ -40,6 +40,13 @@ export default function DelivererDashboard() {
                 View Assigned Orders
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
+              <Link
+                to="/deliverer/profile"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 hover:border-[#98b964] text-gray-700 hover:text-[#5e7142] text-sm font-medium transition-colors ml-0 sm:ml-2 mt-2 sm:mt-0"
+              >
+                Profile
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
             </div>
             <div className="flex justify-center lg:justify-end">
               <img
