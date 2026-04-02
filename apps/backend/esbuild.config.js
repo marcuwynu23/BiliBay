@@ -35,6 +35,7 @@ if (isBuildMode && !fs.existsSync(outputDir)) {
 const esbuildConfig = {
   entryPoints: [entry],
   outfile: path.join(outputDir, "index.js"),
+  tsconfig: path.resolve(__dirname, "tsconfig.json"),
   bundle: true,
   platform: "node",
   minify: isBuildMode,
