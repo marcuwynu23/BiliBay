@@ -1,12 +1,24 @@
+<div align="center">
+
 # BiliBay
+
+[![Node.js](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
+[![Express](https://img.shields.io/badge/Express-4.0+-000000.svg)](https://expressjs.com/)
+[![PNPM](https://img.shields.io/badge/PNPM-8+-F69220.svg)](https://pnpm.io/)
+[![Turborepo](https://img.shields.io/badge/Turborepo-Latest-EF4444.svg)](https://turbo.build/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A **Filipino-inspired online marketplace** built using a **monorepo architecture** powered by **PNPM Workspaces** and **Turborepo**.
 
 This repository contains the **frontend**, **backend**, and a **shared UI component library** used across apps.
 
+</div>
+
 ---
 
-## 🇵🇭 About BiliBay
+## About BiliBay
 
 **BiliBay** is an online marketplace that connects **buyers** and **sellers** through simple product listings, order management, role-based dashboards, and a Pinoy-centric UX.
 
@@ -14,7 +26,7 @@ This monorepo setup makes BiliBay scalable, maintainable, and fast to develop.
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 bilibay/
@@ -30,27 +42,24 @@ bilibay/
 
 ---
 
-## 📦 Workspaces
+## Workspaces
 
 - **Frontend** (`apps/frontend`)
-
   - React + TypeScript + Vite
   - Uses UI components from `@bilibay/ui`
   - Buyer & seller dashboards, product browsing, auth UI
 
 - **Backend** (`apps/backend`)
-
   - Node.js + Express + TypeScript
   - API routes for users, products, orders, auth
 
 - **UI Library** (`packages/ui`)
-
   - Shared React components: `Page`, `Button`, `Card`, `Table`, etc.
   - Reused across all BiliBay apps
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### **Prerequisites**
 
@@ -66,7 +75,7 @@ pnpm install
 
 ---
 
-## 🧑‍💻 Development
+## Development
 
 Run everything (frontend + backend + ui) in parallel:
 
@@ -79,7 +88,7 @@ pnpm dev
 
 ---
 
-## 🌐 Frontend Setup
+## Frontend Setup
 
 ```bash
 cd apps/frontend
@@ -111,7 +120,7 @@ export default defineConfig({
 
 ---
 
-## 🛠 Backend Setup
+## Backend Setup
 
 ```bash
 cd apps/backend
@@ -129,7 +138,7 @@ POST /api/orders
 
 ---
 
-## 🎨 UI Component Library
+## UI Component Library
 
 ```bash
 cd packages/ui
@@ -146,7 +155,7 @@ Exports components like:
 
 ---
 
-## 🧱 API Structure (Example)
+## API Structure (Example)
 
 ```
 apps/backend/src/api/
@@ -171,7 +180,7 @@ router.get("/users", async (req, res) => {
 
 ---
 
-## 🔄 Example Usage (Frontend + UI + API)
+## Example Usage (Frontend + UI + API)
 
 ```tsx
 import {Page, Table} from "@bilibay/ui";
@@ -204,7 +213,7 @@ export default function UsersPage() {
 
 ---
 
-## 🏗️ Build for Production
+## Build for Production
 
 ```bash
 pnpm build
@@ -218,7 +227,7 @@ Outputs:
 
 ---
 
-## 📏 Linting
+## Linting
 
 ```bash
 pnpm lint
@@ -226,7 +235,7 @@ pnpm lint
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 pnpm test
@@ -234,7 +243,7 @@ pnpm test
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 - Use feature branches
 - Update UI types + components when needed
@@ -242,6 +251,6 @@ pnpm test
 
 ---
 
-## 📜 License
+## License
 
 MIT License © 2025 marcuwynu23
