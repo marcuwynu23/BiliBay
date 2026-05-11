@@ -10,9 +10,8 @@
 [![Turborepo](https://img.shields.io/badge/Turborepo-Latest-EF4444.svg)](https://turbo.build/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A **Filipino-inspired online marketplace** built using a **monorepo architecture** powered by **PNPM Workspaces** and **Turborepo**.
-
-This repository contains the **frontend**, **backend**, and a **shared UI component library** used across apps.
+A **Filipino-inspired online marketplace** that connects **buyers**, **sellers**, **couriers**, and **deliverers** in a complete e-commerce ecosystem.
+**BiliBay** supports multiple user roles with role-based dashboards, product management, order processing, and a complete delivery workflow from purchase to doorstep delivery.
 
 </div>
 
@@ -20,234 +19,156 @@ This repository contains the **frontend**, **backend**, and a **shared UI compon
 
 ## About BiliBay
 
-**BiliBay** is an online marketplace that connects **buyers** and **sellers** through simple product listings, order management, role-based dashboards, and a Pinoy-centric UX.
+**BiliBay** is a comprehensive online marketplace that connects multiple stakeholders in the e-commerce ecosystem:
 
-This monorepo setup makes BiliBay scalable, maintainable, and fast to develop.
+- **Buyers**: Browse products, manage cart, place orders, track deliveries
+- **Sellers**: List products, manage inventory, process orders, track sales
+- **Couriers**: Handle inter-city shipping and logistics
+- **Deliverers**: Manage local area deliveries and final handoff
+- **Admins**: Oversee platform operations, user management, and analytics
+
+The platform features a complete order fulfillment workflow with role-based access control, real-time order tracking, and integrated payment processing.
+
+## How BiliBay Works
+
+```mermaid
+sequenceDiagram
+    participant B as Buyer
+    participant S as Seller
+    participant C as Courier
+    participant D as Deliverer
+    participant A as Admin
+    participant API as BiliBay API
+    participant DB as Database
+
+    Note over B,DB: User Registration & Authentication
+    B->>API: Register as Buyer
+    S->>API: Register as Seller
+    C->>API: Register as Courier
+    D->>API: Register as Deliverer
+    API->>DB: Store user profiles
+    API-->>B: Account created
+    API-->>S: Account created
+    API-->>C: Account created
+    API-->>D: Account created
+
+    Note over B,DB: Product Management
+    S->>API: Create product listing
+    API->>DB: Store product data
+    S->>API: Upload product images
+    API->>DB: Store image references
+    API-->>S: Product listed successfully
+
+    Note over B,DB: Shopping & Order Creation
+    B->>API: Browse products
+    API->>DB: Fetch available products
+    API-->>B: Return product listings
+    B->>API: Add items to cart
+    API->>DB: Store cart items
+    B->>API: Place order with shipping address
+    API->>DB: Create order record
+    API->>DB: Update product stock
+    API-->>B: Order confirmation
+    API-->>S: New order notification
+
+    Note over B,DB: Order Processing
+    S->>API: View pending orders
+    API->>DB: Fetch seller's orders
+    API-->>S: Return order list
+    S->>API: Mark order as processing
+    API->>DB: Update order status
+    S->>API: Assign courier for shipping
+    API->>DB: Assign courier to order
+    API-->>C: Order assignment notification
+
+    Note over B,DB: Shipping & Logistics
+    C->>API: View assigned orders
+    API->>DB: Fetch courier's orders
+    API-->>C: Return assigned orders
+    C->>API: Mark order as shipped
+    C->>API: Assign local deliverer
+    API->>DB: Update order status & assign deliverer
+    API-->>D: Delivery assignment notification
+    API-->>B: Order shipped notification
+
+    Note over B,DB: Final Delivery
+    D->>API: View assigned deliveries
+    API->>DB: Fetch deliverer's orders
+    API-->>D: Return delivery list
+    D->>API: Mark order as delivered (with proof)
+    API->>DB: Update order status & delivery evidence
+    API-->>B: Order delivered notification
+    API-->>S: Order completed notification
+
+    Note over B,DB: Admin Oversight
+    A->>API: View platform analytics
+    API->>DB: Fetch system metrics
+    API-->>A: Return dashboard data
+    A->>API: Manage users & orders
+    API->>DB: Update system data
+    API-->>A: Management actions completed
+```
 
 ---
 
-## Project Structure
+## User Roles & Capabilities
 
-```
-bilibay/
-├── apps/
-│   ├── frontend/        # Buyer & Seller web app (React + Vite)
-│   └── backend/         # REST API backend (Node.js + Express)
-├── packages/
-│   └── ui/              # Shared React UI component library
-├── package.json
-├── pnpm-workspace.yaml
-└── turbo.json
-```
+### Buyer Features
 
----
+- **Product Discovery**: Browse and search products by category
+- **Shopping Cart**: Add/remove items, manage quantities
+- **Order Management**: Place orders, track status, view history
+- **Payment Options**: Cash on Delivery (COD) or Bank Transfer
+- **Profile Management**: Update personal information and addresses
 
-## Workspaces
+### Seller Features
 
-- **Frontend** (`apps/frontend`)
-  - React + TypeScript + Vite
-  - Uses UI components from `@bilibay/ui`
-  - Buyer & seller dashboards, product browsing, auth UI
+- **Product Management**: Create, edit, and manage product listings
+- **Inventory Control**: Track stock levels and product variants
+- **Order Processing**: View and process incoming orders
+- **Sales Analytics**: Monitor sales performance and metrics
+- **Courier Assignment**: Assign orders to courier services
 
-- **Backend** (`apps/backend`)
-  - Node.js + Express + TypeScript
-  - API routes for users, products, orders, auth
+### Courier Features
 
-- **UI Library** (`packages/ui`)
-  - Shared React components: `Page`, `Button`, `Card`, `Table`, etc.
-  - Reused across all BiliBay apps
+- **Order Assignment**: Receive orders for inter-city shipping
+- **Logistics Management**: Handle shipping and tracking
+- **Deliverer Coordination**: Assign orders to local deliverers
+- **Status Updates**: Update shipping status and tracking info
+
+### Deliverer Features
+
+- **Local Delivery**: Handle final mile delivery in local areas
+- **Proof of Delivery**: Upload delivery evidence and photos
+- **Route Optimization**: Manage delivery schedules efficiently
+- **Customer Interaction**: Direct communication with buyers
+
+### Admin Features
+
+- **User Management**: Oversee all user accounts and roles
+- **Platform Analytics**: Monitor system performance and metrics
+- **Order Oversight**: Manage and resolve order issues
+- **Category Management**: Organize product categories
+- **Payment Monitoring**: Track payment transactions and status
 
 ---
 
 ## Getting Started
 
-### **Prerequisites**
+Ready to explore BiliBay? Check out our [Contributing Guide](CONTRIBUTING.md) for detailed setup instructions, development workflow, and technical documentation.
 
-- Node.js >= 20
-- PNPM >= 8
-- Turborepo (via devDependencies)
-
-### **Install all dependencies**
+### Quick Start
 
 ```bash
+# Install dependencies
 pnpm install
-```
 
----
-
-## Development
-
-Run everything (frontend + backend + ui) in parallel:
-
-```bash
+# Start development servers
 pnpm dev
 ```
 
 - **Frontend:** [http://localhost:5173](http://localhost:5173)
 - **Backend:** [http://localhost:3000](http://localhost:3000)
-
----
-
-## Frontend Setup
-
-```bash
-cd apps/frontend
-pnpm dev
-```
-
-### Vite Proxy for API
-
-Allows calling `/api/...` without CORS issues:
-
-```ts
-import {defineConfig} from "vite";
-import react from "@vitejs/plugin-react";
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 5173,
-    proxy: {
-      "/api": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
-});
-```
-
----
-
-## Backend Setup
-
-```bash
-cd apps/backend
-pnpm dev
-```
-
-Default endpoints:
-
-```
-GET /api/users
-GET /api/products
-POST /api/auth/login
-POST /api/orders
-```
-
----
-
-## UI Component Library
-
-```bash
-cd packages/ui
-pnpm build
-pnpm dev
-```
-
-Exports components like:
-
-- `<Page />`
-- `<Button />`
-- `<Card />`
-- `<Table />`
-
----
-
-## API Structure (Example)
-
-```
-apps/backend/src/api/
-├── auth/
-│   └── login.ts
-├── users/
-│   └── routes.ts
-├── products/
-│   └── routes.ts
-└── orders/
-    └── routes.ts
-```
-
-### Example Route
-
-```ts
-router.get("/users", async (req, res) => {
-  const users = await db.user.findMany();
-  res.json(users);
-});
-```
-
----
-
-## Example Usage (Frontend + UI + API)
-
-```tsx
-import {Page, Table} from "@bilibay/ui";
-import {useEffect, useState} from "react";
-
-export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    fetch("/api/users")
-      .then((r) => r.json())
-      .then(setUsers);
-  }, []);
-
-  return (
-    <Page className="p-6">
-      <h1 className="text-xl font-bold mb-4">Users</h1>
-      <Table
-        items={users}
-        emptyMessage="No users found."
-        columns={[
-          {header: "ID", render: (u) => u.id},
-          {header: "Name", render: (u) => u.name},
-        ]}
-      />
-    </Page>
-  );
-}
-```
-
----
-
-## Build for Production
-
-```bash
-pnpm build
-```
-
-Outputs:
-
-- `apps/frontend/dist/`
-- `apps/backend/dist/`
-- `packages/ui/dist/`
-
----
-
-## Linting
-
-```bash
-pnpm lint
-```
-
----
-
-## Testing
-
-```bash
-pnpm test
-```
-
----
-
-## Contributing
-
-- Use feature branches
-- Update UI types + components when needed
-- Ensure tests and lint pass before PR
 
 ---
 
