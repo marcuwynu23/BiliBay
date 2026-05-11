@@ -39,7 +39,47 @@ bilibay/
 - PNPM >= 8
 - Turborepo (via devDependencies)
 
-### Install all dependencies
+**OR**
+
+- Docker & Docker Compose (recommended for quick setup)
+
+### Option 1: Docker Setup (Recommended)
+
+#### Production Environment
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+#### Development Environment (with hot reload)
+
+```bash
+# Start development environment
+docker-compose -f docker-compose.dev.yml up -d
+
+# View logs
+docker-compose -f docker-compose.dev.yml logs -f
+
+# Stop development services
+docker-compose -f docker-compose.dev.yml down
+```
+
+**Services:**
+
+- **Frontend:** [http://localhost:3001](http://localhost:3001) (Production) or [http://localhost:5173](http://localhost:5173) (Development)
+- **Backend:** [http://localhost:3000](http://localhost:3000)
+- **MongoDB:** `localhost:27017`
+
+### Option 2: Local Development
+
+#### Install all dependencies
 
 ```bash
 pnpm install
@@ -222,6 +262,82 @@ pnpm test
 - Use meaningful variable and function names
 - Add JSDoc comments for public APIs
 - Keep functions small and focused
+
+## Docker Commands
+
+### Production Deployment
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# Scale services (if needed)
+docker-compose up -d --scale backend=2
+
+# View service status
+docker-compose ps
+
+# View logs
+docker-compose logs -f [service-name]
+
+# Stop and remove containers
+docker-compose down
+
+# Stop and remove containers with volumes
+docker-compose down -v
+```
+
+### Development with Docker
+
+```bash
+# Start development environment
+docker-compose -f docker-compose.dev.yml up -d
+
+# Rebuild services after code changes
+docker-compose -f docker-compose.dev.yml up -d --build
+
+# Execute commands in running containers
+docker-compose -f docker-compose.dev.yml exec backend-dev pnpm install
+docker-compose -f docker-compose.dev.yml exec frontend-dev pnpm add new-package
+
+# View container logs
+docker-compose -f docker-compose.dev.yml logs -f backend-dev
+```
+
+### Database Management
+
+```bash
+# Access MongoDB shell
+docker-compose exec mongodb mongosh -u admin -p password123 --authenticationDatabase admin
+
+# Backup database
+docker-compose exec mongodb mongodump --uri="mongodb://admin:password123@localhost:27017/bilibay?authSource=admin" --out=/backup
+
+# Restore database
+docker-compose exec mongodb mongorestore --uri="mongodb://admin:password123@localhost:27017/bilibay?authSource=admin" /backup/bilibay
+```
+
+## Environment Configuration
+
+### Backend Environment Variables
+
+Create a `.env` file in `apps/backend/` based on `.env.example`:
+
+```bash
+# Copy example environment file
+cp apps/backend/.env.example apps/backend/.env
+```
+
+**Required Variables:**
+
+- `MONGO_URI`: MongoDB connection string
+- `JWT_SECRET`: Secret key for JWT tokens
+- `EMAIL_HOST`, `EMAIL_USER`, `EMAIL_PASS`: Email service configuration
+- `FRONTEND_URL`: Frontend application URL
+
+### Docker Environment
+
+Environment variables are configured in `docker-compose.yml` and `docker-compose.dev.yml`. Update these files for your specific deployment needs.
 
 ## Architecture Guidelines
 
