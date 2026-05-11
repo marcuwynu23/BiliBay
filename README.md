@@ -32,81 +32,36 @@ The platform features a complete order fulfillment workflow with role-based acce
 ## How BiliBay Works
 
 ```mermaid
-sequenceDiagram
-    participant B as Buyer
-    participant S as Seller
-    participant C as Courier
-    participant D as Deliverer
-    participant A as Admin
-    participant API as BiliBay API
-    participant DB as Database
+graph TD
+    A[User Registration] --> B{User Role}
+    B -->|Buyer| C[Browse Products]
+    B -->|Seller| D[List Products]
+    B -->|Courier| E[Wait for Orders]
+    B -->|Deliverer| F[Wait for Deliveries]
+    B -->|Admin| G[Platform Management]
 
-    Note over B,DB: User Registration & Authentication
-    B->>API: Register as Buyer
-    S->>API: Register as Seller
-    C->>API: Register as Courier
-    D->>API: Register as Deliverer
-    API->>DB: Store user profiles
-    API-->>B: Account created
-    API-->>S: Account created
-    API-->>C: Account created
-    API-->>D: Account created
+    C --> H[Add to Cart]
+    H --> I[Place Order]
+    I --> J[Order Created]
 
-    Note over B,DB: Product Management
-    S->>API: Create product listing
-    API->>DB: Store product data
-    S->>API: Upload product images
-    API->>DB: Store image references
-    API-->>S: Product listed successfully
+    D --> K[Product Listed]
+    K --> L[Receive Order]
+    L --> M[Process Order]
+    M --> N[Assign Courier]
 
-    Note over B,DB: Shopping & Order Creation
-    B->>API: Browse products
-    API->>DB: Fetch available products
-    API-->>B: Return product listings
-    B->>API: Add items to cart
-    API->>DB: Store cart items
-    B->>API: Place order with shipping address
-    API->>DB: Create order record
-    API->>DB: Update product stock
-    API-->>B: Order confirmation
-    API-->>S: New order notification
+    J --> O[Seller Processing]
+    O --> P[Courier Pickup]
+    P --> Q[Inter-city Shipping]
+    Q --> R[Assign Deliverer]
+    R --> S[Local Delivery]
+    S --> T[Order Delivered]
 
-    Note over B,DB: Order Processing
-    S->>API: View pending orders
-    API->>DB: Fetch seller's orders
-    API-->>S: Return order list
-    S->>API: Mark order as processing
-    API->>DB: Update order status
-    S->>API: Assign courier for shipping
-    API->>DB: Assign courier to order
-    API-->>C: Order assignment notification
+    E --> P
+    F --> S
+    G --> U[Monitor All Activities]
 
-    Note over B,DB: Shipping & Logistics
-    C->>API: View assigned orders
-    API->>DB: Fetch courier's orders
-    API-->>C: Return assigned orders
-    C->>API: Mark order as shipped
-    C->>API: Assign local deliverer
-    API->>DB: Update order status & assign deliverer
-    API-->>D: Delivery assignment notification
-    API-->>B: Order shipped notification
-
-    Note over B,DB: Final Delivery
-    D->>API: View assigned deliveries
-    API->>DB: Fetch deliverer's orders
-    API-->>D: Return delivery list
-    D->>API: Mark order as delivered (with proof)
-    API->>DB: Update order status & delivery evidence
-    API-->>B: Order delivered notification
-    API-->>S: Order completed notification
-
-    Note over B,DB: Admin Oversight
-    A->>API: View platform analytics
-    API->>DB: Fetch system metrics
-    API-->>A: Return dashboard data
-    A->>API: Manage users & orders
-    API->>DB: Update system data
-    API-->>A: Management actions completed
+    T --> V[Order Complete]
+    V --> W[Payment Settlement]
 ```
 
 ---
