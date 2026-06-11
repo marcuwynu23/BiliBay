@@ -39,12 +39,22 @@ FROM node:20-alpine AS production
 # Install Nginx
 RUN apk add --no-cache nginx
 
+# Install pnpm (version 9.x to support lockfileVersion 9.0)
+RUN npm install -g pnpm@9
+
 # Set working directory
 WORKDIR /app
 
 # Copy backend build and dependencies
 COPY --from=backend-builder /app/apps/backend/build ./backend
+COPY --from=backend-builder /app/apps/backend/package.json ./apps/backend/
+COPY --from=backend-builder /app/apps/backend/tsconfig.json ./apps/backend/
+COPY --from=backend-builder /app/apps/backend/src ./apps/backend/src
 COPY --from=backend-builder /app/node_modules ./node_modules
+COPY --from=backend-builder /app/package.json ./
+COPY --from=backend-builder /app/pnpm-workspace.yaml ./
+COPY --from=backend-builder /app/turbo.json ./
+COPY --from=backend-builder /app/tsconfig.json ./
 
 # Copy frontend build
 COPY --from=frontend-builder /app/apps/frontend/dist /usr/share/nginx/html
