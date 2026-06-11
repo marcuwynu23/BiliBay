@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import Order from "../../models/order";
+import Order from "@/models/order";
 
 export const getDelivererOrders = async (req: Request, res: Response) => {
   try {

@@ -1,8 +1,8 @@
 import {Router} from "express";
-import {uploadProductImages as uploadController} from "../../controllers/seller/upload.controller";
-import {authMiddleware} from "../../middlewares/auth.middleware";
-import {uploadProductImages as uploadMiddleware} from "../../middlewares/upload.middleware";
-import logger from "../../utils/logger";
+import {uploadProductImages as uploadController} from "@/controllers/seller/upload.controller";
+import {authMiddleware} from "@/middlewares/auth.middleware";
+import {uploadProductImages as uploadMiddleware} from "@/middlewares/upload.middleware";
+import logger from "@/utils/logger";
 
 const router = Router();
 

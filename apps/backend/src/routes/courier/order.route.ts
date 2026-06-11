@@ -1,10 +1,10 @@
 import {Router} from "express";
-import {authMiddleware} from "../../middlewares/auth.middleware";
+import {authMiddleware} from "@/middlewares/auth.middleware";
 import {
   getCourierOrders,
   getDeliverersForCourier,
   markCourierOrderShipped,
-} from "../../controllers/courier/order.controller";
+} from "@/controllers/courier/order.controller";
 
 const router = Router();
 

@@ -1,8 +1,8 @@
 import {Request, Response} from "express";
-import Order from "../../models/order";
-import Product from "../../models/product";
-import User from "../../models/user";
-import logger from "../../utils/logger";
+import Order from "@/models/order";
+import Product from "@/models/product";
+import User from "@/models/user";
+import logger from "@/utils/logger";
 
 export const getOrders = async (req: Request, res: Response) => {
   try {

@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import Order from "../../models/order";
-import User from "../../models/user";
+import Order from "@/models/order";
+import User from "@/models/user";
 
 export const getCourierOrders = async (req: Request, res: Response) => {
   try {

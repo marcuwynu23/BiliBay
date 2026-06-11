@@ -1,6 +1,6 @@
 // controllers/admin/order.controller.ts
 import {Request, Response} from "express";
-import Order from "../../models/order";
+import Order from "@/models/order";
 
 export const getAllOrders = async (req: Request, res: Response) => {
   try {

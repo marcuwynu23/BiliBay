@@ -1,6 +1,6 @@
 // controllers/buyer/upload.controller.ts
 import {Request, Response} from "express";
-import {getFileUrl} from "../../middlewares/upload.middleware";
+import {getFileUrl} from "@/middlewares/upload.middleware";
 
 export const uploadReceipt = async (req: Request, res: Response) => {
   try {

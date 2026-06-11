@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import Product from "../../models/product";
-import Category from "../../models/category";
+import Product from "@/models/product";
+import Category from "@/models/category";
 
 // Get all available products with search, filter, and sort
 export const getProducts = async (req: Request, res: Response) => {

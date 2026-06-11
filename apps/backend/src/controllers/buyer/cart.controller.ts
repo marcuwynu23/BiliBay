@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import Cart from "../../models/cart";
-import Product from "../../models/product";
+import Cart from "@/models/cart";
+import Product from "@/models/product";
 import mongoose from "mongoose";
 
 export const getCart = async (req: Request, res: Response) => {

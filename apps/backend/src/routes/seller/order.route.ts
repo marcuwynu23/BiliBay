@@ -5,8 +5,8 @@ import {
   updateOrderStatus,
   getDeliveryHandlers,
   assignOrderHandler,
-} from "../../controllers/seller/order.controller";
-import {authMiddleware} from "../../middlewares/auth.middleware";
+} from "@/controllers/seller/order.controller";
+import {authMiddleware} from "@/middlewares/auth.middleware";
 
 const router = Router();
 

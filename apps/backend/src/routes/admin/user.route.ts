@@ -1,7 +1,7 @@
 import {Router} from "express";
-import {getUsers, toggleUserStatus} from "../../controllers/admin/user.controller";
-import {authMiddleware} from "../../middlewares/auth.middleware";
-import {adminMiddleware} from "../../middlewares/admin.middleware";
+import {getUsers, toggleUserStatus} from "@/controllers/admin/user.controller";
+import {authMiddleware} from "@/middlewares/auth.middleware";
+import {adminMiddleware} from "@/middlewares/admin.middleware";
 
 const router = Router();
 

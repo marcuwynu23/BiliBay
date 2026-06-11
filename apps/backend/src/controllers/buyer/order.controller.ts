@@ -1,8 +1,8 @@
 import {Request, Response} from "express";
-import Order from "../../models/order";
-import Product from "../../models/product";
-import Cart from "../../models/cart";
-import Payment from "../../models/payment";
+import Order from "@/models/order";
+import Product from "@/models/product";
+import Cart from "@/models/cart";
+import Payment from "@/models/payment";
 import mongoose from "mongoose";
 
 // Generate unique order number

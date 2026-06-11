@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from "express";
-import {authMiddleware} from "../../middlewares/auth.middleware";
+import {authMiddleware} from "@/middlewares/auth.middleware";
 import jwt from "jsonwebtoken";
 
 // This test doesn't need database, so we skip the setup

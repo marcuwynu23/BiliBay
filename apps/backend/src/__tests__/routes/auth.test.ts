@@ -1,6 +1,6 @@
 import request from "supertest";
-import app from "../app";
-import User from "../../models/user";
+import app from "@/__tests__/app";
+import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
 describe("Auth Routes", () => {

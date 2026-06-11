@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import {register, login} from "../../controllers/common/auth.controller";
-import User from "../../models/user";
+import {register, login} from "@/controllers/common/auth.controller";
+import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
 // Mock request and response

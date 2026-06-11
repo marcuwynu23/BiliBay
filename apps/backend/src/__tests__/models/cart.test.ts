@@ -1,6 +1,6 @@
-import Cart from "../../models/cart";
-import User from "../../models/user";
-import Product from "../../models/product";
+import Cart from "@/models/cart";
+import User from "@/models/user";
+import Product from "@/models/product";
 import mongoose from "mongoose";
 
 describe("Cart Model", () => {

@@ -1,6 +1,6 @@
 // models/Order.ts
 import mongoose, {Schema, Document, Types} from "mongoose";
-import {IShippingAddress} from "./user";
+import {IShippingAddress} from "@/models/user";
 
 export interface IOrderItem {
   product: Types.ObjectId;

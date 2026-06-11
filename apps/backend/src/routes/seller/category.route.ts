@@ -1,11 +1,11 @@
 import {Router} from "express";
-import {authMiddleware} from "../../middlewares/auth.middleware";
+import {authMiddleware} from "@/middlewares/auth.middleware";
 import {
   getSellerCategories,
   createSellerCategory,
   updateSellerCategory,
   deleteSellerCategory,
-} from "../../controllers/seller/category.controller";
+} from "@/controllers/seller/category.controller";
 
 const router = Router();
 

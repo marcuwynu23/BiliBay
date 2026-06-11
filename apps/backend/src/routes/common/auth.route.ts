@@ -5,7 +5,7 @@ import {
   verifyEmail,
   requestPasswordReset,
   resetPassword,
-} from "../../controllers/common/auth.controller";
+} from "@/controllers/common/auth.controller";
 
 const router = Router();
 

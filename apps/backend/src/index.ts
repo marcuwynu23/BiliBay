@@ -2,39 +2,39 @@ import express, {Request, Response} from "express";
 import dotenv from "dotenv";
 
 // Logger
-import logger from "./utils/logger";
-import {requestLogger, errorLogger} from "./middlewares/logger.middleware";
+import logger from "@/utils/logger";
+import {requestLogger, errorLogger} from "@/middlewares/logger.middleware";
 
 // Routes
-import authRoutes from "./routes/common/auth.route";
-import buyerUserRoutes from "./routes/buyer/user.route";
-import buyerCartRoutes from "./routes/buyer/cart.route";
-import buyerOrderRoutes from "./routes/buyer/order.route";
-import buyerProductRoutes from "./routes/buyer/product.route";
-import sellerUserRoutes from "./routes/seller/user.route";
-import sellerProductRoutes from "./routes/seller/product.route";
-import sellerCategoryRoutes from "./routes/seller/category.route";
-import sellerOrderRoutes from "./routes/seller/order.route";
-import adminDashboardRoutes from "./routes/admin/dashboard.route";
-import adminUserRoutes from "./routes/admin/user.route";
-import adminOrderRoutes from "./routes/admin/order.route";
-import adminPaymentRoutes from "./routes/admin/payment.route";
-import adminCategoryRoutes from "./routes/admin/category.route";
-import sellerUploadRoutes from "./routes/seller/upload.route";
-import buyerUploadRoutes from "./routes/buyer/upload.route";
-import courierUserRoutes from "./routes/courier/user.route";
-import delivererUserRoutes from "./routes/deliverer/user.route";
-import courierOrderRoutes from "./routes/courier/order.route";
-import delivererOrderRoutes from "./routes/deliverer/order.route";
-import delivererUploadRoutes from "./routes/deliverer/upload.route";
+import authRoutes from "@/routes/common/auth.route";
+import buyerUserRoutes from "@/routes/buyer/user.route";
+import buyerCartRoutes from "@/routes/buyer/cart.route";
+import buyerOrderRoutes from "@/routes/buyer/order.route";
+import buyerProductRoutes from "@/routes/buyer/product.route";
+import sellerUserRoutes from "@/routes/seller/user.route";
+import sellerProductRoutes from "@/routes/seller/product.route";
+import sellerCategoryRoutes from "@/routes/seller/category.route";
+import sellerOrderRoutes from "@/routes/seller/order.route";
+import adminDashboardRoutes from "@/routes/admin/dashboard.route";
+import adminUserRoutes from "@/routes/admin/user.route";
+import adminOrderRoutes from "@/routes/admin/order.route";
+import adminPaymentRoutes from "@/routes/admin/payment.route";
+import adminCategoryRoutes from "@/routes/admin/category.route";
+import sellerUploadRoutes from "@/routes/seller/upload.route";
+import buyerUploadRoutes from "@/routes/buyer/upload.route";
+import courierUserRoutes from "@/routes/courier/user.route";
+import delivererUserRoutes from "@/routes/deliverer/user.route";
+import courierOrderRoutes from "@/routes/courier/order.route";
+import delivererOrderRoutes from "@/routes/deliverer/order.route";
+import delivererUploadRoutes from "@/routes/deliverer/upload.route";
 
 // Middleware
-import {authMiddleware} from "./middlewares/auth.middleware";
-import {authRateLimiter, apiRateLimiter} from "./middlewares/rateLimit.middleware";
-import {sanitizeInput} from "./middlewares/validation.middleware";
+import {authMiddleware} from "@/middlewares/auth.middleware";
+import {authRateLimiter, apiRateLimiter} from "@/middlewares/rateLimit.middleware";
+import {sanitizeInput} from "@/middlewares/validation.middleware";
 
 // DB Connection
-import {connectDB} from "./config/database.config";
+import {connectDB} from "@/config/database.config";
 
 dotenv.config();
 

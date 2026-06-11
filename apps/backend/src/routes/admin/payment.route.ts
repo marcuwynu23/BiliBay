@@ -1,7 +1,7 @@
 import {Router} from "express";
-import {getPayments, verifyPayment} from "../../controllers/admin/payment.controller";
-import {authMiddleware} from "../../middlewares/auth.middleware";
-import {adminMiddleware} from "../../middlewares/admin.middleware";
+import {getPayments, verifyPayment} from "@/controllers/admin/payment.controller";
+import {authMiddleware} from "@/middlewares/auth.middleware";
+import {adminMiddleware} from "@/middlewares/admin.middleware";
 
 const router = Router();
 

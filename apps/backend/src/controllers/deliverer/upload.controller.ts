@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {getFileUrl} from "../../middlewares/upload.middleware";
+import {getFileUrl} from "@/middlewares/upload.middleware";
 
 export const uploadDeliveryEvidence = async (req: Request, res: Response) => {
   try {

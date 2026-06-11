@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import Product from "../../models/product";
-import Category from "../../models/category";
+import Product from "@/models/product";
+import Category from "@/models/category";
 import mongoose from "mongoose";
 
 export const createProduct = async (req: Request, res: Response) => {

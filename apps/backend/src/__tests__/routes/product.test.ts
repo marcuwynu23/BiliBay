@@ -1,8 +1,8 @@
 import request from "supertest";
-import app from "../app";
-import User from "../../models/user";
-import Product from "../../models/product";
-import Category from "../../models/category";
+import app from "@/__tests__/app";
+import User from "@/models/user";
+import Product from "@/models/product";
+import Category from "@/models/category";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 

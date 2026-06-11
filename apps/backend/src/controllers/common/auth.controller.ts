@@ -1,10 +1,10 @@
 import {Request, Response} from "express";
-import User from "../../models/user";
+import User from "@/models/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import logger from "../../utils/logger";
-import {JWT_SECRET} from "../../config/jwt.config";
+import logger from "@/utils/logger";
+import {JWT_SECRET} from "@/config/jwt.config";
 
 // Helper to generate random token
 const generateToken = () => crypto.randomBytes(32).toString("hex");
@@ -247,7 +247,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     await user.save();
 
     // Send password reset email
-    const {sendPasswordResetEmail} = await import("../../utils/email.service");
+    const {sendPasswordResetEmail} = await import("@/utils/email.service");
     await sendPasswordResetEmail(user.email, resetToken);
 
     res.json({message: "If email exists, password reset link has been sent"});

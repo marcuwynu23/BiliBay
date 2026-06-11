@@ -1,7 +1,7 @@
 // controllers/seller/upload.controller.ts
 import {Request, Response} from "express";
-import {getFileUrl} from "../../middlewares/upload.middleware";
-import logger from "../../utils/logger";
+import {getFileUrl} from "@/middlewares/upload.middleware";
+import logger from "@/utils/logger";
 
 export const uploadProductImages = async (req: Request, res: Response) => {
   try {

@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import Category from "../../models/category";
+import Category from "@/models/category";
 
 const toSlug = (name: string) =>
   name
@@ -100,7 +100,7 @@ export const deleteSellerCategory = async (req: Request, res: Response) => {
       return res.status(404).json({error: "Category not found"});
     }
 
-    const Product = (await import("../../models/product")).default;
+    const Product = (await import("@/models/product")).default;
     const productCount = await Product.countDocuments({category: id});
     if (productCount > 0) {
       return res.status(400).json({

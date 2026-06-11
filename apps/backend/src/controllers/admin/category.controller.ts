@@ -1,6 +1,6 @@
 // controllers/admin/category.controller.ts
 import {Request, Response} from "express";
-import Category from "../../models/category";
+import Category from "@/models/category";
 
 export const getCategories = async (req: Request, res: Response) => {
   try {
@@ -100,7 +100,7 @@ export const deleteCategory = async (req: Request, res: Response) => {
     }
 
     // Check if category is used by products
-    const Product = (await import("../../models/product")).default;
+    const Product = (await import("@/models/product")).default;
     const productCount = await Product.countDocuments({category: id});
 
     if (productCount > 0) {

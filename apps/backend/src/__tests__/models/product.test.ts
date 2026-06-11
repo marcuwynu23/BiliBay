@@ -1,5 +1,5 @@
-import Product from "../../models/product";
-import User from "../../models/user";
+import Product from "@/models/product";
+import User from "@/models/user";
 import mongoose from "mongoose";
 
 describe("Product Model", () => {

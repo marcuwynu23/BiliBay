@@ -1,9 +1,9 @@
 // controllers/admin/dashboard.controller.ts
 import {Request, Response} from "express";
-import Order from "../../models/order";
-import User from "../../models/user";
-import Product from "../../models/product";
-import Payment from "../../models/payment";
+import Order from "@/models/order";
+import User from "@/models/user";
+import Product from "@/models/product";
+import Payment from "@/models/payment";
 
 export const getDashboardStats = async (req: Request, res: Response) => {
   try {

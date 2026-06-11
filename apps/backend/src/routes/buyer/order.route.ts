@@ -5,8 +5,8 @@ import {
   getOrderById,
   cancelOrder,
   markOrderAsReceived,
-} from "../../controllers/buyer/order.controller";
-import {authMiddleware} from "../../middlewares/auth.middleware";
+} from "@/controllers/buyer/order.controller";
+import {authMiddleware} from "@/middlewares/auth.middleware";
 
 const router = Router();
 

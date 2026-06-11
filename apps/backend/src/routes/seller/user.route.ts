@@ -3,8 +3,8 @@ import {
   getSellerProfile,
   updateSellerProfile,
   changePassword,
-} from "../../controllers/seller/user.controller";
-import {authMiddleware} from "../../middlewares/auth.middleware";
+} from "@/controllers/seller/user.controller";
+import {authMiddleware} from "@/middlewares/auth.middleware";
 
 const router = Router();
 

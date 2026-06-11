@@ -4,9 +4,9 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-} from "../../controllers/admin/category.controller";
-import {authMiddleware} from "../../middlewares/auth.middleware";
-import {adminMiddleware} from "../../middlewares/admin.middleware";
+} from "@/controllers/admin/category.controller";
+import {authMiddleware} from "@/middlewares/auth.middleware";
+import {adminMiddleware} from "@/middlewares/admin.middleware";
 
 const router = Router();
 

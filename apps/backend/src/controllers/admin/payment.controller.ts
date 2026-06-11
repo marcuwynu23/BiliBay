@@ -1,7 +1,7 @@
 // controllers/admin/payment.controller.ts
 import {Request, Response} from "express";
-import Payment from "../../models/payment";
-import Order from "../../models/order";
+import Payment from "@/models/payment";
+import Order from "@/models/order";
 
 export const getPayments = async (req: Request, res: Response) => {
   try {

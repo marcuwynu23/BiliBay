@@ -23,7 +23,7 @@ const envFile = isBuildMode ? ".env.production" : ".env"; // Use .env.production
 
 // Ensure build directory exists
 if (isBuildMode && !fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, {recursive: true});
+  fs.mkdirSync(outputDir, { recursive: true });
 }
 
 // Copy .env file if in build mode
@@ -52,6 +52,36 @@ const esbuildConfig = {
     ".tsx": "tsx", // Use TypeScript loader for `.tsx` files (if using JSX)
     ".js": "js", // Use JavaScript loader for `.js` files
   },
+  plugins: [
+    {
+      name: "alias-plugin",
+      setup(build) {
+        build.onResolve({ filter: /^@\// }, args => {
+          const relPath = args.path.replace(/^@\//, "");
+          let fullPath = path.resolve(__dirname, "src", relPath);
+          
+          // Check for file extensions
+          const extensions = [".ts", ".tsx", ".js", ".jsx"];
+          for (const ext of extensions) {
+            if (fs.existsSync(fullPath + ext)) {
+              return { path: fullPath + ext };
+            }
+          }
+          
+          // Check for index file in directory
+          for (const ext of extensions) {
+            const indexPath = path.join(fullPath, `index${ext}`);
+            if (fs.existsSync(indexPath)) {
+              return { path: indexPath };
+            }
+          }
+          
+          // If nothing found, let esbuild handle it (will throw error)
+          return { path: fullPath };
+        });
+      }
+    }
+  ],
   write: !isCheckMode,
   logLevel: "info",
   define: {

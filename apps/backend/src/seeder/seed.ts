@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Product from "../models/product";
-import Category from "../models/category";
-import User from "../models/user";
-import logger from "../utils/logger";
+import Product from "@/models/product";
+import Category from "@/models/category";
+import User from "@/models/user";
+import logger from "@/utils/logger";
 
 dotenv.config();
 

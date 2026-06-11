@@ -1,8 +1,8 @@
 // src/middlewares/auth.middleware.ts
 import {Request, Response, NextFunction} from "express";
 import jwt from "jsonwebtoken";
-import logger from "../utils/logger";
-import {JWT_SECRET} from "../config/jwt.config";
+import logger from "@/utils/logger";
+import {JWT_SECRET} from "@/config/jwt.config";
 
 interface IUserPayload {
   id: string;

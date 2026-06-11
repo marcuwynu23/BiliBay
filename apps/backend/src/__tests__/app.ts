@@ -2,25 +2,25 @@ import express from "express";
 import dotenv from "dotenv";
 
 // Routes
-import authRoutes from "../routes/common/auth.route";
-import buyerUserRoutes from "../routes/buyer/user.route";
-import buyerCartRoutes from "../routes/buyer/cart.route";
-import buyerOrderRoutes from "../routes/buyer/order.route";
-import buyerProductRoutes from "../routes/buyer/product.route";
-import sellerUserRoutes from "../routes/seller/user.route";
-import sellerProductRoutes from "../routes/seller/product.route";
-import sellerCategoryRoutes from "../routes/seller/category.route";
-import sellerOrderRoutes from "../routes/seller/order.route";
-import adminDashboardRoutes from "../routes/admin/dashboard.route";
-import adminUserRoutes from "../routes/admin/user.route";
-import adminOrderRoutes from "../routes/admin/order.route";
-import adminPaymentRoutes from "../routes/admin/payment.route";
-import adminCategoryRoutes from "../routes/admin/category.route";
+import authRoutes from "@/routes/common/auth.route";
+import buyerUserRoutes from "@/routes/buyer/user.route";
+import buyerCartRoutes from "@/routes/buyer/cart.route";
+import buyerOrderRoutes from "@/routes/buyer/order.route";
+import buyerProductRoutes from "@/routes/buyer/product.route";
+import sellerUserRoutes from "@/routes/seller/user.route";
+import sellerProductRoutes from "@/routes/seller/product.route";
+import sellerCategoryRoutes from "@/routes/seller/category.route";
+import sellerOrderRoutes from "@/routes/seller/order.route";
+import adminDashboardRoutes from "@/routes/admin/dashboard.route";
+import adminUserRoutes from "@/routes/admin/user.route";
+import adminOrderRoutes from "@/routes/admin/order.route";
+import adminPaymentRoutes from "@/routes/admin/payment.route";
+import adminCategoryRoutes from "@/routes/admin/category.route";
 
 // Middleware
-import {authMiddleware} from "../middlewares/auth.middleware";
-import {authRateLimiter, apiRateLimiter} from "../middlewares/rateLimit.middleware";
-import {sanitizeInput} from "../middlewares/validation.middleware";
+import {authMiddleware} from "@/middlewares/auth.middleware";
+import {authRateLimiter, apiRateLimiter} from "@/middlewares/rateLimit.middleware";
+import {sanitizeInput} from "@/middlewares/validation.middleware";
 import cors from "cors";
 
 dotenv.config();
