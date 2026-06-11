@@ -1,8 +1,8 @@
 # Multi-stage Dockerfile for BiliBay monorepo (single image)
 FROM node:20-alpine AS base
 
-# Install pnpm
-RUN npm install -g pnpm@8.15.9
+# Install pnpm (version 9.x to support lockfileVersion 9.0)
+RUN npm install -g pnpm@9
 
 # Set working directory
 WORKDIR /app
@@ -42,8 +42,8 @@ RUN apk add --no-cache nginx
 # Set working directory
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm@8.15.9
+# Install pnpm (version 9.x)
+RUN npm install -g pnpm@9
 
 # Copy backend build and dependencies
 COPY --from=backend-builder /app/apps/backend/build ./backend
