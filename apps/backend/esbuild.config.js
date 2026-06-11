@@ -1,6 +1,10 @@
-const esbuild = require("esbuild");
-const path = require("path");
-const fs = require("fs");
+import esbuild from "esbuild";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Parse command line arguments
 const args = process.argv.slice(2).reduce((acc, arg) => {
