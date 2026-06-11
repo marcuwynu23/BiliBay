@@ -46,6 +46,7 @@ jobs:
           type=sha
 
     - name: Build and push
+      id: build-push
       uses: docker/build-push-action@v6
       with:
         context: .
@@ -58,13 +59,8 @@ jobs:
 
     - name: Clean up Docker resources
       if: always()
+      continue-on-error: true
       run: |
         docker builder prune -af
         docker image prune -af
-        docker container prune -af
-
-    - name: Clean up workspace
-      if: always()
-      run: |
-        rm -rf ./*
-        rm -rf /tmp/*
+        docker container prune -f
