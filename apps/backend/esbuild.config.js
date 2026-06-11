@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
-import path from "path";
 import fs from "fs";
+import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,10 +38,11 @@ if (isBuildMode && !fs.existsSync(outputDir)) {
 // ESBuild configuration
 const esbuildConfig = {
   entryPoints: [entry],
-  outfile: path.join(outputDir, "index.js"),
+  outfile: path.join(outputDir, "index.cjs"),
   tsconfig: path.resolve(__dirname, "tsconfig.json"),
   bundle: true,
   platform: "node",
+  format: "cjs",
   minify: isBuildMode,
   sourcemap: !isBuildMode,
   target: "node18", // You can adjust this depending on your Node.js version

@@ -42,12 +42,8 @@ RUN apk add --no-cache nginx
 # Set working directory
 WORKDIR /app
 
-# Install pnpm (version 9.x)
-RUN npm install -g pnpm@9
-
 # Copy backend build and dependencies
 COPY --from=backend-builder /app/apps/backend/build ./backend
-COPY --from=backend-builder /app/apps/backend/package.json ./package.json
 COPY --from=backend-builder /app/node_modules ./node_modules
 
 # Copy frontend build
@@ -65,7 +61,7 @@ EXPOSE 80
 # Start script to run both Nginx and backend
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'nginx -g "daemon off;" &' >> /app/start.sh && \
-    echo 'cd /app && node backend/index.js' >> /app/start.sh && \
+    echo 'cd /app && node backend/index.cjs' >> /app/start.sh && \
     chmod +x /app/start.sh
 
 CMD ["/app/start.sh"]
