@@ -33,6 +33,9 @@ FROM base AS frontend-builder
 COPY --from=ui-builder /app/packages/ui/dist ./packages/ui/dist
 RUN pnpm --filter @bilibay/frontend build
 
+# Backend builder stage (keep for seeding)
+FROM backend-builder AS seeder
+
 # Production image (combined frontend and backend)
 FROM node:20-alpine AS production
 

@@ -17,23 +17,28 @@ services:
 
   # Database Seeder
   seeder:
-    image: ghcr.io/marcuwynu23/bilibay:sha-90e72cf
+    build:
+      context: .
+      target: seeder
     container_name: bilibay-seeder
     restart: "no"
     environment:
       MONGO_URI: mongodb://admin:password123@mongodb:27017/bilibay?authSource=admin
       NODE_ENV: production
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_started
     volumes:
       - backend_logs:/app/logs
     networks:
       - bilibay-network
-    command: sh -c "cd /app && pnpm --filter @bilibay/backend seed"
+    command: sh -c "pnpm --filter @bilibay/backend seed"
 
   # BiliBay App (combined frontend and backend)
   app:
-    image: ghcr.io/marcuwynu23/bilibay:sha-90e72cf
+    build:
+      context: .
+      target: production
     container_name: bilibay-app
     restart: unless-stopped
     environment:
@@ -49,8 +54,8 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - mongodb
-      - seeder
+      seeder:
+        condition: service_completed_successfully
     volumes:
       - backend_logs:/app/logs
     networks:
