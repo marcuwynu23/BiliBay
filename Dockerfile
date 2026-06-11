@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for BiliBay monorepo
+# Multi-stage Dockerfile for BiliBay monorepo (single image)
 FROM node:20-alpine AS base
 
 # Install pnpm
@@ -33,25 +33,39 @@ FROM base AS frontend-builder
 COPY --from=ui-builder /app/packages/ui/dist ./packages/ui/dist
 RUN pnpm --filter @bilibay/frontend build
 
-# Production backend image
-FROM node:20-alpine AS backend
-RUN npm install -g pnpm@8.15.9
+# Production image (combined frontend and backend)
+FROM node:20-alpine AS production
+
+# Install Nginx
+RUN apk add --no-cache nginx
+
+# Set working directory
 WORKDIR /app
 
+# Install pnpm
+RUN npm install -g pnpm@8.15.9
+
 # Copy backend build and dependencies
-COPY --from=backend-builder /app/apps/backend/dist ./dist
+COPY --from=backend-builder /app/apps/backend/build ./backend
 COPY --from=backend-builder /app/apps/backend/package.json ./package.json
 COPY --from=backend-builder /app/node_modules ./node_modules
+
+# Copy frontend build
+COPY --from=frontend-builder /app/apps/frontend/dist /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Create logs directory
 RUN mkdir -p logs
 
-EXPOSE 3000
-CMD ["pnpm", "start"]
-
-# Production frontend image
-FROM nginx:alpine AS frontend
-COPY --from=frontend-builder /app/apps/frontend/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
+# Expose ports
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# Start script to run both Nginx and backend
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'nginx -g "daemon off;" &' >> /app/start.sh && \
+    echo 'cd /app && node backend/index.js' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]
