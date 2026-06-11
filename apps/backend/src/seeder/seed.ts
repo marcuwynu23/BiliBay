@@ -1,9 +1,10 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import Product from "@/models/product";
 import Category from "@/models/category";
+import Product from "@/models/product";
 import User from "@/models/user";
 import logger from "@/utils/logger";
+import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -300,20 +301,46 @@ const seedProducts = async () => {
       categoryMap.set(catData.name, category._id);
     }
 
-    // Get or create seller users
-    logger.info("Finding seller users...");
+    // Get or create test users for all roles
+    logger.info("Finding existing test users...");
     let sellers = await User.find({ role: "seller" }).limit(10);
+    let buyers = await User.find({ role: "buyer" }).limit(5);
+    let couriers = await User.find({ role: "courier" }).limit(3);
+    let deliverers = await User.find({ role: "deliverer" }).limit(3);
+    let admins = await User.find({ role: "admin" }).limit(1);
     
+    const hashedPassword = await bcrypt.hash("password123", 10);
+    
+    // Create test buyers if none exist
+    if (buyers.length === 0) {
+      logger.warn("No buyer users found. Creating test buyers...");
+      const testBuyers = [];
+      for (let i = 1; i <= 5; i++) {
+        const buyer = await User.create({
+          firstName: `Buyer${i}`,
+          lastName: `Test${i}`,
+          email: `buyer${i}@test.com`,
+          password: hashedPassword,
+          role: "buyer",
+          isActive: true,
+          emailVerified: true,
+        });
+        testBuyers.push(buyer);
+      }
+      buyers = testBuyers;
+      logger.info(`Created ${testBuyers.length} test buyers with email: buyer1@test.com, password: password123`);
+    }
+    
+    // Create test sellers if none exist
     if (sellers.length === 0) {
       logger.warn("No seller users found. Creating test sellers...");
-      // Create a few test sellers
       const testSellers = [];
       for (let i = 1; i <= 5; i++) {
         const seller = await User.create({
           firstName: `Seller${i}`,
           lastName: `Test${i}`,
           email: `seller${i}@test.com`,
-          password: "$2a$10$rOzJqJqJqJqJqJqJqJqJqO", // dummy hash
+          password: hashedPassword,
           role: "seller",
           isActive: true,
           emailVerified: true,
@@ -321,7 +348,63 @@ const seedProducts = async () => {
         testSellers.push(seller);
       }
       sellers = testSellers;
-      logger.info(`Created ${testSellers.length} test sellers`);
+      logger.info(`Created ${testSellers.length} test sellers with email: seller1@test.com, password: password123`);
+    }
+    
+    // Create test couriers if none exist
+    if (couriers.length === 0) {
+      logger.warn("No courier users found. Creating test couriers...");
+      const testCouriers = [];
+      for (let i = 1; i <= 3; i++) {
+        const courier = await User.create({
+          firstName: `Courier${i}`,
+          lastName: `Test${i}`,
+          email: `courier${i}@test.com`,
+          password: hashedPassword,
+          role: "courier",
+          isActive: true,
+          emailVerified: true,
+        });
+        testCouriers.push(courier);
+      }
+      couriers = testCouriers;
+      logger.info(`Created ${testCouriers.length} test couriers with email: courier1@test.com, password: password123`);
+    }
+    
+    // Create test deliverers if none exist
+    if (deliverers.length === 0) {
+      logger.warn("No deliverer users found. Creating test deliverers...");
+      const testDeliverers = [];
+      for (let i = 1; i <= 3; i++) {
+        const deliverer = await User.create({
+          firstName: `Deliverer${i}`,
+          lastName: `Test${i}`,
+          email: `deliverer${i}@test.com`,
+          password: hashedPassword,
+          role: "deliverer",
+          isActive: true,
+          emailVerified: true,
+        });
+        testDeliverers.push(deliverer);
+      }
+      deliverers = testDeliverers;
+      logger.info(`Created ${testDeliverers.length} test deliverers with email: deliverer1@test.com, password: password123`);
+    }
+    
+    // Create test admin if none exists
+    if (admins.length === 0) {
+      logger.warn("No admin user found. Creating test admin...");
+      const admin = await User.create({
+        firstName: `Admin`,
+        lastName: `Test`,
+        email: `admin@test.com`,
+        password: hashedPassword,
+        role: "admin",
+        isActive: true,
+        emailVerified: true,
+      });
+      admins = [admin];
+      logger.info(`Created test admin with email: admin@test.com, password: password123`);
     }
 
     if (sellers.length === 0) {
