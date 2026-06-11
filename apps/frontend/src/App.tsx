@@ -1,13 +1,14 @@
+import { useQuery } from "@tanstack/react-query";
+import { lazy, Suspense, type ReactNode } from "react";
 import {
   BrowserRouter,
-  Routes,
-  Route,
   Navigate,
+  Route,
+  Routes,
 } from "react-router-dom";
-import {lazy, Suspense, type ReactNode} from "react";
-import {useQuery} from "@tanstack/react-query";
-import {useAuthStore} from "~/stores/common/authStore";
-import {PromptProvider} from "~/components/common/PromptProvider";
+import { PromptProvider } from "~/components/common/PromptProvider";
+import { useAuthStore } from "~/stores/common/authStore";
+import Landing from "./pages/Landing";
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -115,8 +116,10 @@ function App() {
         element={
           isScopedLogisticsUser ? (
             <Navigate to={logisticsDashboardPath} replace />
-          ) : (
+          ) : user && token ? (
             <Home />
+          ) : (
+            <Landing />
           )
         }
       />
