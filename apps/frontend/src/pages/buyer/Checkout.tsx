@@ -273,7 +273,7 @@ export default function Checkout() {
       onConfirm: async () => {
         setSubmitting(true);
         try {
-          let receiptUrl = null;
+          let receiptUrl: string | null = null;
           if (paymentMethod === "bank_transfer" && receiptFile) {
             receiptUrl = await uploadReceipt();
           }

@@ -1,16 +1,15 @@
-import {Link, useNavigate, useLocation} from "react-router-dom";
-import {useState, useEffect} from "react";
 import {
-  HomeIcon,
-  ShoppingCartIcon,
-  ShoppingBagIcon,
-  UserIcon,
   ArrowRightOnRectangleIcon,
-  ClipboardDocumentListIcon,
+  HomeIcon,
   QueueListIcon,
+  ShoppingBagIcon,
+  ShoppingCartIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
-import {useAuthStore} from "~/stores/common/authStore";
-import {usePromptStore} from "~/stores/common/promptStore";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "~/stores/common/authStore";
+import { usePromptStore } from "~/stores/common/promptStore";
 
 export const NavBar = () => {
   const {user, token, logout} = useAuthStore();
